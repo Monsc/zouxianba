@@ -195,7 +195,7 @@ router.delete('/:id', auth, async (req: any, res: express.Response) => {
       return res.status(403).json({ message: '没有权限删除此帖子' })
     }
 
-    await post.remove()
+    await post.deleteOne()
     res.json({ message: '帖子已删除' })
   } catch (error) {
     res.status(500).json({ message: '服务器错误' })
