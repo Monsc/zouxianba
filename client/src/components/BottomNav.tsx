@@ -21,7 +21,7 @@ export default function BottomNav() {
               isActive('/') ? 'text-primary-600' : 'text-gray-400'
             } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
           >
-            <HomeIcon className="h-7 w-7" />
+            <HomeIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
           </Link>
 
           <Link
@@ -30,7 +30,7 @@ export default function BottomNav() {
               isActive('/search') ? 'text-primary-600' : 'text-gray-400'
             } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
           >
-            <MagnifyingGlassIcon className="h-7 w-7" />
+            <MagnifyingGlassIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
           </Link>
 
           <Link
@@ -39,7 +39,7 @@ export default function BottomNav() {
               isActive('/notifications') ? 'text-primary-600' : 'text-gray-400'
             } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
           >
-            <BellIcon className="h-7 w-7" />
+            <BellIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
           </Link>
 
           <Link
@@ -48,7 +48,7 @@ export default function BottomNav() {
               isActive('/messages') ? 'text-primary-600' : 'text-gray-400'
             } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
           >
-            <ChatBubbleLeftRightIcon className="h-7 w-7" />
+            <ChatBubbleLeftRightIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
           </Link>
         </div>
       </div>

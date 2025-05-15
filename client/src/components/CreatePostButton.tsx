@@ -12,8 +12,14 @@ export default function CreatePostButton() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed right-4 bottom-20 bg-primary-600 text-white rounded-full p-4 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300 z-30 shadow-none"
-        style={{ boxShadow: 'none' }}
+        style={{
+          position: 'fixed',
+          right: 24,
+          bottom: typeof window !== 'undefined' && window.innerWidth < 768 ? 80 : 32,
+          zIndex: 9999,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
+        }}
+        className="bg-primary-600 text-white rounded-full p-4 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
       >
         <PlusIcon className="h-6 w-6" />
       </button>
@@ -25,7 +31,7 @@ export default function CreatePostButton() {
       >
         <div className="fixed inset-0 bg-black/20" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-4">
-          <Dialog.Panel className="mx-auto max-w-sm rounded-lg bg-white p-6 w-full border border-gray-100">
+          <Dialog.Panel className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000] max-w-sm rounded-lg bg-white p-6 w-full border border-gray-100">
             {user ? (
               <>
                 <Dialog.Title className="text-lg font-medium mb-4 text-gray-900">

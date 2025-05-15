@@ -12,11 +12,12 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
-      <CreatePostButton />
       {/* BottomNav 仅移动端显示 */}
       <div className="block md:hidden">
         <BottomNav />
       </div>
+      {/* 悬浮发布按钮，始终在页面最顶层 */}
+      <CreatePostButton />
     </div>
   )
 } 
