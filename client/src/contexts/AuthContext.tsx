@@ -38,16 +38,22 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
               Authorization: `Bearer ${token}`
             }
           });
+          
           if (response.ok) {
             const data = await response.json();
             setUser(data);
           } else {
+            console.error('Token validation failed:', await response.text());
             localStorage.removeItem('token');
+            setUser(null);
           }
         } catch (error) {
           console.error('Token validation error:', error);
           localStorage.removeItem('token');
+          setUser(null);
         }
+      } else {
+        setUser(null);
       }
       setIsLoading(false);
     };
