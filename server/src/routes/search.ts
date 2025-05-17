@@ -1,7 +1,9 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { User } from '../models/User';
 import { Post } from '../models/Post';
 import { auth } from '../middleware/auth';
+import { Request, Response, UserDocument } from '../types/express';
+import { catchAsync } from '../utils/catchAsync';
 
 const router = express.Router();
 
@@ -23,52 +25,47 @@ const getDateRange = (timeFilter: string) => {
 };
 
 // Search users and posts
-router.get('/', auth, async (req, res) => {
-  try {
-    const { q, type = 'all', sort = 'relevance', time = 'all' } = req.query;
-    const query = q as string;
+router.get('/', catchAsync(async (req: Request, res: Response) => {
+  const { q, type } = req.query;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
 
-    if (!query) {
-      return res.json([]);
-    }
+  if (!q) {
+    return res.status(400).json({ message: 'Search query is required' });
+  }
 
-    const results = [];
-    const dateRange = getDateRange(time as string);
+  const skip = (page - 1) * limit;
 
-    // Search users
-    if (type === 'all' || type === 'users') {
+  switch (type) {
+    case 'users':
       const users = await User.find({
         $or: [
-          { username: { $regex: query, $options: 'i' } },
-          { handle: { $regex: query, $options: 'i' } },
-        ],
+          { username: { $regex: q, $options: 'i' } },
+          { handle: { $regex: q, $options: 'i' } }
+        ]
       })
-        .select('username handle avatar')
-        .limit(10);
+        .select('username handle avatar isVerified')
+        .skip(skip)
+        .limit(limit);
 
-      results.push(
-        ...users.map(user => ({
+      return res.json({
+        users: users.map(user => ({
           id: user._id,
-          type: 'user',
-          user: {
-            id: user._id,
-            username: user.username,
-            handle: user.handle,
-            avatar: user.avatar,
-          },
+          username: user.username,
+          handle: user.handle,
+          avatar: user.avatar,
+          isVerified: user.isVerified
         }))
-      );
-    }
+      });
 
-    // Search posts
-    if (type === 'all' || type === 'posts') {
+    case 'posts':
       const postQuery: any = {
-        content: { $regex: query, $options: 'i' },
-        createdAt: { $gte: dateRange },
+        content: { $regex: q, $options: 'i' },
+        createdAt: { $gte: getDateRange('all') },
       };
 
       let sortOptions: any = {};
-      switch (sort) {
+      switch (req.query.sort) {
         case 'recent':
           sortOptions = { createdAt: -1 };
           break;
@@ -77,19 +74,19 @@ router.get('/', auth, async (req, res) => {
           break;
         default:
           // For relevance, we'll use text score if available
-          postQuery.$text = { $search: query };
+          postQuery.$text = { $search: q };
           sortOptions = { score: { $meta: 'textScore' } };
       }
 
       const posts = await Post.find(postQuery)
         .populate('author', 'username handle avatar')
         .sort(sortOptions)
-        .limit(10);
+        .skip(skip)
+        .limit(limit);
 
-      results.push(
-        ...posts.map(post => ({
+      return res.json({
+        posts: posts.map(post => ({
           id: post._id,
-          type: 'post',
           content: post.content,
           user: {
             id: post.author._id,
@@ -101,9 +98,31 @@ router.get('/', auth, async (req, res) => {
           likes: post.likes.length,
           comments: post.comments.length,
         }))
-      );
-    }
+      });
 
+    default:
+      const results = [];
+      const dateRange = getDateRange(req.query.time as string);
+
+      // Search users
+      if (type === 'all' || type === 'users') {
+        const users = await User.find({
+          $or: [
+            { username: { $regex: q, $options: 'i' } },
+            { handle: { $regex: q, $options: 'i' } },
+          ],
+        })
+          .select('username handle avatar')
+          .limit(10);
+
+        results.push(
+          ...users.map(user => ({
+            id: user._id,
+            type: 'user',
+            user: {
+              id: user._id,
+              username: user.username,
+              handle: user.handle,
     // Sort results by relevance (you can implement more sophisticated ranking)
     if (sort === 'relevance') {
       results.sort((a, b) => {

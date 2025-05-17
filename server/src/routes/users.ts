@@ -3,11 +3,13 @@ import { User } from '../models/User';
 import { auth, optionalAuth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
+import { Router } from 'express';
+import { Request, Response } from '../types/express';
 
 const router = express.Router();
 
 // Get user profile
-router.get('/:userId', optionalAuth, catchAsync(async (req, res) => {
+router.get('/:userId', optionalAuth, catchAsync(async (req: Request, res: Response) => {
   const user = await User.findById(req.params.userId)
     .select('-password')
     .populate('followers', 'username handle avatar isVerified')
@@ -27,7 +29,7 @@ router.get('/:userId', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Search users
-router.get('/search/:query', optionalAuth, catchAsync(async (req, res) => {
+router.get('/search/:query', optionalAuth, catchAsync(async (req: Request, res: Response) => {
   const { query } = req.params;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
@@ -47,7 +49,7 @@ router.get('/search/:query', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Follow/Unfollow user
-router.post('/:userId/follow', auth, catchAsync(async (req, res) => {
+router.post('/:userId/follow', auth, catchAsync(async (req: Request, res: Response) => {
   if (req.params.userId === req.user.id) {
     throw new AppError('Cannot follow yourself', 400);
   }
@@ -77,7 +79,7 @@ router.post('/:userId/follow', auth, catchAsync(async (req, res) => {
 }));
 
 // Get user followers
-router.get('/:userId/followers', optionalAuth, catchAsync(async (req, res) => {
+router.get('/:userId/followers', optionalAuth, catchAsync(async (req: Request, res: Response) => {
   const user = await User.findById(req.params.userId)
     .select('followers isPrivate')
     .populate('followers', 'username handle avatar isVerified');
@@ -95,7 +97,7 @@ router.get('/:userId/followers', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Get user following
-router.get('/:userId/following', optionalAuth, catchAsync(async (req, res) => {
+router.get('/:userId/following', optionalAuth, catchAsync(async (req: Request, res: Response) => {
   const user = await User.findById(req.params.userId)
     .select('following isPrivate')
     .populate('following', 'username handle avatar isVerified');
@@ -113,7 +115,7 @@ router.get('/:userId/following', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Update user privacy
-router.patch('/privacy', auth, catchAsync(async (req, res) => {
+router.patch('/privacy', auth, catchAsync(async (req: Request, res: Response) => {
   const { isPrivate } = req.body;
 
   req.user.isPrivate = isPrivate;
@@ -123,7 +125,7 @@ router.patch('/privacy', auth, catchAsync(async (req, res) => {
 }));
 
 // Get suggested users to follow
-router.get('/suggestions', auth, catchAsync(async (req, res) => {
+router.get('/suggestions', auth, catchAsync(async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 10;
 
   // Get users that the current user is not following

@@ -1,169 +1,102 @@
-import express from 'express';
-import { auth } from '../middleware/auth';
-import { Conversation } from '../models/Conversation';
+import { Router } from 'express';
+import { Request, Response } from '../types/express';
 import { Message } from '../models/Message';
-import { User } from '../models/User';
+import { auth } from '../middleware/auth';
+import { catchAsync } from '../middleware/errorHandler';
 
-const router = express.Router();
+const router = Router();
 
-// Get all conversations for the current user
-router.get('/conversations', auth, async (req, res) => {
-  try {
-    const conversations = await Conversation.find({
-      participants: req.user.id,
-    })
-      .populate('participants', 'username handle avatar')
-      .sort({ updatedAt: -1 });
-
-    // Get unread message counts for each conversation
-    const conversationsWithUnread = await Promise.all(
-      conversations.map(async conversation => {
-        const unreadCount = await Message.countDocuments({
-          conversation: conversation._id,
-          sender: { $ne: req.user.id },
-          read: false,
-        });
-
-        const lastMessage = await Message.findOne({
-          conversation: conversation._id,
-        })
-          .sort({ createdAt: -1 })
-          .select('content createdAt');
-
-        return {
-          ...conversation.toObject(),
-          unreadCount,
-          lastMessage,
-        };
-      })
-    );
-
-    res.json(conversationsWithUnread);
-  } catch (error) {
-    console.error('Error fetching conversations:', error);
-    res.status(500).json({ message: 'Failed to fetch conversations' });
-  }
-});
-
-// Get messages for a specific conversation
-router.get('/conversations/:conversationId/messages', auth, async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-
-    // Verify user is part of the conversation
-    const conversation = await Conversation.findOne({
-      _id: conversationId,
-      participants: req.user.id,
-    });
-
-    if (!conversation) {
-      return res.status(404).json({ message: 'Conversation not found' });
+// Get conversations
+router.get('/conversations', auth, catchAsync(async (req: Request, res: Response) => {
+  const conversations = await Message.aggregate([
+    {
+      $match: {
+        $or: [
+          { sender: req.user._id },
+          { recipient: req.user._id }
+        ]
+      }
+    },
+    {
+      $sort: { createdAt: -1 }
+    },
+    {
+      $group: {
+        _id: {
+          $cond: [
+            { $eq: ['$sender', req.user._id] },
+            '$recipient',
+            '$sender'
+          ]
+        },
+        lastMessage: { $first: '$$ROOT' }
+      }
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'user'
+      }
+    },
+    {
+      $unwind: '$user'
+    },
+    {
+      $project: {
+        _id: 1,
+        lastMessage: 1,
+        user: {
+          _id: 1,
+          username: 1,
+          handle: 1,
+          avatar: 1
+        }
+      }
     }
+  ]);
 
-    const messages = await Message.find({ conversation: conversationId })
-      .populate('sender', 'username handle avatar')
-      .sort({ createdAt: 1 });
+  return res.json(conversations);
+}));
 
-    // Mark messages as read
-    await Message.updateMany(
-      {
-        conversation: conversationId,
-        sender: { $ne: req.user.id },
-        read: false,
-      },
-      { read: true }
-    );
+// Get messages with a user
+router.get('/:userId', auth, catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+  const skip = (page - 1) * limit;
 
-    res.json(messages);
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-    res.status(500).json({ message: 'Failed to fetch messages' });
-  }
-});
+  const messages = await Message.find({
+    $or: [
+      { sender: req.user._id, recipient: userId },
+      { sender: userId, recipient: req.user._id }
+    ]
+  })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate('sender', 'username handle avatar')
+    .populate('recipient', 'username handle avatar');
 
-// Create a new conversation or get existing one
-router.post('/conversations', auth, async (req, res) => {
-  try {
-    const { participantId } = req.body;
+  return res.json(messages);
+}));
 
-    // Check if conversation already exists
-    let conversation = await Conversation.findOne({
-      participants: { $all: [req.user.id, participantId] },
-    });
+// Send message
+router.post('/:userId', auth, catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const { content } = req.body;
 
-    if (!conversation) {
-      // Create new conversation
-      conversation = await Conversation.create({
-        participants: [req.user.id, participantId],
-      });
-    }
+  const message = await Message.create({
+    sender: req.user._id,
+    recipient: userId,
+    content
+  });
 
-    await conversation.populate('participants', 'username handle avatar');
-    res.json(conversation);
-  } catch (error) {
-    console.error('Error creating conversation:', error);
-    res.status(500).json({ message: 'Failed to create conversation' });
-  }
-});
+  await message.populate('sender', 'username handle avatar');
+  await message.populate('recipient', 'username handle avatar');
 
-// Send a message
-router.post('/conversations/:conversationId/messages', auth, async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-    const { content } = req.body;
-
-    // Verify user is part of the conversation
-    const conversation = await Conversation.findOne({
-      _id: conversationId,
-      participants: req.user.id,
-    });
-
-    if (!conversation) {
-      return res.status(404).json({ message: 'Conversation not found' });
-    }
-
-    const message = await Message.create({
-      conversation: conversationId,
-      sender: req.user.id,
-      content,
-    });
-
-    await message.populate('sender', 'username handle avatar');
-
-    // Update conversation's last message timestamp
-    conversation.updatedAt = new Date();
-    await conversation.save();
-
-    res.json(message);
-  } catch (error) {
-    console.error('Error sending message:', error);
-    res.status(500).json({ message: 'Failed to send message' });
-  }
-});
-
-// Delete a conversation
-router.delete('/conversations/:conversationId', auth, async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-
-    const conversation = await Conversation.findOne({
-      _id: conversationId,
-      participants: req.user.id,
-    });
-
-    if (!conversation) {
-      return res.status(404).json({ message: 'Conversation not found' });
-    }
-
-    // Delete all messages in the conversation
-    await Message.deleteMany({ conversation: conversationId });
-    await conversation.deleteOne();
-
-    res.json({ message: 'Conversation deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting conversation:', error);
-    res.status(500).json({ message: 'Failed to delete conversation' });
-  }
-});
+  return res.status(201).json(message);
+}));
 
 export default router; 

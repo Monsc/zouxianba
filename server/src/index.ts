@@ -24,6 +24,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/users', userRoutes);
 
+// Health check endpoint
+app.use('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
+
 // Error handling
 app.use(notFound);
 app.use(errorHandler);

@@ -4,11 +4,13 @@ import { Comment } from '../models/Comment';
 import { auth, optionalAuth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
+import { Router } from 'express';
+import { Request, Response, PostDocument } from '../types/express';
 
 const router = express.Router();
 
 // Get feed posts
-router.get('/feed', auth, catchAsync(async (req, res) => {
+router.get('/feed', auth, catchAsync(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
   const skip = (page - 1) * limit;
@@ -36,7 +38,7 @@ router.get('/feed', auth, catchAsync(async (req, res) => {
 }));
 
 // Get user posts
-router.get('/user/:userId', optionalAuth, catchAsync(async (req, res) => {
+router.get('/user/:userId', optionalAuth, catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.params;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
@@ -66,7 +68,7 @@ router.get('/user/:userId', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Create post
-router.post('/', auth, catchAsync(async (req, res) => {
+router.post('/', auth, catchAsync(async (req: Request, res: Response) => {
   const { content, media, visibility } = req.body;
 
   const post = await Post.create({
@@ -81,7 +83,7 @@ router.post('/', auth, catchAsync(async (req, res) => {
 }));
 
 // Get post by ID
-router.get('/:postId', optionalAuth, catchAsync(async (req, res) => {
+router.get('/:postId', optionalAuth, catchAsync(async (req: Request, res: Response) => {
   const post = await Post.findById(req.params.postId)
     .populate('author', 'username handle avatar isVerified')
     .populate({
@@ -105,7 +107,7 @@ router.get('/:postId', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Update post
-router.patch('/:postId', auth, catchAsync(async (req, res) => {
+router.patch('/:postId', auth, catchAsync(async (req: Request, res: Response) => {
   const post = await Post.findOne({
     _id: req.params.postId,
     author: req.user.id,
@@ -135,7 +137,7 @@ router.patch('/:postId', auth, catchAsync(async (req, res) => {
 }));
 
 // Delete post
-router.delete('/:postId', auth, catchAsync(async (req, res) => {
+router.delete('/:postId', auth, catchAsync(async (req: Request, res: Response) => {
   const post = await Post.findOne({
     _id: req.params.postId,
     author: req.user.id,
@@ -153,7 +155,7 @@ router.delete('/:postId', auth, catchAsync(async (req, res) => {
 }));
 
 // Like/Unlike post
-router.post('/:postId/like', auth, catchAsync(async (req, res) => {
+router.post('/:postId/like', auth, catchAsync(async (req: Request, res: Response) => {
   const post = await Post.findById(req.params.postId);
 
   if (!post) {
@@ -172,7 +174,7 @@ router.post('/:postId/like', auth, catchAsync(async (req, res) => {
 }));
 
 // Add comment
-router.post('/:postId/comments', auth, catchAsync(async (req, res) => {
+router.post('/:postId/comments', auth, catchAsync(async (req: Request, res: Response) => {
   const { content, media, parentComment } = req.body;
 
   const post = await Post.findById(req.params.postId);
@@ -196,7 +198,7 @@ router.post('/:postId/comments', auth, catchAsync(async (req, res) => {
 }));
 
 // Get post comments
-router.get('/:postId/comments', optionalAuth, catchAsync(async (req, res) => {
+router.get('/:postId/comments', optionalAuth, catchAsync(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
   const skip = (page - 1) * limit;

@@ -4,11 +4,13 @@ import { User } from '../models/User';
 import { auth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
+import { Router } from 'express';
+import { Request, Response } from '../types/express';
 
 const router = express.Router();
 
 // Register
-router.post('/register', catchAsync(async (req, res) => {
+router.post('/register', catchAsync(async (req: Request, res: Response) => {
   const { username, email, password, handle } = req.body;
 
   // Check if user already exists
@@ -40,7 +42,7 @@ router.post('/register', catchAsync(async (req, res) => {
 }));
 
 // Login
-router.post('/login', catchAsync(async (req, res) => {
+router.post('/login', catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   // Find user
@@ -67,12 +69,12 @@ router.post('/login', catchAsync(async (req, res) => {
 }));
 
 // Get current user
-router.get('/me', auth, catchAsync(async (req, res) => {
+router.get('/me', auth, catchAsync(async (req: Request, res: Response) => {
   res.json(req.user.getPublicProfile());
 }));
 
 // Update user profile
-router.patch('/me', auth, catchAsync(async (req, res) => {
+router.patch('/me', auth, catchAsync(async (req: Request, res: Response) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['username', 'email', 'password', 'avatar', 'bio', 'location', 'website'];
   const isValidOperation = updates.every(update => allowedUpdates.includes(update));
@@ -90,7 +92,7 @@ router.patch('/me', auth, catchAsync(async (req, res) => {
 }));
 
 // Change password
-router.post('/change-password', auth, catchAsync(async (req, res) => {
+router.post('/change-password', auth, catchAsync(async (req: Request, res: Response) => {
   const { currentPassword, newPassword } = req.body;
 
   const isMatch = await req.user.comparePassword(currentPassword);
@@ -105,7 +107,7 @@ router.post('/change-password', auth, catchAsync(async (req, res) => {
 }));
 
 // Delete account
-router.delete('/me', auth, catchAsync(async (req, res) => {
+router.delete('/me', auth, catchAsync(async (req: Request, res: Response) => {
   await req.user.deleteOne();
   res.json({ message: 'Account deleted successfully' });
 }));
