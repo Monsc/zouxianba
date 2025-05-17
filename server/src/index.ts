@@ -6,6 +6,7 @@ import path from 'path';
 import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
 import userRoutes from './routes/users';
+import notificationRoutes from './routes/notifications';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check endpoint
 app.use('/api/health', (_req, res) => {
