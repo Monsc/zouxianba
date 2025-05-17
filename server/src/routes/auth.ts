@@ -36,7 +36,7 @@ router.post('/register', catchAsync(async (req: Request, res: Response) => {
   });
 
   res.status(201).json({
-    user: user.getPublicProfile(),
+    user: (user as any).getPublicProfile(),
     token,
   });
 }));
@@ -52,7 +52,7 @@ router.post('/login', catchAsync(async (req: Request, res: Response) => {
   }
 
   // Check password
-  const isMatch = await user.comparePassword(password);
+  const isMatch = await (user as any).comparePassword(password);
   if (!isMatch) {
     throw new AppError('Invalid credentials', 401);
   }
@@ -63,14 +63,14 @@ router.post('/login', catchAsync(async (req: Request, res: Response) => {
   });
 
   res.json({
-    user: user.getPublicProfile(),
+    user: (user as any).getPublicProfile(),
     token,
   });
 }));
 
 // Get current user
 router.get('/me', auth, catchAsync(async (req: Request, res: Response) => {
-  res.json(req.user.getPublicProfile());
+  res.json((req.user as any).getPublicProfile());
 }));
 
 // Update user profile
@@ -88,14 +88,14 @@ router.patch('/me', auth, catchAsync(async (req: Request, res: Response) => {
   });
 
   await req.user.save();
-  res.json(req.user.getPublicProfile());
+  res.json((req.user as any).getPublicProfile());
 }));
 
 // Change password
 router.post('/change-password', auth, catchAsync(async (req: Request, res: Response) => {
   const { currentPassword, newPassword } = req.body;
 
-  const isMatch = await req.user.comparePassword(currentPassword);
+  const isMatch = await (req.user as any).comparePassword(currentPassword);
   if (!isMatch) {
     throw new AppError('Current password is incorrect', 401);
   }

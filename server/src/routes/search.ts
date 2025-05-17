@@ -1,9 +1,8 @@
-import express, { Router } from 'express';
+import express from 'express';
 import { User } from '../models/User';
 import { Post } from '../models/Post';
-import { auth } from '../middleware/auth';
-import { Request, Response, UserDocument } from '../types/express';
-import { catchAsync } from '../utils/catchAsync';
+import { Request, Response } from '../types/express';
+import { catchAsync } from '../middleware/errorHandler';
 
 const router = express.Router();
 
@@ -49,13 +48,17 @@ router.get('/', catchAsync(async (req: Request, res: Response) => {
         .limit(limit);
 
       return res.json({
-        users: users.map(user => ({
-          id: user._id,
-          username: user.username,
-          handle: user.handle,
-          avatar: user.avatar,
-          isVerified: user.isVerified
-        }))
+        users: users.map(user => {
+          // user 可能是 Document 或 ObjectId，需断言
+          const u = user as any;
+          return {
+            id: u._id,
+            username: u.username,
+            handle: u.handle,
+            avatar: u.avatar,
+            isVerified: u.isVerified
+          };
+        })
       });
 
     case 'posts':
@@ -85,19 +88,22 @@ router.get('/', catchAsync(async (req: Request, res: Response) => {
         .limit(limit);
 
       return res.json({
-        posts: posts.map(post => ({
-          id: post._id,
-          content: post.content,
-          user: {
-            id: post.author._id,
-            username: post.author.username,
-            handle: post.author.handle,
-            avatar: post.author.avatar,
-          },
-          createdAt: post.createdAt,
-          likes: post.likes.length,
-          comments: post.comments.length,
-        }))
+        posts: posts.map(post => {
+          const author = post.author as any;
+          return {
+            id: post._id,
+            content: post.content,
+            user: {
+              id: author._id,
+              username: author.username,
+              handle: author.handle,
+              avatar: author.avatar,
+            },
+            createdAt: post.createdAt,
+            likes: post.likes.length,
+            comments: post.comments.length,
+          };
+        })
       });
 
     default:

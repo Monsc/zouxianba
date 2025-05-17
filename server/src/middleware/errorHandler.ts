@@ -17,9 +17,9 @@ export class AppError extends Error {
 
 export const errorHandler = (
   err: Error | AppError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
@@ -46,6 +46,6 @@ export const catchAsync = (fn: Function) => {
 };
 
 // Handle 404 errors
-export const notFound = (req: Request, res: Response, next: NextFunction) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+export const notFound = (_req: Request, res: Response, _next: NextFunction) => {
+  next(new AppError(`Can't find ${_req.originalUrl} on this server!`, 404));
 }; 

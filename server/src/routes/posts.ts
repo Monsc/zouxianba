@@ -126,7 +126,7 @@ router.patch('/:postId', auth, catchAsync(async (req: Request, res: Response) =>
   }
 
   updates.forEach(update => {
-    post[update] = req.body[update];
+    if (allowedUpdates.includes(update)) (post as any)[update] = req.body[update];
   });
 
   post.isEdited = true;
