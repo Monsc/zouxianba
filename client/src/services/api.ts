@@ -1,4 +1,4 @@
-const API_URL = '';
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 interface ApiResponse<T> {
   data?: T;
@@ -11,11 +11,15 @@ async function fetchApi<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
+  let headers: HeadersInit = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };
+
+  // Only set Content-Type if body is not FormData
+  if (!(options.body instanceof FormData)) {
+    headers = { 'Content-Type': 'application/json', ...headers };
+  }
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
