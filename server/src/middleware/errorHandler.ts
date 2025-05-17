@@ -46,6 +46,6 @@ export const catchAsync = (fn: Function) => {
 };
 
 // Handle 404 errors
-export const notFound = (_req: Request, res: Response, next: NextFunction) => {
+export const notFound = (_req: Request, _res: Response, next: NextFunction) => {
   next(new AppError(`Can't find ${_req.originalUrl} on this server!`, 404));
 }; 
