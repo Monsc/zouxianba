@@ -5,6 +5,7 @@ import { auth, optionalAuth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
 import { Request, Response } from '../types/express';
+import { upload } from '../middleware/upload';
 
 const router = express.Router();
 
@@ -67,16 +68,18 @@ router.get('/user/:userId', optionalAuth, catchAsync(async (req: Request, res: R
 }));
 
 // Create post
-router.post('/', auth, catchAsync(async (req: Request, res: Response) => {
-  const { content, media, visibility } = req.body;
-
+router.post('/', auth, upload.array('media', 4), catchAsync(async (req: Request, res: Response) => {
+  const { content, visibility } = req.body;
+  let media: string[] = [];
+  if (req.files && Array.isArray(req.files)) {
+    media = req.files.map((file: any) => '/uploads/' + file.filename);
+  }
   const post = await Post.create({
     author: req.user.id,
     content,
     media,
     visibility,
   });
-
   await post.populate('author', 'username handle avatar isVerified');
   res.status(201).json(post);
 }));
