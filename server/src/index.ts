@@ -36,10 +36,18 @@ app.use(errorHandler);
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI!);
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not defined');
+    }
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
   } catch (error) {
     console.error('MongoDB connection error:', error);
+    console.error('Environment variables:', {
+      MONGODB_URI: process.env.MONGODB_URI ? 'defined' : 'undefined',
+      NODE_ENV: process.env.NODE_ENV,
+      PORT: process.env.PORT
+    });
     process.exit(1);
   }
 };
