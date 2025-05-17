@@ -1,7 +1,7 @@
 {
-  "name": "twitter-clone-server",
+  "name": "zouxianba-server",
   "version": "1.0.0",
-  "description": "Backend server for Twitter clone",
+  "description": "Backend server for ZouXianBa",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",

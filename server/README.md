@@ -1,6 +1,6 @@
-# Twitter Clone Backend
+# ZouXianBa Backend
 
-This is the backend server for the Twitter clone application. It provides a RESTful API for user authentication, posts, comments, and user interactions.
+This is the backend server for the ZouXianBa application. It provides a RESTful API for user authentication, posts, comments, and user interactions.
 
 ## Features
 
@@ -38,7 +38,7 @@ This is the backend server for the Twitter clone application. It provides a REST
 3. Create a `.env` file in the root directory with the following variables:
    ```
    PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/twitter-clone
+   MONGODB_URI=mongodb://localhost:27017/zouxianba
    JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
    NODE_ENV=development
    ```

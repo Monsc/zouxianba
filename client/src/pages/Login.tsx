@@ -34,7 +34,7 @@ function Login() {
   return (
     <div className="auth-page">
       <div className="auth-container">
-        <h1 className="auth-title">Login to Twitter Clone</h1>
+        <h1 className="auth-title">Login to ZouXianBa</h1>
 
         {error && (
           <div className="error-message">

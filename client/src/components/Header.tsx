@@ -13,7 +13,7 @@ function Header() {
           className="header-title"
           onClick={() => navigate('/')}
         >
-          Twitter Clone
+          ZouXianBa
         </h1>
         <div className="header-actions">
           {user && (

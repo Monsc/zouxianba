@@ -1,6 +1,6 @@
-# Twitter Clone Client
+# ZouXianBa Client
 
-This is the frontend client for the Twitter Clone application, built with React and TypeScript.
+This is the frontend client for the ZouXianBa application, built with React and TypeScript.
 
 ## Features
 

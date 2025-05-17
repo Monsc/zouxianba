@@ -120,7 +120,7 @@ export async function getUserPosts(id: string) {
 
 export async function followUser(id: string) {
   return fetchApi(`/users/${id}/follow`, {
-    method: 'POST',
+        method: 'POST',
   });
 }
 
