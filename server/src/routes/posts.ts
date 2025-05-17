@@ -4,8 +4,7 @@ import { Comment } from '../models/Comment';
 import { auth, optionalAuth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
-import { Router } from 'express';
-import { Request, Response, PostDocument } from '../types/express';
+import { Request, Response } from '../types/express';
 
 const router = express.Router();
 

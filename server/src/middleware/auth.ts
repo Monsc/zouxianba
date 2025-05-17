@@ -29,7 +29,7 @@ export const auth = async (req: Request, _res: Response, next: NextFunction) => 
     req.user = user;
     next();
   } catch (error) {
-    _res.status(401).json({ message: 'Please authenticate' });
+    return;
   }
 };
 
