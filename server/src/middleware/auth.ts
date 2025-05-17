@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const auth = async (req: Request, _res: Response, next: NextFunction) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -25,7 +25,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Please authenticate' });
+    _res.status(401).json({ message: 'Please authenticate' });
   }
 };
 
