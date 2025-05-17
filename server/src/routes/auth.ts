@@ -4,7 +4,6 @@ import { User } from '../models/User';
 import { auth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
-import { Router } from 'express';
 import { Request, Response } from '../types/express';
 
 const router = express.Router();
