@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, PropsWithChildren } from 'react';
 import { login as apiLogin, register as apiRegister, logout as apiLogout } from '../services/api';
 
 interface User {
@@ -23,9 +23,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: PropsWithChildren<{}>) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Check for stored token and validate it
@@ -43,22 +43,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { user, token } = await apiLogin(email, password);
       localStorage.setItem('token', token);
       setUser(user);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
-      throw error;
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   };
 
   const register = async (username: string, email: string, password: string, handle: string) => {
     try {
-      console.log('AuthContext register called', { username, email, password, handle });
       const { user, token } = await apiRegister(username, email, password, handle);
-      console.log('apiRegister resolved', { user, token });
       localStorage.setItem('token', token);
       setUser(user);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Registration error in AuthContext:', error);
-      throw error;
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   };
 
@@ -67,9 +65,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await apiLogout();
       localStorage.removeItem('token');
       setUser(null);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Logout error:', error);
-      throw error;
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   };
 
