@@ -18,7 +18,7 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<div style={{color:'red',fontWeight:'bold',fontSize:32}}>TEST REGISTER ROUTE</div>} />
+          <Route path="/register" element={<Register />} />
 
           {/* Protected routes */}
           <Route element={<Layout />}>
