@@ -68,11 +68,11 @@ export async function logout() {
 
 // Posts
 export async function getFeed() {
-  return fetchApi('/posts/feed');
+  return fetchApi('/api/posts/feed');
 }
 
 export async function getPost(id: string) {
-  return fetchApi(`/posts/${id}`);
+  return fetchApi(`/api/posts/${id}`);
 }
 
 export async function createPost(data: { content: string; media?: File[] }) {
@@ -81,20 +81,20 @@ export async function createPost(data: { content: string; media?: File[] }) {
   if (data.media) {
     data.media.forEach(file => formData.append('media', file));
   }
-  return fetchApi('/posts', {
+  return fetchApi('/api/posts', {
     method: 'POST',
     body: formData,
   });
 }
 
 export async function likePost(id: string) {
-  return fetchApi(`/posts/${id}/like`, {
+  return fetchApi(`/api/posts/${id}/like`, {
     method: 'POST',
   });
 }
 
 export async function getComments(postId: string) {
-  return fetchApi(`/posts/${postId}/comments`);
+  return fetchApi(`/api/posts/${postId}/comments`);
 }
 
 export async function createComment(postId: string, data: { content: string; media?: File[] }) {
@@ -103,7 +103,7 @@ export async function createComment(postId: string, data: { content: string; med
   if (data.media) {
     data.media.forEach(file => formData.append('media', file));
   }
-  return fetchApi(`/posts/${postId}/comments`, {
+  return fetchApi(`/api/posts/${postId}/comments`, {
     method: 'POST',
     body: formData,
   });
