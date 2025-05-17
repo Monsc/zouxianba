@@ -29,13 +29,30 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
 
   useEffect(() => {
     // Check for stored token and validate it
-    const token = localStorage.getItem('token');
-    if (token) {
-      // TODO: Validate token with backend
-      // For now, just clear invalid token
-      localStorage.removeItem('token');
-    }
-    setIsLoading(false);
+    const validateToken = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data);
+          } else {
+            localStorage.removeItem('token');
+          }
+        } catch (error) {
+          console.error('Token validation error:', error);
+          localStorage.removeItem('token');
+        }
+      }
+      setIsLoading(false);
+    };
+
+    validateToken();
   }, []);
 
   const login = async (email: string, password: string) => {
