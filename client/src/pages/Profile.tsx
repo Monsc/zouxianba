@@ -47,27 +47,20 @@ function Profile() {
       navigate('/');
       return;
     }
-
-    loadProfile();
-  }, [userId, navigate]);
-
-  const loadProfile = async () => {
-    try {
-      setIsLoading(true);
-      const [userData, postsData] = await Promise.all([
-        getUserProfile(userId!),
-        getUserPosts(userId!)
-      ]);
-      setUser(userData as User);
-      setPosts(postsData as Post[]);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load profile. Please try again later.');
-      console.error('Error loading profile:', err);
-    } finally {
+    Promise.all([
+      getUserProfile(userId!),
+      getUserPosts(userId!)
+    ]).then(([profile, posts]) => {
+      setUser(profile as User);
+      // 兼容后端返回的 _id 字段
+      const postsWithId = (posts as any[]).map(post => ({ ...post, id: post._id }));
+      setPosts(postsWithId as Post[]);
       setIsLoading(false);
-    }
-  };
+    }).catch(() => {
+      setError('Failed to load profile.');
+      setIsLoading(false);
+    });
+  }, [userId, navigate]);
 
   const handleFollow = async () => {
     if (!user) return;

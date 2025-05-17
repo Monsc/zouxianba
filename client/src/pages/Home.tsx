@@ -40,7 +40,8 @@ function Home() {
     try {
       setIsLoading(true);
       const data = await getFeed();
-      setPosts(data as Post[]);
+      const postsWithId = (data as any[]).map(post => ({ ...post, id: post._id }));
+      setPosts(postsWithId as Post[]);
       setError(null);
     } catch (err) {
       setError('Failed to load posts. Please try again later.');
