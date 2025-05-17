@@ -76,11 +76,17 @@ export async function getPost(id: string) {
 }
 
 export async function createPost(data: { content: string; media?: File[] }) {
+  if (!data.media || data.media.length === 0) {
+    // 只发纯文本
+    return fetchApi('/api/posts', {
+      method: 'POST',
+      body: JSON.stringify({ content: data.content }),
+    });
+  }
+  // 有媒体时仍用FormData
   const formData = new FormData();
   formData.append('content', data.content);
-  if (data.media) {
-    data.media.forEach(file => formData.append('media', file));
-  }
+  data.media.forEach(file => formData.append('media', file));
   return fetchApi('/api/posts', {
     method: 'POST',
     body: formData,
