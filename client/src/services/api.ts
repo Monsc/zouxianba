@@ -1,98 +1,203 @@
-import axios from 'axios'
+const API_URL = '';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+  message?: string;
+}
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
+async function fetchApi<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = localStorage.getItem('token');
+  const headers = {
     'Content-Type': 'application/json',
-  },
-})
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
 
-// 请求拦截器
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  let data: ApiResponse<T>;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error('Invalid server response');
   }
-)
 
-// 响应拦截器
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(error)
+  if (!response.ok) {
+    throw new Error(data.error || data.message || 'Something went wrong');
   }
-)
 
-// 认证相关
-export const auth = {
-  login: (email: string, password: string) =>
-    api.post('/auth/login', { email, password }),
-  register: (username: string, email: string, password: string) =>
-    api.post('/auth/register', { username, email, password }),
-  getMe: () => api.get('/auth/me'),
+  return (data.data ?? data) as T;
 }
 
-// 帖子相关
-export const posts = {
-  getAll: (page = 1, limit = 10) =>
-    api.get(`/posts?page=${page}&limit=${limit}`),
-  getOne: (id: string) => api.get(`/posts/${id}`),
-  create: (content: string, images?: File[]) => {
-    const formData = new FormData()
-    formData.append('content', content)
-    if (images) {
-      images.forEach((image) => formData.append('images', image))
+// Auth
+export async function login(email: string, password: string) {
+  return fetchApi<{ user: any; token: string }>('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function register(
+  username: string,
+  email: string,
+  password: string,
+  handle: string
+) {
+  return fetchApi<{ user: any; token: string }>('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ username, email, password, handle }),
+  });
+}
+
+export async function logout() {
+  return fetchApi('/api/auth/logout', {
+    method: 'POST',
+  });
+}
+
+// Posts
+export async function getFeed() {
+  return fetchApi('/posts/feed');
+}
+
+export async function getPost(id: string) {
+  return fetchApi(`/posts/${id}`);
+}
+
+export async function createPost(data: { content: string; media?: File[] }) {
+  const formData = new FormData();
+  formData.append('content', data.content);
+  if (data.media) {
+    data.media.forEach(file => formData.append('media', file));
+  }
+  return fetchApi('/posts', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export async function likePost(id: string) {
+  return fetchApi(`/posts/${id}/like`, {
+    method: 'POST',
+  });
+}
+
+export async function getComments(postId: string) {
+  return fetchApi(`/posts/${postId}/comments`);
+}
+
+export async function createComment(postId: string, data: { content: string; media?: File[] }) {
+  const formData = new FormData();
+  formData.append('content', data.content);
+  if (data.media) {
+    data.media.forEach(file => formData.append('media', file));
+  }
+  return fetchApi(`/posts/${postId}/comments`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+// User
+export async function getUserProfile(id: string) {
+  return fetchApi(`/users/${id}`);
+}
+
+export async function getUserPosts(id: string) {
+  return fetchApi(`/users/${id}/posts`);
+}
+
+export async function followUser(id: string) {
+  return fetchApi(`/users/${id}/follow`, {
+    method: 'POST',
+  });
+}
+
+export async function updateProfile(data: {
+  username?: string;
+  email?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  avatar?: File;
+}) {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) {
+      formData.append(key, value);
     }
-    return api.post('/posts', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-  },
-  like: (id: string) => api.post(`/posts/${id}/like`),
-  comment: (id: string, content: string, parent?: string) =>
-    api.post(`/posts/${id}/comments`, { content, parent }),
-  delete: (id: string) => api.delete(`/posts/${id}`),
+  });
+  return fetchApi('/users/profile', {
+    method: 'PUT',
+    body: formData,
+  });
 }
 
-// 用户相关
-export const users = {
-  getOne: (id: string) => api.get(`/users/${id}`),
-  getPosts: (id: string, page = 1, limit = 10) =>
-    api.get(`/users/${id}/posts?page=${page}&limit=${limit}`),
-  update: (id: string, data: any) => {
-    const formData = new FormData()
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined) {
-        formData.append(key, value as string)
-      }
-    })
-    return api.put(`/users/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-  },
+export async function changePassword(currentPassword: string, newPassword: string) {
+  return fetchApi('/users/password', {
+    method: 'PUT',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
 }
 
-// 管理员相关
-export const admin = {
-  getAllUsers: (page = 1, limit = 10) =>
-    api.get(`/users?page=${page}&limit=${limit}`),
-  updateUserRole: (id: string, role: string) =>
-    api.put(`/users/${id}/role`, { role }),
+// Search
+export async function searchUsers(query: string) {
+  return fetchApi<Array<{
+    id: string;
+    username: string;
+    handle: string;
+    avatar: string;
+    bio?: string;
+  }>>(`/search/users?q=${encodeURIComponent(query)}`);
 }
 
-export default api 
+export async function searchPosts(query: string) {
+  return fetchApi<Array<{
+    id: string;
+    content: string;
+    media?: string[];
+    author: {
+      id: string;
+      username: string;
+      handle: string;
+      avatar: string;
+    };
+    createdAt: string;
+    likes: number;
+    comments: number;
+    isLiked: boolean;
+  }>>(`/search/posts?q=${encodeURIComponent(query)}`);
+}
+
+// Notifications
+export async function getNotifications() {
+  return fetchApi<Array<{
+    id: string;
+    type: 'like' | 'comment' | 'follow' | 'mention';
+    read: boolean;
+    createdAt: string;
+    actor: {
+      id: string;
+      username: string;
+      handle: string;
+      avatar: string;
+    };
+    post?: {
+      id: string;
+      content: string;
+    };
+  }>>('/notifications');
+}
+
+export async function markNotificationAsRead(id: string) {
+  return fetchApi(`/notifications/${id}/read`, {
+    method: 'PUT',
+  });
+} 

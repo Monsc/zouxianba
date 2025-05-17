@@ -1,57 +1,35 @@
-import { Link, useLocation } from 'react-router-dom'
-import {
-  HomeIcon,
-  MagnifyingGlassIcon,
-  BellIcon,
-  ChatBubbleLeftRightIcon,
-} from '@heroicons/react/24/outline'
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function BottomNav() {
-  const location = useLocation()
+function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
 
-  const isActive = (path: string) => location.pathname === path
+  if (!user) return null;
+
+  const navItems = [
+    { path: '/', icon: 'icon-home', label: 'Home' },
+    { path: '/search', icon: 'icon-search', label: 'Search' },
+    { path: '/notifications', icon: 'icon-bell', label: 'Notifications' },
+    { path: `/profile/${user.id}`, icon: 'icon-user', label: 'Profile' },
+  ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-20 block md:hidden overflow-hidden">
-      <div className="mx-auto w-full max-w-[600px] px-0">
-        <div className="flex justify-around items-center h-14">
-          <Link
-            to="/"
-            className={`flex flex-col items-center justify-center ${
-              isActive('/') ? 'text-primary-600' : 'text-gray-400'
-            } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
-          >
-            <HomeIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
-          </Link>
-
-          <Link
-            to="/search"
-            className={`flex flex-col items-center justify-center ${
-              isActive('/search') ? 'text-primary-600' : 'text-gray-400'
-            } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
-          >
-            <MagnifyingGlassIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
-          </Link>
-
-          <Link
-            to="/notifications"
-            className={`flex flex-col items-center justify-center ${
-              isActive('/notifications') ? 'text-primary-600' : 'text-gray-400'
-            } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
-          >
-            <BellIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
-          </Link>
-
-          <Link
-            to="/messages"
-            className={`flex flex-col items-center justify-center ${
-              isActive('/messages') ? 'text-primary-600' : 'text-gray-400'
-            } hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-full w-12 h-12`}
-          >
-            <ChatBubbleLeftRightIcon className="h-7 w-7" style={{ width: 28, height: 28 }} />
-          </Link>
-        </div>
-      </div>
+    <nav className="bottom-nav">
+      {navItems.map(item => (
+        <button
+          key={item.path}
+          className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+          onClick={() => navigate(item.path)}
+        >
+          <i className={item.icon} />
+          <span>{item.label}</span>
+        </button>
+      ))}
     </nav>
-  )
-} 
+  );
+}
+
+export default BottomNav; 

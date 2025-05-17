@@ -1,15 +1,4 @@
-import mongoose from 'mongoose'
-
-export interface IPost extends mongoose.Document {
-  author: mongoose.Types.ObjectId
-  content: string
-  images?: string[]
-  likes: mongoose.Types.ObjectId[]
-  comments: mongoose.Types.ObjectId[]
-  shares: number
-  createdAt: Date
-  updatedAt: Date
-}
+import mongoose from 'mongoose';
 
 const postSchema = new mongoose.Schema(
   {
@@ -21,12 +10,11 @@ const postSchema = new mongoose.Schema(
     content: {
       type: String,
       required: true,
-      trim: true,
-      maxlength: 1000,
+      maxlength: 280,
     },
-    images: [{
-      type: String,
-      trim: true,
+    media: [{
+      type: String, // URL to media file
+      maxlength: 4, // Maximum 4 media items per post
     }],
     likes: [{
       type: mongoose.Schema.Types.ObjectId,
@@ -36,18 +24,57 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Comment',
     }],
-    shares: {
-      type: Number,
-      default: 0,
+    reposts: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    }],
+    isRepost: {
+      type: Boolean,
+      default: false,
+    },
+    originalPost: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Post',
+    },
+    isEdited: {
+      type: Boolean,
+      default: false,
+    },
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
+    visibility: {
+      type: String,
+      enum: ['public', 'followers', 'private'],
+      default: 'public',
     },
   },
   {
     timestamps: true,
   }
-)
+);
 
-// 索引
-postSchema.index({ author: 1, createdAt: -1 })
-postSchema.index({ content: 'text' })
+// Create indexes for search and sorting
+postSchema.index({ content: 'text' });
+postSchema.index({ createdAt: -1 });
+postSchema.index({ author: 1, createdAt: -1 });
 
-export default mongoose.model<IPost>('Post', postSchema) 
+// Method to get post with populated fields
+postSchema.methods.getPopulatedPost = async function() {
+  return this.populate([
+    {
+      path: 'author',
+      select: 'username handle avatar isVerified',
+    },
+    {
+      path: 'comments',
+      populate: {
+        path: 'author',
+        select: 'username handle avatar isVerified',
+      },
+    },
+  ]);
+};
+
+export const Post = mongoose.model('Post', postSchema); 

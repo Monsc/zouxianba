@@ -1,91 +1,162 @@
-import { useState } from 'react'
-import { Dialog } from '@headlessui/react'
-import { PlusIcon } from '@heroicons/react/24/outline'
-import { useAuth } from '../contexts/AuthContext'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { createPost } from '../services/api';
 
-export default function CreatePostButton() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { user } = useAuth()
+function CreatePostButton() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [content, setContent] = useState('');
+  const [media, setMedia] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (!content.trim() && media.length === 0) {
+      setError('Please enter some content or upload media');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      await createPost({ content, media });
+      setContent('');
+      setMedia([]);
+      setIsModalOpen(false);
+    } catch (err) {
+      setError('Failed to create post. Please try again.');
+      console.error('Error creating post:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length + media.length > 4) {
+      setError('You can only upload up to 4 files');
+      return;
+    }
+
+    const validFiles = files.filter(file => {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('File size must be less than 5MB');
+        return false;
+      }
+      return true;
+    });
+
+    setMedia([...media, ...validFiles]);
+  };
+
+  const removeMedia = (index: number) => {
+    setMedia(media.filter((_, i) => i !== index));
+  };
+
+  if (!user) return null;
 
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
-        style={{
-          position: 'fixed',
-          right: 24,
-          bottom: typeof window !== 'undefined' && window.innerWidth < 768 ? 80 : 32,
-          zIndex: 9999,
-          boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
-        }}
-        className="bg-primary-600 text-white rounded-full p-4 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
+        className="create-post-button"
+        onClick={() => setIsModalOpen(true)}
       >
-        <PlusIcon className="h-6 w-6" />
+        <i className="icon-plus" />
       </button>
 
-      <Dialog
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        className="relative z-50"
-      >
-        <div className="fixed inset-0 bg-black/20" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-4">
-          <Dialog.Panel className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000] max-w-sm rounded-lg bg-white p-6 w-full border border-gray-100">
-            {user ? (
-              <>
-                <Dialog.Title className="text-lg font-medium mb-4 text-gray-900">
-                  说点什么？
-                </Dialog.Title>
-                <form className="space-y-4">
-                  <div>
-                    <textarea
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 focus:border-primary-400 focus:ring-primary-400 text-gray-900"
-                      rows={4}
-                      placeholder="分享你的想法..."
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsOpen(false)}
-                      className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md"
-                    >
-                      取消
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md"
-                    >
-                      发布
-                    </button>
-                  </div>
-                </form>
-              </>
-            ) : (
-              <>
-                <Dialog.Title className="text-lg font-medium mb-4 text-gray-900 text-center">
-                  请先登录或注册
-                </Dialog.Title>
-                <div className="flex justify-center space-x-4">
-                  <Link
-                    to="/login"
-                    className="px-6 py-2 rounded-md bg-primary-600 text-white hover:bg-primary-700 transition-colors"
-                  >
-                    登录
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="px-6 py-2 rounded-md bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors"
-                  >
-                    注册
-                  </Link>
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Create Post</h2>
+              <button
+                className="close-button"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="post-form">
+              {error && (
+                <div className="error-message">
+                  {error}
                 </div>
-              </>
-            )}
-          </Dialog.Panel>
+              )}
+
+              <div className="post-author">
+                <img
+                  src={user.avatar || '/default-avatar.png'}
+                  alt={user.username}
+                  className="avatar"
+                />
+                <div className="author-info">
+                  <span className="username">{user.username}</span>
+                  <span className="handle">@{user.handle}</span>
+                </div>
+              </div>
+
+              <textarea
+                className="post-input"
+                placeholder="What's happening?"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                maxLength={280}
+              />
+
+              {media.length > 0 && (
+                <div className="media-preview">
+                  {media.map((file, index) => (
+                    <div key={index} className="media-item">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Media ${index + 1}`}
+                      />
+                      <button
+                        type="button"
+                        className="remove-media"
+                        onClick={() => removeMedia(index)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="post-actions">
+                <label className="media-upload">
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={handleMediaChange}
+                  />
+                  <i className="icon-image" />
+                </label>
+
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isLoading || (!content.trim() && media.length === 0)}
+                >
+                  {isLoading ? 'Posting...' : 'Post'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </Dialog>
+      )}
     </>
-  )
-} 
+  );
+}
+
+export default CreatePostButton; 

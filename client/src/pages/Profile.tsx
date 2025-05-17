@@ -1,3 +1,184 @@
-export default function Profile() {
-  return <div>个人中心页面</div>
-} 
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { getUserProfile, getUserPosts, followUser } from '../services/api';
+import PostCard from '../components/PostCard';
+
+interface User {
+  id: string;
+  username: string;
+  handle: string;
+  avatar: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  followers: number;
+  following: number;
+  isFollowing: boolean;
+}
+
+interface Post {
+  id: string;
+  content: string;
+  media?: string[];
+  author: {
+    id: string;
+    username: string;
+    handle: string;
+    avatar: string;
+  };
+  createdAt: string;
+  likes: number;
+  comments: number;
+  isLiked: boolean;
+}
+
+function Profile() {
+  const { userId } = useParams<{ userId: string }>();
+  const [user, setUser] = useState<User | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userId) {
+      navigate('/');
+      return;
+    }
+
+    loadProfile();
+  }, [userId, navigate]);
+
+  const loadProfile = async () => {
+    try {
+      setIsLoading(true);
+      const [userData, postsData] = await Promise.all([
+        getUserProfile(userId!),
+        getUserPosts(userId!)
+      ]);
+      setUser(userData as User);
+      setPosts(postsData as Post[]);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load profile. Please try again later.');
+      console.error('Error loading profile:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFollow = async () => {
+    if (!user) return;
+
+    try {
+      await followUser(user.id);
+      setUser({
+        ...user,
+        followers: user.isFollowing ? user.followers - 1 : user.followers + 1,
+        isFollowing: !user.isFollowing
+      });
+    } catch (err) {
+      console.error('Error following user:', err);
+    }
+  };
+
+  const handleLike = async (postId: string) => {
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+          isLiked: !post.isLiked
+        };
+      }
+      return post;
+    }));
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="loading-spinner" />
+      </div>
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-error">{error || 'User not found'}</p>
+      </div>
+    );
+  }
+
+  const isOwnProfile = currentUser?.id === user.id;
+
+  return (
+    <div className="profile-page">
+      <div className="profile-header">
+        <div className="profile-cover" />
+        <div className="profile-info">
+          <img
+            src={user.avatar || '/default-avatar.png'}
+            alt={user.username}
+            className="profile-avatar"
+          />
+          <div className="profile-details">
+            <h1 className="profile-name">{user.username}</h1>
+            <p className="profile-handle">@{user.handle}</p>
+            {user.bio && <p className="profile-bio">{user.bio}</p>}
+            <div className="profile-meta">
+              {user.location && (
+                <span className="profile-location">
+                  <i className="icon-location" />
+                  {user.location}
+                </span>
+              )}
+              {user.website && (
+                <a
+                  href={user.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="profile-website"
+                >
+                  <i className="icon-link" />
+                  {user.website}
+                </a>
+              )}
+            </div>
+            <div className="profile-stats">
+              <span>
+                <strong>{user.following}</strong> Following
+              </span>
+              <span>
+                <strong>{user.followers}</strong> Followers
+              </span>
+            </div>
+            {!isOwnProfile && (
+              <button
+                className={`btn ${user.isFollowing ? 'btn-secondary' : 'btn-primary'}`}
+                onClick={handleFollow}
+              >
+                {user.isFollowing ? 'Unfollow' : 'Follow'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="profile-posts">
+        {posts.map(post => (
+          <PostCard
+            key={post.id}
+            post={post}
+            onLike={() => handleLike(post.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Profile; 

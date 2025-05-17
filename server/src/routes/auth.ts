@@ -1,134 +1,113 @@
-import express from 'express'
-import { body, validationResult } from 'express-validator'
-import jwt from 'jsonwebtoken'
-import User from '../models/User'
-import { auth } from '../middleware/auth'
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import { User } from '../models/User';
+import { auth } from '../middleware/auth';
+import { catchAsync } from '../middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler';
 
-const router = express.Router()
+const router = express.Router();
 
-// 注册
-router.post(
-  '/register',
-  [
-    body('username').trim().isLength({ min: 3 }).escape(),
-    body('email').isEmail().normalizeEmail(),
-    body('password').isLength({ min: 6 }),
-  ],
-  async (req: express.Request, res: express.Response) => {
-    try {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })
-      }
+// Register
+router.post('/register', catchAsync(async (req, res) => {
+  const { username, email, password, handle } = req.body;
 
-      const { username, email, password } = req.body
+  // Check if user already exists
+  const existingUser = await User.findOne({
+    $or: [{ email }, { username }, { handle }],
+  });
 
-      // 检查用户是否已存在
-      const existingUser = await User.findOne({
-        $or: [{ email }, { username }],
-      })
-
-      if (existingUser) {
-        return res.status(400).json({
-          message: '用户名或邮箱已被注册',
-        })
-      }
-
-      // 创建新用户
-      const user = new User({
-        username,
-        email,
-        password,
-      })
-
-      await user.save()
-
-      // 生成 token
-      const token = jwt.sign(
-        { _id: user._id },
-        process.env.JWT_SECRET || 'your-secret-key',
-        {
-          expiresIn: '7d',
-        }
-      )
-
-      res.status(201).json({
-        token,
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          avatar: user.avatar,
-          role: user.role,
-        },
-      })
-    } catch (error) {
-      res.status(500).json({ message: '服务器错误' })
-    }
+  if (existingUser) {
+    throw new AppError('User already exists', 400);
   }
-)
 
-// 登录
-router.post(
-  '/login',
-  [
-    body('email').isEmail().normalizeEmail(),
-    body('password').exists(),
-  ],
-  async (req: express.Request, res: express.Response) => {
-    try {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })
-      }
+  // Create new user
+  const user = await User.create({
+    username,
+    email,
+    password,
+    handle,
+  });
 
-      const { email, password } = req.body
+  // Generate token
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
+    expiresIn: '7d',
+  });
 
-      // 查找用户
-      const user = await User.findOne({ email })
-      if (!user) {
-        return res.status(401).json({ message: '邮箱或密码错误' })
-      }
+  res.status(201).json({
+    user: user.getPublicProfile(),
+    token,
+  });
+}));
 
-      // 验证密码
-      const isMatch = await user.comparePassword(password)
-      if (!isMatch) {
-        return res.status(401).json({ message: '邮箱或密码错误' })
-      }
+// Login
+router.post('/login', catchAsync(async (req, res) => {
+  const { email, password } = req.body;
 
-      // 生成 token
-      const token = jwt.sign(
-        { _id: user._id },
-        process.env.JWT_SECRET || 'your-secret-key',
-        {
-          expiresIn: '7d',
-        }
-      )
-
-      res.json({
-        token,
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          avatar: user.avatar,
-          role: user.role,
-        },
-      })
-    } catch (error) {
-      res.status(500).json({ message: '服务器错误' })
-    }
+  // Find user
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AppError('Invalid credentials', 401);
   }
-)
 
-// 获取当前用户信息
-router.get('/me', auth, async (req: any, res: express.Response) => {
-  try {
-    const user = await User.findById(req.user._id).select('-password')
-    res.json(user)
-  } catch (error) {
-    res.status(500).json({ message: '服务器错误' })
+  // Check password
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    throw new AppError('Invalid credentials', 401);
   }
-})
 
-export default router 
+  // Generate token
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
+    expiresIn: '7d',
+  });
+
+  res.json({
+    user: user.getPublicProfile(),
+    token,
+  });
+}));
+
+// Get current user
+router.get('/me', auth, catchAsync(async (req, res) => {
+  res.json(req.user.getPublicProfile());
+}));
+
+// Update user profile
+router.patch('/me', auth, catchAsync(async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ['username', 'email', 'password', 'avatar', 'bio', 'location', 'website'];
+  const isValidOperation = updates.every(update => allowedUpdates.includes(update));
+
+  if (!isValidOperation) {
+    throw new AppError('Invalid updates', 400);
+  }
+
+  updates.forEach(update => {
+    req.user[update] = req.body[update];
+  });
+
+  await req.user.save();
+  res.json(req.user.getPublicProfile());
+}));
+
+// Change password
+router.post('/change-password', auth, catchAsync(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const isMatch = await req.user.comparePassword(currentPassword);
+  if (!isMatch) {
+    throw new AppError('Current password is incorrect', 401);
+  }
+
+  req.user.password = newPassword;
+  await req.user.save();
+
+  res.json({ message: 'Password updated successfully' });
+}));
+
+// Delete account
+router.delete('/me', auth, catchAsync(async (req, res) => {
+  await req.user.deleteOne();
+  res.json({ message: 'Account deleted successfully' });
+}));
+
+export default router; 

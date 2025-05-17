@@ -1,34 +1,67 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
-import Layout from './components/Layout'
-import LoadingSpinner from './components/LoadingSpinner'
-import { AuthProvider } from './contexts/AuthContext'
-
-// Lazy load pages
-const Home = lazy(() => import('./pages/Home'))
-const Login = lazy(() => import('./pages/Login'))
-const Register = lazy(() => import('./pages/Register'))
-const Profile = lazy(() => import('./pages/Profile'))
-const NotFound = lazy(() => import('./pages/NotFound'))
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import PostDetail from './pages/PostDetail';
+import './styles/global.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="login" element={<Login />} />
-              <Route path="register" element={<Register />} />
-              <Route path="profile/:id" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </Router>
-    </AuthProvider>
-  )
+    <Router>
+      <AuthProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<div style={{color:'red',fontWeight:'bold',fontSize:32}}>TEST REGISTER ROUTE</div>} />
+
+          {/* Protected routes */}
+          <Route element={<Layout />}>
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Home />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile/:userId"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <Settings />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/post/:postId"
+              element={
+                <PrivateRoute>
+                  <PostDetail />
+                </PrivateRoute>
+              }
+            />
+          </Route>
+
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
+  );
 }
 
-export default App
+export default App; 
