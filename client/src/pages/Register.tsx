@@ -1,7 +1,7 @@
-console.log('Register component loaded');
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+console.log('Register component loaded');
 
 function Register() {
   const [username, setUsername] = useState('');
