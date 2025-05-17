@@ -101,42 +101,9 @@ router.get('/', catchAsync(async (req: Request, res: Response) => {
       });
 
     default:
-      const results = [];
-      const dateRange = getDateRange(req.query.time as string);
-
-      // Search users
-      if (type === 'all' || type === 'users') {
-        const users = await User.find({
-          $or: [
-            { username: { $regex: q, $options: 'i' } },
-            { handle: { $regex: q, $options: 'i' } },
-          ],
-        })
-          .select('username handle avatar')
-          .limit(10);
-
-        results.push(
-          ...users.map(user => ({
-            id: user._id,
-            type: 'user',
-            user: {
-              id: user._id,
-              username: user.username,
-              handle: user.handle,
-    // Sort results by relevance (you can implement more sophisticated ranking)
-    if (sort === 'relevance') {
-      results.sort((a, b) => {
-        if (a.type === 'user' && b.type === 'post') return -1;
-        if (a.type === 'post' && b.type === 'user') return 1;
-        return 0;
-      });
-    }
-
-    res.json(results);
-  } catch (error) {
-    console.error('Search error:', error);
-    res.status(500).json({ message: 'Search failed' });
+      // 目前只实现 users/posts 类型，default 返回 400
+      return res.status(400).json({ message: 'Invalid search type' });
   }
-});
+}));
 
 export default router; 
