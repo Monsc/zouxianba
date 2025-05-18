@@ -72,8 +72,8 @@ router.get('/user/:userId', optionalAuth, catchAsync(async (req: Request, res: R
 router.post('/', auth, upload.array('media', 4), catchAsync(async (req: Request, res: Response) => {
   const { content, visibility } = req.body;
   let media: string[] = [];
-  if (req.files && Array.isArray(req.files)) {
-    media = req.files.map((file: any) => '/uploads/' + file.filename);
+  if ((req as any).files && Array.isArray((req as any).files)) {
+    media = (req as any).files.map((file: any) => '/uploads/' + file.filename);
   }
   const post = await Post.create({
     author: req.user.id,

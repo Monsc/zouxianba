@@ -88,8 +88,8 @@ router.patch('/me', auth, upload.single('avatar'), catchAsync(async (req: Reques
   });
 
   // 处理头像上传
-  if (req.file) {
-    req.user.avatar = '/uploads/' + req.file.filename;
+  if ((req as any).file) {
+    req.user.avatar = '/uploads/' + (req as any).file.filename;
   }
 
   await req.user.save();

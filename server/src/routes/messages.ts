@@ -45,12 +45,12 @@ router.get('/:userId', auth, catchAsync(async (req: Request, res: Response) => {
 // 发送图片消息
 router.post('/:userId/image', auth, upload.single('image'), catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.params;
-  if (!req.file) return res.status(400).json({ error: '未上传图片' });
+  if (!(req as any).file) return res.status(400).json({ error: '未上传图片' });
   const message = await Message.create({
     from: req.user.id,
     to: userId,
     contentType: 'image',
-    imageUrl: '/uploads/' + req.file.filename,
+    imageUrl: '/uploads/' + (req as any).file.filename,
   });
   res.status(201).json(message);
 }));
