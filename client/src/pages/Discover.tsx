@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRecommendedUsers, getTrendingTopics, followUser, unfollowUser } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { User, Topic } from '../types';
 
 function Discover() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [topics, setTopics] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ function Discover() {
 
   // 过滤被屏蔽用户的推荐
   const visibleUsers = currentUser && Array.isArray((currentUser as any).blocked)
-    ? users.filter(u => !(currentUser as any).blocked.includes(u.id))
+    ? users.filter(u => !(currentUser as any).blocked.includes(u._id))
     : users;
 
   if (isLoading) {
@@ -40,19 +41,18 @@ function Discover() {
   }
 
   return (
-    <div className="discover-page max-w-lg mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6 text-primary">发现</h1>
+    <div className="max-w-2xl mx-auto px-4 py-8">
       {/* 推荐用户 */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold mb-4">推荐关注</h2>
+        <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">推荐关注</h2>
         <div className="space-y-4">
           {visibleUsers.map(user => (
             <div
-              key={user.id}
-              className="user-card flex items-center justify-between p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-              onClick={() => navigate(`/profile/${user.id}`)}
+              key={user._id}
+              className="user-card flex items-center justify-between p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
+              onClick={() => navigate(`/profile/${user._id}`)}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center space-x-3">
                 <img
                   src={user.avatar || '/default-avatar.png'}
                   alt={user.username}
@@ -76,12 +76,12 @@ function Discover() {
                   e.stopPropagation();
                   try {
                     if (user.isFollowing) {
-                      await unfollowUser(user.id);
+                      await unfollowUser(user._id);
                     } else {
-                      await followUser(user.id);
+                      await followUser(user._id);
                     }
                     setUsers(prev => prev.map(u =>
-                      u.id === user.id ? { ...u, isFollowing: !u.isFollowing } : u
+                      u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
                     ));
                   } catch (err) {}
                 }}
@@ -92,19 +92,22 @@ function Discover() {
           ))}
         </div>
       </div>
+
       {/* 热门话题 */}
       <div>
-        <h2 className="text-lg font-bold mb-4">热门话题</h2>
+        <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">热门话题</h2>
         <div className="space-y-4">
           {topics.map(topic => (
             <div
-              key={topic.id}
-              className="topic-card p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-              onClick={() => navigate(`/search?q=${encodeURIComponent(topic.name)}`)}
+              key={topic.tag}
+              className="topic-card p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => navigate(`/search?q=${encodeURIComponent(topic.tag)}`)}
             >
               <div className="flex flex-col">
-                <span className="topic-label">#{topic.name}</span>
-                <span className="topic-count">{topic.postCount} 条帖子</span>
+                <span className="text-lg font-medium text-primary">#{topic.tag}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  {topic.count} 条帖子
+                </span>
               </div>
             </div>
           ))}
