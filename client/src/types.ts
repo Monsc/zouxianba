@@ -1,9 +1,9 @@
 export interface User {
   _id: string;
-  id: string;
   username: string;
   handle: string;
   avatar: string;
+  email: string;
   bio?: string;
   location?: string;
   website?: string;
@@ -11,6 +11,8 @@ export interface User {
   followers?: number;
   following?: number;
   isFollowing?: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Message {

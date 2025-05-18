@@ -219,52 +219,28 @@ export async function getUnreadNotificationCount(): Promise<{ count: number }> {
 /**
  * 获取推荐用户列表
  */
-export const getRecommendedUsers = async () => {
-  try {
-    const response = await fetch(`${API_URL}/api/users/recommended`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch recommended users');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching recommended users:', error);
-    return [];
-  }
-};
+export async function getRecommendedUsers(): Promise<User[]> {
+  return fetchApi<User[]>('/api/users/recommended');
+}
 
 /**
  * 获取热门话题列表
  */
-export const getTrendingTopics = async () => {
-  try {
-    const response = await fetch(`${API_URL}/api/topics/trending`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch trending topics');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching trending topics:', error);
-    return [];
-  }
-};
-
-export async function getNewPostCount(since: string) {
-  return fetchApi<number>(`/api/posts/new/count?since=${encodeURIComponent(since)}`);
+export async function getTrendingTopics(): Promise<{ tag: string; count: number }[]> {
+  return fetchApi<{ tag: string; count: number }[]>('/api/topics/trending');
 }
 
-export async function reportContent(data: { targetUser?: string; targetPost?: string; targetComment?: string; reason: string; detail?: string }): Promise<void> {
+export async function getNewPostCount(since: string): Promise<{ count: number }> {
+  return fetchApi<{ count: number }>(`/api/posts/new/count?since=${encodeURIComponent(since)}`);
+}
+
+export async function reportContent(data: { 
+  targetUser?: string; 
+  targetPost?: string; 
+  targetComment?: string; 
+  reason: string; 
+  detail?: string 
+}): Promise<void> {
   return fetchApi<void>('/api/reports', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -285,77 +261,32 @@ export async function unblockUser(userId: string): Promise<void> {
 
 // Messages
 export async function getConversations(): Promise<ConversationListItem[]> {
-  return fetchApi<ConversationListItem[]>('/api/messages/conversations');
+  return fetchApi<ConversationListItem[]>('/api/conversations');
 }
 
 export async function getMessages(userId: string): Promise<Message[]> {
-  return fetchApi<Message[]>(`/api/messages/${userId}`);
+  return fetchApi<Message[]>(`/api/conversations/${userId}/messages`);
 }
 
 export async function sendMessage(userId: string, content: string): Promise<Message> {
-  return fetchApi<Message>(`/api/messages/${userId}`, {
+  return fetchApi<Message>(`/api/conversations/${userId}/messages`, {
     method: 'POST',
     body: JSON.stringify({ content }),
   });
 }
 
 export async function getUnreadMessageCount(): Promise<number> {
-  return fetchApi<number>('/api/messages/unread/count');
+  return fetchApi<number>('/api/conversations/unread/count');
 }
 
-export const getTrendingHashtags = async () => {
-  try {
-    const response = await fetch(`${API_URL}/api/hashtags/trending`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch trending hashtags');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching trending hashtags:', error);
-    return [];
-  }
-};
+export async function getTrendingHashtags(): Promise<{ tag: string; count: number }[]> {
+  return fetchApi<{ tag: string; count: number }[]>('/api/hashtags/trending');
+}
 
-export const getHashtagPosts = async (tag: string) => {
-  try {
-    const response = await fetch(`${API_URL}/api/hashtags/${encodeURIComponent(tag)}/posts`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch hashtag posts');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching hashtag posts:', error);
-    return [];
-  }
-};
+export async function getHashtagPosts(tag: string): Promise<Post[]> {
+  return fetchApi<Post[]>(`/api/hashtags/${encodeURIComponent(tag)}/posts`);
+}
 
-export const getMentions = async () => {
-  try {
-    const response = await fetch(`${API_URL}/api/mentions`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch mentions');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching mentions:', error);
-    return [];
-  }
-}; 
+export async function getMentions(): Promise<User[]> {
+  return fetchApi<User[]>('/api/mentions');
+} 
