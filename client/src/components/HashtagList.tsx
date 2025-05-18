@@ -36,7 +36,7 @@ const HashtagList: React.FC = () => {
       <div className="space-y-3">
         {topics.map((topic) => (
           <Link
-            key={topic._id}
+            key={topic.tag}
             to={`/topic/${topic.tag}`}
             className="block p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
