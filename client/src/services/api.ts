@@ -1,4 +1,4 @@
-import { User, Post, Comment, Notification, Message, ConversationListItem, Hashtag, Topic } from '../types';
+import { User, Post, Comment, Notification, Message, Topic, Conversation } from '../types';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
 
@@ -73,12 +73,11 @@ export async function login(email: string, password: string): Promise<{ user: Us
 export async function register(
   username: string,
   email: string,
-  password: string,
-  handle: string
+  password: string
 ): Promise<{ user: User; token: string }> {
   return fetchApi<{ user: User; token: string }>('/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ username, email, password, handle }),
+    body: JSON.stringify({ username, email, password }),
   });
 }
 
@@ -97,16 +96,21 @@ export async function getPost(id: string): Promise<Post> {
   return fetchApi<Post>(`/api/posts/${id}`);
 }
 
-export async function createPost(data: { content: string; media?: File[] } | FormData): Promise<Post> {
+export async function createPost(data: { content: string; images?: File[] } | FormData): Promise<Post> {
   if (data instanceof FormData) {
     return fetchApi<Post>('/api/posts', {
       method: 'POST',
       body: data,
     });
   }
+  const formData = new FormData();
+  formData.append('content', data.content);
+  if (data.images) {
+    data.images.forEach(file => formData.append('images', file));
+  }
   return fetchApi<Post>('/api/posts', {
     method: 'POST',
-    body: JSON.stringify({ content: data.content }),
+    body: formData,
   });
 }
 
@@ -120,7 +124,7 @@ export async function getComments(postId: string): Promise<Comment[]> {
   return fetchApi<Comment[]>(`/api/posts/${postId}/comments`);
 }
 
-export async function createComment(postId: string, data: { content: string; media?: File[] } | FormData): Promise<Comment> {
+export async function createComment(postId: string, data: { content: string; images?: File[] } | FormData): Promise<Comment> {
   if (data instanceof FormData) {
     return fetchApi<Comment>(`/api/posts/${postId}/comments`, {
       method: 'POST',
@@ -129,8 +133,8 @@ export async function createComment(postId: string, data: { content: string; med
   }
   const formData = new FormData();
   formData.append('content', data.content);
-  if (data.media) {
-    data.media.forEach(file => formData.append('media', file));
+  if (data.images) {
+    data.images.forEach(file => formData.append('images', file));
   }
   return fetchApi<Comment>(`/api/posts/${postId}/comments`, {
     method: 'POST',
@@ -163,8 +167,6 @@ export async function updateProfile(data: {
   username?: string;
   email?: string;
   bio?: string;
-  location?: string;
-  website?: string;
   avatar?: File;
 } | FormData): Promise<User> {
   if (data instanceof FormData) {
@@ -260,31 +262,32 @@ export async function unblockUser(userId: string): Promise<void> {
 }
 
 // Messages
-export async function getConversations(): Promise<ConversationListItem[]> {
-  return fetchApi<ConversationListItem[]>('/api/conversations');
+export async function getConversations(): Promise<Conversation[]> {
+  return fetchApi<Conversation[]>('/api/conversations');
 }
 
 export async function getMessages(userId: string): Promise<Message[]> {
-  return fetchApi<Message[]>(`/api/conversations/${userId}/messages`);
+  return fetchApi<Message[]>(`/api/messages/${userId}`);
 }
 
 export async function sendMessage(userId: string, content: string): Promise<Message> {
-  return fetchApi<Message>(`/api/conversations/${userId}/messages`, {
+  return fetchApi<Message>(`/api/messages/${userId}`, {
     method: 'POST',
     body: JSON.stringify({ content }),
   });
 }
 
+export async function sendImageMessage(userId: string, image: File): Promise<Message> {
+  const formData = new FormData();
+  formData.append('image', image);
+  return fetchApi<Message>(`/api/messages/${userId}/image`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
 export async function getUnreadMessageCount(): Promise<number> {
   return fetchApi<number>('/api/conversations/unread/count');
-}
-
-export async function getTrendingHashtags(): Promise<Hashtag[]> {
-  return fetchApi<Hashtag[]>('/api/hashtags/trending');
-}
-
-export async function getHashtagPosts(tag: string): Promise<Post[]> {
-  return fetchApi<Post[]>(`/api/hashtags/${encodeURIComponent(tag)}/posts`);
 }
 
 export async function getMentions(): Promise<User[]> {
