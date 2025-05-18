@@ -28,6 +28,7 @@ router.get('/conversations', auth, catchAsync(async (req: Request, res: Response
     conversations[id].user = users.find(u => u._id.toString() === id);
   });
   res.json(Object.values(conversations));
+  return null;
 }));
 
 // 获取与某用户的历史消息
@@ -40,6 +41,7 @@ router.get('/:userId', auth, catchAsync(async (req: Request, res: Response) => {
     ],
   }).sort({ createdAt: 1 });
   res.json(messages);
+  return null;
 }));
 
 // 发送图片消息
@@ -53,6 +55,7 @@ router.post('/:userId/image', auth, upload.single('image'), catchAsync(async (re
     imageUrl: '/uploads/' + (req as any).file.filename,
   });
   res.status(201).json(message);
+  return null;
 }));
 
 // 发送文本消息
@@ -67,12 +70,14 @@ router.post('/:userId', auth, catchAsync(async (req: Request, res: Response) => 
     contentType: 'text',
   });
   res.status(201).json(message);
+  return null;
 }));
 
 // 获取未读消息总数
 router.get('/unread-count', auth, catchAsync(async (req: Request, res: Response) => {
   const count = await Message.countDocuments({ to: req.user.id, read: false });
   res.json({ count });
+  return null;
 }));
 
 export default router; 

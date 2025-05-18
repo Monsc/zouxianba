@@ -12,6 +12,7 @@ router.post('/:userId', auth, catchAsync(async (req: Request, res: Response) => 
   if (userId === req.user.id) return res.status(400).json({ error: '不能屏蔽自己' });
   await User.findByIdAndUpdate(req.user.id, { $addToSet: { blocked: userId } });
   res.json({ success: true });
+  return null;
 }));
 
 // 取消屏蔽
@@ -19,6 +20,7 @@ router.delete('/:userId', auth, catchAsync(async (req: Request, res: Response) =
   const { userId } = req.params;
   await User.findByIdAndUpdate(req.user.id, { $pull: { blocked: userId } });
   res.json({ success: true });
+  return null;
 }));
 
 export default router; 

@@ -18,6 +18,7 @@ router.get('/', auth, catchAsync(async (req: Request, res: Response) => {
     .populate('actor', 'username handle avatar')
     .populate('post', 'content');
   res.json(notifications);
+  return null;
 }));
 
 // 标记通知为已读
@@ -29,6 +30,7 @@ router.put('/:id/read', auth, catchAsync(async (req: Request, res: Response) => 
   );
   if (!notification) return res.status(404).json({ error: 'Notification not found' });
   res.json(notification);
+  return null;
 }));
 
 // 举报内容
@@ -47,6 +49,7 @@ router.post('/', auth, catchAsync(async (req: Request, res: Response) => {
     detail,
   });
   res.status(201).json(report);
+  return null;
 }));
 
 export default router; 

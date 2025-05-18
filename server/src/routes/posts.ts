@@ -36,6 +36,7 @@ router.get('/feed', auth, catchAsync(async (req: Request, res: Response) => {
     });
 
   res.json(posts);
+  return null;
 }));
 
 // Get user posts
@@ -66,6 +67,7 @@ router.get('/user/:userId', optionalAuth, catchAsync(async (req: Request, res: R
     });
 
   res.json(posts);
+  return null;
 }));
 
 // Create post
@@ -83,6 +85,7 @@ router.post('/', auth, upload.array('media', 4), catchAsync(async (req: Request,
   });
   await post.populate('author', 'username handle avatar isVerified');
   res.status(201).json(post);
+  return null;
 }));
 
 // Get post by ID
@@ -107,6 +110,7 @@ router.get('/:postId', optionalAuth, catchAsync(async (req: Request, res: Respon
   }
 
   res.json(post);
+  return null;
 }));
 
 // Update post
@@ -137,6 +141,7 @@ router.patch('/:postId', auth, catchAsync(async (req: Request, res: Response) =>
 
   await post.populate('author', 'username handle avatar isVerified');
   res.json(post);
+  return null;
 }));
 
 // Delete post
@@ -155,6 +160,7 @@ router.delete('/:postId', auth, catchAsync(async (req: Request, res: Response) =
   await post.deleteOne();
 
   res.json({ message: 'Post deleted successfully' });
+  return null;
 }));
 
 // Like/Unlike post
@@ -182,6 +188,7 @@ router.post('/:postId/like', auth, catchAsync(async (req: Request, res: Response
 
   await post.save();
   res.json(post);
+  return null;
 }));
 
 // Add comment
@@ -216,6 +223,7 @@ router.post('/:postId/comments', auth, catchAsync(async (req: Request, res: Resp
   }
 
   res.status(201).json(comment);
+  return null;
 }));
 
 // Get post comments
@@ -241,6 +249,7 @@ router.get('/:postId/comments', optionalAuth, catchAsync(async (req: Request, re
     });
 
   res.json(comments);
+  return null;
 }));
 
 // 获取新帖数量
@@ -259,6 +268,7 @@ router.get('/new-count', auth, catchAsync(async (req: Request, res: Response) =>
     createdAt: { $gt: sinceDate },
   });
   res.json({ count });
+  return null;
 }));
 
 // 获取热门话题
@@ -274,6 +284,7 @@ router.get('/hashtags/trending', async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: '获取热门话题失败' });
   }
+  return null;
 });
 
 // 获取话题相关帖子
@@ -286,6 +297,7 @@ router.get('/hashtags/:tag', async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: '获取话题帖子失败' });
   }
+  return null;
 });
 
 // 获取用户提及
@@ -298,6 +310,7 @@ router.get('/mentions', auth, async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: '获取提及失败' });
   }
+  return null;
 });
 
 export default router; 
