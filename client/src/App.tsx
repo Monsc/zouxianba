@@ -12,7 +12,7 @@ import PostDetail from './pages/PostDetail';
 import Discover from './pages/Discover';
 import Messages from './pages/Messages';
 import Chat from './pages/Chat';
-import HashtagPage from './pages/HashtagPage';
+import TopicPage from './pages/HashtagPage';
 import Mentions from './pages/Mentions';
 import './styles/global.css';
 import { getUnreadNotificationCount } from './services/api';
@@ -98,10 +98,10 @@ function App() {
               }
             />
             <Route
-              path="/hashtag/:tag"
+              path="/topic/:tag"
               element={
                 <PrivateRoute>
-                  <HashtagPage />
+                  <TopicPage />
                 </PrivateRoute>
               }
             />

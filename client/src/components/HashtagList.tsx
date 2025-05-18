@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getTrendingHashtags } from '../services/api';
-import { Hashtag } from '../types';
+import { getTrendingTopics } from '../services/api';
+import { Topic } from '../types';
 
 const HashtagList: React.FC = () => {
-  const [hashtags, setHashtags] = useState<Hashtag[]>([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchHashtags = async () => {
+    const fetchTopics = async () => {
       try {
-        const data = await getTrendingHashtags();
-        setHashtags(data);
+        const data = await getTrendingTopics();
+        setTopics(data);
       } catch (error) {
         console.error('获取热门话题失败:', error);
       } finally {
@@ -19,7 +19,7 @@ const HashtagList: React.FC = () => {
       }
     };
 
-    fetchHashtags();
+    fetchTopics();
   }, []);
 
   if (loading) {
@@ -34,18 +34,30 @@ const HashtagList: React.FC = () => {
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">热门话题</h2>
       <div className="space-y-3">
-        {hashtags.map((tag) => (
+        {topics.map((topic) => (
           <Link
-            key={tag.tag}
-            to={`/hashtag/${tag.tag}`}
+            key={topic._id}
+            to={`/topic/${topic.tag}`}
             className="block p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             <div className="flex justify-between items-center">
-              <span className="text-primary font-medium">#{tag.tag}</span>
+              <div>
+                <span className="text-primary font-medium">#{topic.tag}</span>
+                {topic.name && (
+                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                    {topic.name}
+                  </span>
+                )}
+              </div>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                {tag.count} 条帖子
+                {topic.followers.length} 人关注
               </span>
             </div>
+            {topic.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                {topic.description}
+              </p>
+            )}
           </Link>
         ))}
       </div>
