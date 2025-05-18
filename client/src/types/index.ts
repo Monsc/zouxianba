@@ -57,13 +57,25 @@ export interface Comment {
 export interface Notification {
   _id: string;
   type: 'like' | 'comment' | 'follow' | 'mention';
-  from: Author;
+  actor: Author;
   post?: Post;
   comment?: Comment;
   read: boolean;
   createdAt: string;
 }
 
+/**
+ * Topic interface for hashtags and trending topics
+ * @property {string} _id - Unique identifier
+ * @property {string} tag - Topic tag (e.g. "javascript")
+ * @property {string} [name] - Optional display name
+ * @property {string} [description] - Optional description
+ * @property {string[]} followers - Array of user IDs following this topic
+ * @property {boolean} followed - Whether the current user follows this topic
+ * @property {number} count - Number of posts using this topic
+ * @property {string} createdAt - Creation timestamp
+ * @property {string} updatedAt - Last update timestamp
+ */
 export interface Topic {
   _id: string;
   tag: string;
