@@ -1,5 +1,5 @@
 import express from 'express';
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose'; // 已不再使用，删除
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
