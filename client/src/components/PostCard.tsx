@@ -1,27 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { Post } from '../types';
 import ReportModal from './ReportModal';
-
-interface Post {
-  id: string;
-  content: string;
-  media?: string[];
-  author: {
-    id: string;
-    username: string;
-    handle: string;
-    avatar: string;
-  };
-  createdAt: string;
-  likes: number;
-  comments: number;
-  isLiked: boolean;
-}
 
 interface PostCardProps {
   post: Post;
-  onLike: () => void;
+  onLike?: () => void;
 }
 
 function PostCard({ post, onLike }: PostCardProps) {
@@ -30,11 +15,11 @@ function PostCard({ post, onLike }: PostCardProps) {
 
   const handleAuthorClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/profile/${post.author.id}`);
+    navigate(`/profile/${post.author._id}`);
   };
 
   const handlePostClick = () => {
-    navigate(`/post/${post.id}`);
+    navigate(`/post/${post._id}`);
   };
 
   return (
@@ -47,7 +32,7 @@ function PostCard({ post, onLike }: PostCardProps) {
       >
         <i className="icon-bell" />
       </button>
-      <ReportModal open={showReport} onClose={() => setShowReport(false)} targetPost={post.id} />
+      <ReportModal open={showReport} onClose={() => setShowReport(false)} targetPost={post._id} />
       <article
         className="post-card bg-white dark:bg-[#15202b] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 mb-4 cursor-pointer border border-gray-100 dark:border-gray-800 p-4 group"
         onClick={handlePostClick}
@@ -93,7 +78,7 @@ function PostCard({ post, onLike }: PostCardProps) {
             className={`action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-pink-50 dark:hover:bg-pink-900/30 ${post.isLiked ? 'text-pink-600 dark:text-pink-400' : 'text-gray-500 dark:text-gray-400'}`}
             onClick={(e) => {
               e.stopPropagation();
-              onLike();
+              onLike?.();
             }}
           >
             <i className="icon-heart text-lg" />
@@ -103,7 +88,7 @@ function PostCard({ post, onLike }: PostCardProps) {
             className="action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-500 dark:text-gray-400"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/post/${post.id}`);
+              navigate(`/post/${post._id}`);
             }}
           >
             <i className="icon-comment text-lg" />
