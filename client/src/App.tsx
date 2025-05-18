@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
@@ -15,8 +15,22 @@ import Chat from './pages/Chat';
 import HashtagPage from './pages/HashtagPage';
 import Mentions from './pages/Mentions';
 import './styles/global.css';
+import { getUnreadNotificationCount } from './services/api';
 
 function App() {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const data = await getUnreadNotificationCount();
+        setUnreadCount(data || 0);
+      } catch {}
+    };
+
+    fetchUnread();
+  }, []);
+
   return (
     <Router>
       <AuthProvider>
