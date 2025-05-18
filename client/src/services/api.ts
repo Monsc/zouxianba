@@ -63,8 +63,8 @@ async function fetchApi<T>(
 }
 
 // Auth
-export async function login(email: string, password: string) {
-  return fetchApi<{ user: any; token: string }>('/api/auth/login', {
+export async function login(email: string, password: string): Promise<{ user: User; token: string }> {
+  return fetchApi<{ user: User; token: string }>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
@@ -75,55 +75,54 @@ export async function register(
   email: string,
   password: string,
   handle: string
-) {
-  return fetchApi<{ user: any; token: string }>('/api/auth/register', {
+): Promise<{ user: User; token: string }> {
+  return fetchApi<{ user: User; token: string }>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify({ username, email, password, handle }),
   });
 }
 
-export async function logout() {
-  return fetchApi('/api/auth/logout', {
+export async function logout(): Promise<void> {
+  return fetchApi<void>('/api/auth/logout', {
     method: 'POST',
   });
 }
 
 // Posts
-export async function getFeed() {
-  return fetchApi('/api/posts/feed');
+export async function getFeed(): Promise<Post[]> {
+  return fetchApi<Post[]>('/api/posts/feed');
 }
 
-export async function getPost(id: string) {
-  return fetchApi(`/api/posts/${id}`);
+export async function getPost(id: string): Promise<Post> {
+  return fetchApi<Post>(`/api/posts/${id}`);
 }
 
-export async function createPost(data: { content: string; media?: File[] } | FormData) {
+export async function createPost(data: { content: string; media?: File[] } | FormData): Promise<Post> {
   if (data instanceof FormData) {
-    return fetchApi('/api/posts', {
+    return fetchApi<Post>('/api/posts', {
       method: 'POST',
       body: data,
     });
   }
-  // 只发纯文本
-  return fetchApi('/api/posts', {
+  return fetchApi<Post>('/api/posts', {
     method: 'POST',
     body: JSON.stringify({ content: data.content }),
   });
 }
 
-export async function likePost(id: string) {
-  return fetchApi(`/api/posts/${id}/like`, {
+export async function likePost(id: string): Promise<Post> {
+  return fetchApi<Post>(`/api/posts/${id}/like`, {
     method: 'POST',
   });
 }
 
-export async function getComments(postId: string) {
-  return fetchApi(`/api/posts/${postId}/comments`);
+export async function getComments(postId: string): Promise<Comment[]> {
+  return fetchApi<Comment[]>(`/api/posts/${postId}/comments`);
 }
 
-export async function createComment(postId: string, data: { content: string; media?: File[] } | FormData) {
+export async function createComment(postId: string, data: { content: string; media?: File[] } | FormData): Promise<Comment> {
   if (data instanceof FormData) {
-    return fetchApi(`/api/posts/${postId}/comments`, {
+    return fetchApi<Comment>(`/api/posts/${postId}/comments`, {
       method: 'POST',
       body: data,
     });
@@ -133,29 +132,29 @@ export async function createComment(postId: string, data: { content: string; med
   if (data.media) {
     data.media.forEach(file => formData.append('media', file));
   }
-  return fetchApi(`/api/posts/${postId}/comments`, {
+  return fetchApi<Comment>(`/api/posts/${postId}/comments`, {
     method: 'POST',
     body: formData,
   });
 }
 
 // User
-export async function getUserProfile(id: string) {
-  return fetchApi(`/api/users/${id}`);
+export async function getUserProfile(id: string): Promise<User> {
+  return fetchApi<User>(`/api/users/${id}`);
 }
 
-export async function getUserPosts(id: string) {
-  return fetchApi(`/api/users/${id}/posts`);
+export async function getUserPosts(id: string): Promise<Post[]> {
+  return fetchApi<Post[]>(`/api/users/${id}/posts`);
 }
 
-export async function followUser(id: string) {
-  return fetchApi(`/api/users/${id}/follow`, {
+export async function followUser(id: string): Promise<void> {
+  return fetchApi<void>(`/api/users/${id}/follow`, {
     method: 'POST',
   });
 }
 
-export async function unfollowUser(id: string) {
-  return fetchApi(`/api/users/${id}/unfollow`, {
+export async function unfollowUser(id: string): Promise<void> {
+  return fetchApi<void>(`/api/users/${id}/unfollow`, {
     method: 'POST',
   });
 }
@@ -167,9 +166,9 @@ export async function updateProfile(data: {
   location?: string;
   website?: string;
   avatar?: File;
-} | FormData) {
+} | FormData): Promise<User> {
   if (data instanceof FormData) {
-    return fetchApi('/api/users/profile', {
+    return fetchApi<User>('/api/users/profile', {
       method: 'PUT',
       body: data,
     });
@@ -180,55 +179,40 @@ export async function updateProfile(data: {
       formData.append(key, value);
     }
   });
-  return fetchApi('/api/users/profile', {
+  return fetchApi<User>('/api/users/profile', {
     method: 'PUT',
     body: formData,
   });
 }
 
-export async function changePassword(currentPassword: string, newPassword: string) {
-  return fetchApi('/api/users/password', {
+export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  return fetchApi<void>('/api/users/password', {
     method: 'PUT',
     body: JSON.stringify({ currentPassword, newPassword }),
   });
 }
 
 // Search
-export async function searchUsers(query: string) {
+export async function searchUsers(query: string): Promise<User[]> {
   return fetchApi<User[]>(`/api/search/users?q=${encodeURIComponent(query)}`);
 }
 
-export async function searchPosts(query: string) {
+export async function searchPosts(query: string): Promise<Post[]> {
   return fetchApi<Post[]>(`/api/search/posts?q=${encodeURIComponent(query)}`);
 }
 
 // Notifications
-export async function getNotifications() {
-  return fetchApi<Array<{
-    id: string;
-    type: 'like' | 'comment' | 'follow' | 'mention';
-    read: boolean;
-    createdAt: string;
-    actor: {
-      id: string;
-      username: string;
-      handle: string;
-      avatar: string;
-    };
-    post?: {
-      id: string;
-      content: string;
-    };
-  }>>('/api/notifications');
+export async function getNotifications(): Promise<Notification[]> {
+  return fetchApi<Notification[]>('/api/notifications');
 }
 
-export async function markNotificationAsRead(id: string) {
-  return fetchApi(`/api/notifications/${id}/read`, {
+export async function markNotificationAsRead(id: string): Promise<void> {
+  return fetchApi<void>(`/api/notifications/${id}/read`, {
     method: 'PUT',
   });
 }
 
-export async function getUnreadNotificationCount() {
+export async function getUnreadNotificationCount(): Promise<{ count: number }> {
   return fetchApi<{ count: number }>('/api/notifications/unread/count');
 }
 
@@ -280,27 +264,27 @@ export async function getNewPostCount(since: string) {
   return fetchApi<number>(`/api/posts/new/count?since=${encodeURIComponent(since)}`);
 }
 
-export async function reportContent(data: { targetUser?: string; targetPost?: string; targetComment?: string; reason: string; detail?: string }) {
-  return fetchApi('/api/reports', {
+export async function reportContent(data: { targetUser?: string; targetPost?: string; targetComment?: string; reason: string; detail?: string }): Promise<void> {
+  return fetchApi<void>('/api/reports', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export async function blockUser(userId: string) {
-  return fetchApi(`/api/users/${userId}/block`, {
+export async function blockUser(userId: string): Promise<void> {
+  return fetchApi<void>(`/api/users/${userId}/block`, {
     method: 'POST',
   });
 }
 
-export async function unblockUser(userId: string) {
-  return fetchApi(`/api/users/${userId}/unblock`, {
+export async function unblockUser(userId: string): Promise<void> {
+  return fetchApi<void>(`/api/users/${userId}/unblock`, {
     method: 'POST',
   });
 }
 
 // Messages
-export async function getConversations() {
+export async function getConversations(): Promise<ConversationListItem[]> {
   return fetchApi<ConversationListItem[]>('/api/messages/conversations');
 }
 
@@ -308,14 +292,14 @@ export async function getMessages(userId: string): Promise<Message[]> {
   return fetchApi<Message[]>(`/api/messages/${userId}`);
 }
 
-export async function sendMessage(userId: string, content: string) {
-  return fetchApi(`/api/messages/${userId}`, {
+export async function sendMessage(userId: string, content: string): Promise<Message> {
+  return fetchApi<Message>(`/api/messages/${userId}`, {
     method: 'POST',
     body: JSON.stringify({ content }),
   });
 }
 
-export async function getUnreadMessageCount() {
+export async function getUnreadMessageCount(): Promise<number> {
   return fetchApi<number>('/api/messages/unread/count');
 }
 
