@@ -27,7 +27,8 @@ const app = express();
 // Enable CORS for specific origins
 app.use(cors({
   origin: [
-    'https://zouxianba.vercel.app', // 正式前端域名
+    'https://zouxianba-client.onrender.com', // 新增生产前端域名
+    'https://zouxianba.vercel.app', // 保留原有
     'http://localhost:3000',        // 本地开发
   ],
   credentials: true,
@@ -57,6 +58,7 @@ const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
     origin: [
+      'https://zouxianba-client.onrender.com', // 新增生产前端域名
       'https://zouxianba.vercel.app',
       'http://localhost:3000',
     ],
