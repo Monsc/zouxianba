@@ -1,4 +1,4 @@
-import { User, Post, Comment, Notification, Message, ConversationListItem } from '../types';
+import { User, Post, Comment, Notification, Message, ConversationListItem, Hashtag, Topic } from '../types';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
 
@@ -226,8 +226,8 @@ export async function getRecommendedUsers(): Promise<User[]> {
 /**
  * 获取热门话题列表
  */
-export async function getTrendingTopics(): Promise<{ tag: string; count: number }[]> {
-  return fetchApi<{ tag: string; count: number }[]>('/api/topics/trending');
+export async function getTrendingTopics(): Promise<Topic[]> {
+  return fetchApi<Topic[]>('/api/topics/trending');
 }
 
 export async function getNewPostCount(since: string): Promise<{ count: number }> {
@@ -279,8 +279,8 @@ export async function getUnreadMessageCount(): Promise<number> {
   return fetchApi<number>('/api/conversations/unread/count');
 }
 
-export async function getTrendingHashtags(): Promise<{ tag: string; count: number }[]> {
-  return fetchApi<{ tag: string; count: number }[]>('/api/hashtags/trending');
+export async function getTrendingHashtags(): Promise<Hashtag[]> {
+  return fetchApi<Hashtag[]>('/api/hashtags/trending');
 }
 
 export async function getHashtagPosts(tag: string): Promise<Post[]> {

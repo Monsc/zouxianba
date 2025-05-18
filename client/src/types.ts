@@ -17,7 +17,6 @@ export interface User {
 
 export interface Message {
   _id: string;
-  id: string;
   from: string;
   to: string;
   text: string;
@@ -27,7 +26,6 @@ export interface Message {
 
 export interface Author {
   _id: string;
-  id: string;
   username: string;
   handle: string;
   avatar: string;
@@ -36,7 +34,6 @@ export interface Author {
 
 export interface Post {
   _id: string;
-  id: string;
   content: string;
   author: Author;
   media?: string[];
@@ -44,7 +41,7 @@ export interface Post {
   comments: number;
   createdAt: string;
   updatedAt: string;
-  liked?: boolean;
+  liked: boolean;
   isEdited?: boolean;
   visibility?: 'public' | 'followers' | 'private';
   hashtags?: string[];
@@ -53,7 +50,6 @@ export interface Post {
 
 export interface Comment {
   _id: string;
-  id: string;
   content: string;
   author: Author;
   post: string;
@@ -61,7 +57,7 @@ export interface Comment {
   likes: number;
   createdAt: string;
   updatedAt: string;
-  liked?: boolean;
+  liked: boolean;
   isEdited?: boolean;
   parentComment?: string;
   replies?: Comment[];
@@ -69,13 +65,12 @@ export interface Comment {
 
 export interface Notification {
   _id: string;
-  id: string;
   type: 'like' | 'comment' | 'follow' | 'mention';
   read: boolean;
   createdAt: string;
   actor: Author;
   post?: {
-    id: string;
+    _id: string;
     content: string;
   };
 }
@@ -85,4 +80,14 @@ export interface ConversationListItem {
   content: string;
   createdAt: string;
   unreadCount?: number;
+}
+
+export interface Hashtag {
+  tag: string;
+  count: number;
+}
+
+export interface Topic {
+  tag: string;
+  count: number;
 } 

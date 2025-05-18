@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getTrendingHashtags } from '../services/api';
-
-interface Hashtag {
-  _id: string;
-  count: number;
-}
+import { Hashtag } from '../types';
 
 const HashtagList: React.FC = () => {
   const [hashtags, setHashtags] = useState<Hashtag[]>([]);
@@ -40,12 +36,12 @@ const HashtagList: React.FC = () => {
       <div className="space-y-3">
         {hashtags.map((tag) => (
           <Link
-            key={tag._id}
-            to={`/hashtag/${tag._id}`}
+            key={tag.tag}
+            to={`/hashtag/${tag.tag}`}
             className="block p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             <div className="flex justify-between items-center">
-              <span className="text-primary font-medium">#{tag._id}</span>
+              <span className="text-primary font-medium">#{tag.tag}</span>
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {tag.count} 条帖子
               </span>

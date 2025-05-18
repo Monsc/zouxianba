@@ -2,22 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getRecommendedUsers, getTrendingTopics, followUser, unfollowUser } from '../services/api';
-
-interface User {
-  id: string;
-  username: string;
-  handle: string;
-  avatar: string;
-  bio?: string;
-  followers: number;
-  isFollowing: boolean;
-}
-
-interface Topic {
-  id: string;
-  name: string;
-  postCount: number;
-}
+import { User, Topic } from '../types';
 
 function RightSidebar() {
   const [users, setUsers] = useState<User[]>([]);
@@ -37,8 +22,8 @@ function RightSidebar() {
         getRecommendedUsers(),
         getTrendingTopics()
       ]);
-      setUsers(recommendedUsers as User[]);
-      setTopics(trendingTopics as Topic[]);
+      setUsers(recommendedUsers);
+      setTopics(trendingTopics);
     } catch (error) {
       console.error('Error loading sidebar content:', error);
     } finally {
@@ -70,27 +55,24 @@ function RightSidebar() {
       </div>
 
       {/* 推荐用户 */}
-      <div className="recommended-users mb-6">
+      <div className="recommended-users mb-8">
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">推荐关注</h2>
         <div className="space-y-4">
           {users.map(user => (
             <div
-              key={user.id}
+              key={user._id}
               className="user-card flex items-center justify-between p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-              onClick={() => navigate(`/profile/${user.id}`)}
+              onClick={() => navigate(`/profile/${user._id}`)}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center space-x-3">
                 <img
                   src={user.avatar || '/default-avatar.png'}
                   alt={user.username}
-                  className="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 object-cover"
+                  className="w-10 h-10 rounded-full"
                 />
-                <div className="flex flex-col">
-                  <span className="font-bold text-gray-900 dark:text-white">{user.username}</span>
-                  <span className="text-sm text-gray-500">@{user.handle}</span>
-                  {user.bio && (
-                    <span className="text-sm text-gray-500 line-clamp-1">{user.bio}</span>
-                  )}
+                <div>
+                  <div className="font-bold text-gray-900 dark:text-white">{user.username}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">@{user.handle}</div>
                 </div>
               </div>
               <button
@@ -103,12 +85,12 @@ function RightSidebar() {
                   e.stopPropagation();
                   try {
                     if (user.isFollowing) {
-                      await unfollowUser(user.id);
+                      await unfollowUser(user._id);
                     } else {
-                      await followUser(user.id);
+                      await followUser(user._id);
                     }
                     setUsers(prev => prev.map(u =>
-                      u.id === user.id ? { ...u, isFollowing: !u.isFollowing } : u
+                      u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
                     ));
                   } catch (err) {
                     // 可选：弹出错误提示
@@ -128,13 +110,13 @@ function RightSidebar() {
         <div className="space-y-4">
           {topics.map(topic => (
             <div
-              key={topic.id}
+              key={topic.tag}
               className="topic-card p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-              onClick={() => navigate(`/search?q=${encodeURIComponent(topic.name)}`)}
+              onClick={() => navigate(`/search?q=${encodeURIComponent(topic.tag)}`)}
             >
               <div className="flex flex-col">
-                <span className="topic-label">#{topic.name}</span>
-                <span className="topic-count">{topic.postCount} 条帖子</span>
+                <span className="topic-label">#{topic.tag}</span>
+                <span className="topic-count">{topic.count} 条帖子</span>
               </div>
             </div>
           ))}
