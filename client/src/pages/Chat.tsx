@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { getMessages, sendMessage } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Picker } from 'emoji-mart';
-import 'emoji-mart/css/emoji-mart.css';
 import io from 'socket.io-client';
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || window.location.origin.replace(/^http/, 'ws');
