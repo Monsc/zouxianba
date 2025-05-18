@@ -10,9 +10,21 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 const http = require('http');
 const SocketIOServer = require('socket.io').Server;
 const { Message } = require('./models/Message');
+const mongoose = require('mongoose');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Log environment variables (without sensitive data)
 console.log('Environment check:', {
