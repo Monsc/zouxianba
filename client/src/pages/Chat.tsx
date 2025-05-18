@@ -4,13 +4,14 @@ import { getMessages, sendMessage } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Picker } from 'emoji-mart';
 import io from 'socket.io-client';
+import { Message } from '../types';
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || window.location.origin.replace(/^http/, 'ws');
 
 function Chat() {
   const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,24 +24,23 @@ function Chat() {
 
   useEffect(() => {
     // 初始化Socket.io连接
-    if (!user) return;
+    if (!user?._id) return;
     const s = io(SOCKET_URL, { transports: ['websocket'] });
     s.emit('login', user._id);
     setSocket(s);
     return () => { s.disconnect(); };
-    // eslint-disable-next-line
   }, [user]);
 
   useEffect(() => {
     if (!socket) return;
     // 新消息推送
-    socket.on('new_message', (msg: any) => {
+    socket.on('new_message', (msg: Message) => {
       if (msg.from === userId || msg.to === userId) {
         setMessages(prev => [...prev, msg]);
       }
     });
     // 已读回执
-    socket.on('messages_read', (data: any) => {
+    socket.on('messages_read', (data: { from: string }) => {
       setReadMap(prev => ({ ...prev, [data.from]: true }));
     });
     return () => {
@@ -51,7 +51,6 @@ function Chat() {
 
   useEffect(() => {
     if (userId) loadMessages();
-    // eslint-disable-next-line
   }, [userId]);
 
   useEffect(() => {
@@ -66,10 +65,11 @@ function Chat() {
   }, [socket, userId, messages.length]);
 
   const loadMessages = async () => {
+    if (!userId) return;
     try {
       setIsLoading(true);
       setError(null);
-      const data = await getMessages(userId!);
+      const data = await getMessages(userId);
       setMessages(data);
       // 标记已读
       if (socket) socket.emit('read_messages', { from: userId });
@@ -82,6 +82,8 @@ function Chat() {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user?._id || !userId) return;
+
     if (image && socket) {
       const formData = new FormData();
       formData.append('image', image);
@@ -98,7 +100,7 @@ function Chat() {
     }
     if (!input.trim() || !socket) return;
     try {
-      await sendMessage(userId!, input);
+      await sendMessage(userId, input);
       socket.emit('send_message', { to: userId, content: input, contentType: 'text' });
       setInput('');
     } catch (err) {
@@ -119,12 +121,13 @@ function Chat() {
     }
   };
 
+  if (!user) return <div className="loading-spinner" />;
   if (isLoading) return <div className="loading-spinner" />;
   if (error) return <div className="error-message">{error}</div>;
 
   // 判断最后一条消息是否已读
   const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
-  const isLastRead = lastMsg && lastMsg.from === user._id && lastMsg.read;
+  const isLastRead = lastMsg?.from === user._id && lastMsg?.read;
 
   return (
     <div className="chat-page max-w-lg mx-auto flex flex-col h-[80vh] p-4">

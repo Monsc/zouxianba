@@ -32,8 +32,8 @@ function Discover() {
   };
 
   // 过滤被屏蔽用户的推荐
-  const visibleUsers = currentUser && Array.isArray((currentUser as any).blocked)
-    ? users.filter(u => !(currentUser as any).blocked.includes(u._id))
+  const visibleUsers = currentUser?.blocked
+    ? users.filter(u => !currentUser.blocked.includes(u._id))
     : users;
 
   if (isLoading) {
@@ -74,6 +74,7 @@ function Discover() {
                 }`}
                 onClick={async (e) => {
                   e.stopPropagation();
+                  if (!user._id) return;
                   try {
                     if (user.isFollowing) {
                       await unfollowUser(user._id);
@@ -83,7 +84,9 @@ function Discover() {
                     setUsers(prev => prev.map(u =>
                       u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
                     ));
-                  } catch (err) {}
+                  } catch (err) {
+                    // 错误处理
+                  }
                 }}
               >
                 {user.isFollowing ? '已关注' : '关注'}

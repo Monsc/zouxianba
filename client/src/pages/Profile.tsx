@@ -4,35 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getUserProfile, getUserPosts, followUser, blockUser, unblockUser } from '../services/api';
 import PostCard from '../components/PostCard';
 import ReportModal from '../components/ReportModal';
-
-interface User {
-  id: string;
-  username: string;
-  handle: string;
-  avatar: string;
-  bio?: string;
-  location?: string;
-  website?: string;
-  followers: number;
-  following: number;
-  isFollowing: boolean;
-}
-
-interface Post {
-  id: string;
-  content: string;
-  media?: string[];
-  author: {
-    id: string;
-    username: string;
-    handle: string;
-    avatar: string;
-  };
-  createdAt: string;
-  likes: number;
-  comments: number;
-  liked: boolean;
-}
+import { User, Post } from '../types';
 
 function Profile() {
   const { userId } = useParams<{ userId: string }>();
@@ -51,13 +23,11 @@ function Profile() {
       return;
     }
     Promise.all([
-      getUserProfile(userId!),
-      getUserPosts(userId!)
+      getUserProfile(userId),
+      getUserPosts(userId)
     ]).then(([profile, posts]) => {
-      setUser(profile as User);
-      // 兼容后端返回的 _id 字段
-      const postsWithId = (posts as any[]).map(post => ({ ...post, id: post._id }));
-      setPosts(postsWithId as Post[]);
+      setUser(profile);
+      setPosts(posts);
       setIsLoading(false);
     }).catch(() => {
       setError('Failed to load profile.');
@@ -67,20 +37,20 @@ function Profile() {
 
   useEffect(() => {
     if (currentUser && user) {
-      setIsBlocked(Array.isArray((currentUser as any).blocked) && (currentUser as any).blocked.includes(user._id));
+      setIsBlocked(Array.isArray(currentUser.blocked) && currentUser.blocked.includes(user._id));
     }
   }, [currentUser, user]);
 
   const handleFollow = async () => {
-    if (!user) return;
+    if (!user?._id) return;
 
     try {
       await followUser(user._id);
-      setUser({
-        ...user,
-        followers: user.isFollowing ? user.followers - 1 : user.followers + 1,
-        isFollowing: !user.isFollowing
-      });
+      setUser(prev => prev ? {
+        ...prev,
+        followers: prev.isFollowing ? prev.followers - 1 : prev.followers + 1,
+        isFollowing: !prev.isFollowing
+      } : null);
     } catch (err) {
       console.error('Error following user:', err);
     }
@@ -97,7 +67,7 @@ function Profile() {
   };
 
   const handleBlock = async () => {
-    if (!user) return;
+    if (!user?._id) return;
     try {
       if (isBlocked) {
         await unblockUser(user._id);

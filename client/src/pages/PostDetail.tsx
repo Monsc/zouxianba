@@ -4,38 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getPost, getComments, createComment, likePost } from '../services/api';
 import PostCard from '../components/PostCard';
 import ReportModal from '../components/ReportModal';
-
-interface Comment {
-  id: string;
-  content: string;
-  media?: string[];
-  author: {
-    id: string;
-    username: string;
-    handle: string;
-    avatar: string;
-  };
-  createdAt: string;
-  likes: number;
-  liked: boolean;
-  replies: number;
-}
-
-interface Post {
-  id: string;
-  content: string;
-  media?: string[];
-  author: {
-    id: string;
-    username: string;
-    handle: string;
-    avatar: string;
-  };
-  createdAt: string;
-  likes: number;
-  comments: number;
-  liked: boolean;
-}
+import { Post, Comment } from '../types';
 
 function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
@@ -73,14 +42,15 @@ function PostDetail() {
   };
 
   const loadPost = async () => {
+    if (!postId) return;
     try {
       setIsLoading(true);
       const [postData, commentsData] = await Promise.all([
-        getPost(postId!),
-        getComments(postId!)
+        getPost(postId),
+        getComments(postId)
       ]);
-      setPost(postData as Post);
-      setComments(commentsData as Comment[]);
+      setPost(postData);
+      setComments(commentsData);
       setError(null);
     } catch (err) {
       setError('Failed to load post. Please try again later.');
@@ -91,15 +61,15 @@ function PostDetail() {
   };
 
   const handleLike = async () => {
-    if (!post) return;
+    if (!post?._id) return;
 
     try {
       await likePost(post._id);
-      setPost({
-        ...post,
-        likes: post.liked ? post.likes - 1 : post.likes + 1,
-        liked: !post.liked
-      });
+      setPost(prev => prev ? {
+        ...prev,
+        likes: prev.liked ? prev.likes - 1 : prev.likes + 1,
+        liked: !prev.liked
+      } : null);
     } catch (err) {
       console.error('Error liking post:', err);
     }
@@ -117,26 +87,24 @@ function PostDetail() {
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    if (!newComment.trim() || !postId) return;
 
     try {
-      const comment = await createComment(postId!, { content: newComment });
-      setComments([comment as Comment, ...comments]);
+      const comment = await createComment(postId, { content: newComment });
+      setComments([comment, ...comments]);
       setNewComment('');
-      if (post) {
-        setPost({
-          ...post,
-          comments: post.comments + 1
-        });
-      }
+      setPost(prev => prev ? {
+        ...prev,
+        comments: prev.comments + 1
+      } : null);
     } catch (err) {
       console.error('Error creating comment:', err);
     }
   };
 
   // 过滤被屏蔽用户的评论
-  const visibleComments = currentUser && Array.isArray((currentUser as any).blocked)
-    ? comments.filter(comment => !(currentUser as any).blocked.includes(comment.author._id))
+  const visibleComments = currentUser?.blocked
+    ? comments.filter(comment => !currentUser.blocked.includes(comment.author._id))
     : comments;
 
   if (isLoading) {
