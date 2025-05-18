@@ -59,10 +59,10 @@ export async function login(email, password) {
   });
 }
 
-export async function register(username, email, password) {
+export async function register(username, email, password, handle) {
   return fetchApi('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({ username, email, password, handle }),
   });
 }
 
