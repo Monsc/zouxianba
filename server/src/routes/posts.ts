@@ -272,7 +272,7 @@ router.get('/new-count', auth, catchAsync(async (req: Request, res: Response) =>
 }));
 
 // 获取热门话题
-router.get('/hashtags/trending', async (req: Request, res: Response) => {
+router.get('/hashtags/trending', async (_req: any, res: any) => {
   try {
     const hashtags = await Post.aggregate([
       { $unwind: '$hashtags' },
