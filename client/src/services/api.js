@@ -53,37 +53,37 @@ async function fetchApi(endpoint, options = {}) {
 
 // Auth
 export async function login(email, password) {
-  return fetchApi('/api/auth/login', {
+  return fetchApi('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
 }
 
 export async function register(username, email, password) {
-  return fetchApi('/api/auth/register', {
+  return fetchApi('/auth/register', {
     method: 'POST',
     body: JSON.stringify({ username, email, password }),
   });
 }
 
 export async function logout() {
-  return fetchApi('/api/auth/logout', {
+  return fetchApi('/auth/logout', {
     method: 'POST',
   });
 }
 
 // Posts
 export async function getFeed() {
-  return fetchApi('/api/posts/feed');
+  return fetchApi('/posts/feed');
 }
 
 export async function getPost(id) {
-  return fetchApi(`/api/posts/${id}`);
+  return fetchApi(`/posts/${id}`);
 }
 
 export async function createPost(data) {
   if (data instanceof FormData) {
-    return fetchApi('/api/posts', {
+    return fetchApi('/posts', {
       method: 'POST',
       body: data,
     });
@@ -93,25 +93,25 @@ export async function createPost(data) {
   if (data.images) {
     data.images.forEach(file => formData.append('images', file));
   }
-  return fetchApi('/api/posts', {
+  return fetchApi('/posts', {
     method: 'POST',
     body: formData,
   });
 }
 
 export async function likePost(id) {
-  return fetchApi(`/api/posts/${id}/like`, {
+  return fetchApi(`/posts/${id}/like`, {
     method: 'POST',
   });
 }
 
 export async function getComments(postId) {
-  return fetchApi(`/api/posts/${postId}/comments`);
+  return fetchApi(`/posts/${postId}/comments`);
 }
 
 export async function createComment(postId, data) {
   if (data instanceof FormData) {
-    return fetchApi(`/api/posts/${postId}/comments`, {
+    return fetchApi(`/posts/${postId}/comments`, {
       method: 'POST',
       body: data,
     });
@@ -121,7 +121,7 @@ export async function createComment(postId, data) {
   if (data.images) {
     data.images.forEach(file => formData.append('images', file));
   }
-  return fetchApi(`/api/posts/${postId}/comments`, {
+  return fetchApi(`/posts/${postId}/comments`, {
     method: 'POST',
     body: formData,
   });
@@ -129,28 +129,28 @@ export async function createComment(postId, data) {
 
 // User
 export async function getUserProfile(id) {
-  return fetchApi(`/api/users/${id}`);
+  return fetchApi(`/users/${id}`);
 }
 
 export async function getUserPosts(id) {
-  return fetchApi(`/api/users/${id}/posts`);
+  return fetchApi(`/users/${id}/posts`);
 }
 
 export async function followUser(id) {
-  return fetchApi(`/api/users/${id}/follow`, {
+  return fetchApi(`/users/${id}/follow`, {
     method: 'POST',
   });
 }
 
 export async function unfollowUser(id) {
-  return fetchApi(`/api/users/${id}/unfollow`, {
+  return fetchApi(`/users/${id}/unfollow`, {
     method: 'POST',
   });
 }
 
 export async function updateProfile(data) {
   if (data instanceof FormData) {
-    return fetchApi('/api/users/profile', {
+    return fetchApi('/users/profile', {
       method: 'PUT',
       body: data,
     });
@@ -161,14 +161,14 @@ export async function updateProfile(data) {
       formData.append(key, value);
     }
   });
-  return fetchApi('/api/users/profile', {
+  return fetchApi('/users/profile', {
     method: 'PUT',
     body: formData,
   });
 }
 
 export async function changePassword(currentPassword, newPassword) {
-  return fetchApi('/api/users/password', {
+  return fetchApi('/users/password', {
     method: 'PUT',
     body: JSON.stringify({ currentPassword, newPassword }),
   });
@@ -176,76 +176,76 @@ export async function changePassword(currentPassword, newPassword) {
 
 // Search
 export async function searchUsers(query) {
-  return fetchApi(`/api/users/search?q=${encodeURIComponent(query)}`);
+  return fetchApi(`/users/search?q=${encodeURIComponent(query)}`);
 }
 
 export async function searchPosts(query) {
-  return fetchApi(`/api/posts/search?q=${encodeURIComponent(query)}`);
+  return fetchApi(`/posts/search?q=${encodeURIComponent(query)}`);
 }
 
 // Notifications
 export async function getNotifications() {
-  return fetchApi('/api/notifications');
+  return fetchApi('/notifications');
 }
 
 export async function markNotificationAsRead(id) {
-  return fetchApi(`/api/notifications/${id}/read`, {
+  return fetchApi(`/notifications/${id}/read`, {
     method: 'PATCH',
   });
 }
 
 export async function getUnreadNotificationCount() {
-  return fetchApi('/api/notifications/unread/count');
+  return fetchApi('/notifications/unread/count');
 }
 
 /**
  * 获取推荐用户列表
  */
 export async function getRecommendedUsers() {
-  return fetchApi('/api/users/recommended');
+  return fetchApi('/users/recommended');
 }
 
 /**
  * 获取热门话题列表
  */
 export async function getTrendingTopics() {
-  return fetchApi('/api/topics/trending');
+  return fetchApi('/topics/trending');
 }
 
 export async function getNewPostCount(since) {
-  return fetchApi(`/api/posts/new/count?since=${encodeURIComponent(since)}`);
+  return fetchApi(`/posts/new/count?since=${encodeURIComponent(since)}`);
 }
 
 export async function reportContent(data) {
-  return fetchApi('/api/reports', {
+  return fetchApi('/reports', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
 export async function blockUser(userId) {
-  return fetchApi(`/api/users/${userId}/block`, {
+  return fetchApi(`/users/${userId}/block`, {
     method: 'POST',
   });
 }
 
 export async function unblockUser(userId) {
-  return fetchApi(`/api/users/${userId}/unblock`, {
+  return fetchApi(`/users/${userId}/unblock`, {
     method: 'POST',
   });
 }
 
 // Messages
 export async function getConversations() {
-  return fetchApi('/api/messages/conversations');
+  return fetchApi('/messages/conversations');
 }
 
 export async function getMessages(userId) {
-  return fetchApi(`/api/messages/${userId}`);
+  return fetchApi(`/messages/${userId}`);
 }
 
 export async function sendMessage(userId, content) {
-  return fetchApi(`/api/messages/${userId}`, {
+  return fetchApi(`/messages/${userId}`, {
     method: 'POST',
     body: JSON.stringify({ content }),
   });
@@ -254,16 +254,16 @@ export async function sendMessage(userId, content) {
 export async function sendImageMessage(userId, image) {
   const formData = new FormData();
   formData.append('image', image);
-  return fetchApi(`/api/messages/${userId}/image`, {
+  return fetchApi(`/messages/${userId}/image`, {
     method: 'POST',
     body: formData,
   });
 }
 
 export async function getUnreadMessageCount() {
-  return fetchApi('/api/messages/unread/count');
+  return fetchApi('/messages/unread/count');
 }
 
 export async function getMentions() {
-  return fetchApi('/api/users/mentions');
+  return fetchApi('/users/mentions');
 }
