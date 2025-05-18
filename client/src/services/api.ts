@@ -117,21 +117,21 @@ export async function createComment(postId: string, data: { content: string; med
 
 // User
 export async function getUserProfile(id: string) {
-  return fetchApi(`/users/${id}`);
+  return fetchApi(`/api/users/${id}`);
 }
 
 export async function getUserPosts(id: string) {
-  return fetchApi(`/users/${id}/posts`);
+  return fetchApi(`/api/users/${id}/posts`);
 }
 
 export async function followUser(id: string) {
-  return fetchApi(`/users/${id}/follow`, {
-        method: 'POST',
+  return fetchApi(`/api/users/${id}/follow`, {
+    method: 'POST',
   });
 }
 
 export async function unfollowUser(id: string) {
-  return fetchApi(`/users/${id}/unfollow`, {
+  return fetchApi(`/api/users/${id}/unfollow`, {
     method: 'POST',
   });
 }
@@ -150,14 +150,14 @@ export async function updateProfile(data: {
       formData.append(key, value);
     }
   });
-  return fetchApi('/users/profile', {
+  return fetchApi('/api/users/profile', {
     method: 'PUT',
     body: formData,
   });
 }
 
 export async function changePassword(currentPassword: string, newPassword: string) {
-  return fetchApi('/users/password', {
+  return fetchApi('/api/users/password', {
     method: 'PUT',
     body: JSON.stringify({ currentPassword, newPassword }),
   });
@@ -171,7 +171,7 @@ export async function searchUsers(query: string) {
     handle: string;
     avatar: string;
     bio?: string;
-  }>>(`/search/users?q=${encodeURIComponent(query)}`);
+  }>>(`/api/search/users?q=${encodeURIComponent(query)}`);
 }
 
 export async function searchPosts(query: string) {
@@ -189,7 +189,7 @@ export async function searchPosts(query: string) {
     likes: number;
     comments: number;
     isLiked: boolean;
-  }>>(`/search/posts?q=${encodeURIComponent(query)}`);
+  }>>(`/api/search/posts?q=${encodeURIComponent(query)}`);
 }
 
 // Notifications
@@ -209,22 +209,25 @@ export async function getNotifications() {
       id: string;
       content: string;
     };
-  }>>('/notifications');
+  }>>('/api/notifications');
 }
 
 export async function markNotificationAsRead(id: string) {
-  return fetchApi(`/notifications/${id}/read`, {
+  return fetchApi(`/api/notifications/${id}/read`, {
     method: 'PUT',
   });
 }
 
 export async function getUnreadNotificationCount() {
+  return fetchApi<number>('/api/notifications/unread/count');
+}
+
 /**
  * 获取推荐用户列表
  */
 export const getRecommendedUsers = async () => {
   try {
-    const response = await fetch(`${API_URL}/users/recommended`, {
+    const response = await fetch(`${API_URL}/api/users/recommended`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
@@ -246,7 +249,7 @@ export const getRecommendedUsers = async () => {
  */
 export const getTrendingTopics = async () => {
   try {
-    const response = await fetch(`${API_URL}/topics/trending`, {
+    const response = await fetch(`${API_URL}/api/topics/trending`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
@@ -264,58 +267,100 @@ export const getTrendingTopics = async () => {
 };
 
 export async function getNewPostCount(since: string) {
-  return fetchApi<{ count: number }>(`/api/posts/new-count?since=${encodeURIComponent(since)}`);
+  return fetchApi<number>(`/api/posts/new/count?since=${encodeURIComponent(since)}`);
 }
 
 export async function reportContent(data: { targetUser?: string; targetPost?: string; targetComment?: string; reason: string; detail?: string }) {
-  return fetchApi('/report', {
+  return fetchApi('/api/reports', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
 export async function blockUser(userId: string) {
-  return fetchApi(`/block/${userId}`, { method: 'POST' });
+  return fetchApi(`/api/users/${userId}/block`, {
+    method: 'POST',
+  });
 }
 
 export async function unblockUser(userId: string) {
-  return fetchApi(`/block/${userId}`, { method: 'DELETE' });
+  return fetchApi(`/api/users/${userId}/unblock`, {
+    method: 'POST',
+  });
 }
 
 export async function getConversations() {
-  return fetchApi('/messages/conversations');
+  return fetchApi('/api/messages/conversations');
 }
 
 export async function getMessages(userId: string) {
-  return fetchApi(`/messages/${userId}`);
+  return fetchApi(`/api/messages/${userId}`);
 }
 
 export async function sendMessage(userId: string, content: string) {
-  return fetchApi(`/messages/${userId}`, {
+  return fetchApi(`/api/messages/${userId}`, {
     method: 'POST',
     body: JSON.stringify({ content }),
   });
 }
 
 export async function getUnreadMessageCount() {
-  return fetchApi<{ count: number }>(`/messages/unread-count`);
+  return fetchApi<number>('/api/messages/unread/count');
 }
 
-// 获取热门话题
 export const getTrendingHashtags = async () => {
-  const response = await fetch('/api/posts/hashtags/trending');
-  if (!response.ok) throw new Error('获取热门话题失败');
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/api/hashtags/trending`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch trending hashtags');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching trending hashtags:', error);
+    return [];
+  }
 };
 
-// 获取话题相关帖子
 export const getHashtagPosts = async (tag: string) => {
-  const response = await fetch(`/api/posts/hashtags/${tag}`);
-  if (!response.ok) throw new Error('获取话题帖子失败');
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/api/hashtags/${encodeURIComponent(tag)}/posts`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch hashtag posts');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching hashtag posts:', error);
+    return [];
+  }
 };
 
-// 获取用户提及
 export const getMentions = async () => {
-  return fetchApi<Post[]>('/api/posts/mentions');
+  try {
+    const response = await fetch(`${API_URL}/api/mentions`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch mentions');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching mentions:', error);
+    return [];
+  }
 }; 
