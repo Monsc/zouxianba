@@ -1,3 +1,5 @@
+import { User, Post, Comment, Notification, Message, ConversationListItem } from '../types';
+
 const API_URL = process.env.REACT_APP_API_URL || '';
 
 interface ApiResponse<T> {
@@ -5,6 +7,17 @@ interface ApiResponse<T> {
   error?: string;
   message?: string;
 }
+
+// 获取 CSRF token
+const getCsrfToken = () => {
+  const name = 'XSRF-TOKEN';
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift();
+  }
+  return '';
+};
 
 async function fetchApi<T>(
   endpoint: string,
@@ -16,6 +29,14 @@ async function fetchApi<T>(
     ...options.headers,
   };
 
+  // 添加 CSRF token 到所有非 GET 请求
+  if (options.method && options.method !== 'GET') {
+    headers = {
+      ...headers,
+      'X-CSRF-Token': getCsrfToken() || '',
+    };
+  }
+
   // Only set Content-Type if body is not FormData
   if (!(options.body instanceof FormData)) {
     headers = { 'Content-Type': 'application/json', ...headers };
@@ -24,6 +45,7 @@ async function fetchApi<T>(
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
+    credentials: 'include', // 添加这行以支持跨域 cookie
   });
 
   let data: ApiResponse<T>;
@@ -75,21 +97,17 @@ export async function getPost(id: string) {
   return fetchApi(`/api/posts/${id}`);
 }
 
-export async function createPost(data: { content: string; media?: File[] }) {
-  if (!data.media || data.media.length === 0) {
-    // 只发纯文本
+export async function createPost(data: { content: string; media?: File[] } | FormData) {
+  if (data instanceof FormData) {
     return fetchApi('/api/posts', {
       method: 'POST',
-      body: JSON.stringify({ content: data.content }),
+      body: data,
     });
   }
-  // 有媒体时仍用FormData
-  const formData = new FormData();
-  formData.append('content', data.content);
-  data.media.forEach(file => formData.append('media', file));
+  // 只发纯文本
   return fetchApi('/api/posts', {
     method: 'POST',
-    body: formData,
+    body: JSON.stringify({ content: data.content }),
   });
 }
 
@@ -103,7 +121,13 @@ export async function getComments(postId: string) {
   return fetchApi(`/api/posts/${postId}/comments`);
 }
 
-export async function createComment(postId: string, data: { content: string; media?: File[] }) {
+export async function createComment(postId: string, data: { content: string; media?: File[] } | FormData) {
+  if (data instanceof FormData) {
+    return fetchApi(`/api/posts/${postId}/comments`, {
+      method: 'POST',
+      body: data,
+    });
+  }
   const formData = new FormData();
   formData.append('content', data.content);
   if (data.media) {
@@ -143,7 +167,13 @@ export async function updateProfile(data: {
   location?: string;
   website?: string;
   avatar?: File;
-}) {
+} | FormData) {
+  if (data instanceof FormData) {
+    return fetchApi('/api/users/profile', {
+      method: 'PUT',
+      body: data,
+    });
+  }
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
     if (value !== undefined) {
@@ -165,31 +195,11 @@ export async function changePassword(currentPassword: string, newPassword: strin
 
 // Search
 export async function searchUsers(query: string) {
-  return fetchApi<Array<{
-    id: string;
-    username: string;
-    handle: string;
-    avatar: string;
-    bio?: string;
-  }>>(`/api/search/users?q=${encodeURIComponent(query)}`);
+  return fetchApi<User[]>(`/api/search/users?q=${encodeURIComponent(query)}`);
 }
 
 export async function searchPosts(query: string) {
-  return fetchApi<Array<{
-    id: string;
-    content: string;
-    media?: string[];
-    author: {
-      id: string;
-      username: string;
-      handle: string;
-      avatar: string;
-    };
-    createdAt: string;
-    likes: number;
-    comments: number;
-    isLiked: boolean;
-  }>>(`/api/search/posts?q=${encodeURIComponent(query)}`);
+  return fetchApi<Post[]>(`/api/search/posts?q=${encodeURIComponent(query)}`);
 }
 
 // Notifications
@@ -219,7 +229,7 @@ export async function markNotificationAsRead(id: string) {
 }
 
 export async function getUnreadNotificationCount() {
-  return fetchApi<number>('/api/notifications/unread/count');
+  return fetchApi<{ count: number }>('/api/notifications/unread/count');
 }
 
 /**
@@ -289,8 +299,9 @@ export async function unblockUser(userId: string) {
   });
 }
 
+// Messages
 export async function getConversations() {
-  return fetchApi('/api/messages/conversations');
+  return fetchApi<ConversationListItem[]>('/api/messages/conversations');
 }
 
 export async function getMessages(userId: string) {
