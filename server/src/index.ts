@@ -9,7 +9,7 @@ import userRoutes from './routes/users';
 import notificationRoutes from './routes/notifications';
 import { errorHandler, notFound } from './middleware/errorHandler';
 import http from 'http';
-import { Server as SocketIOServer, Socket } from 'socket.io';
+const SocketIOServer = require('socket.io').Server;
 import { Message } from './models/Message';
 
 // Load environment variables
@@ -69,14 +69,14 @@ const io = new SocketIOServer(server, {
 
 const userSocketMap = new Map<string, string>(); // userId -> socketId
 
-io.on('connection', (socket: Socket) => {
+io.on('connection', (socket: any) => {
   let userId = '';
   socket.on('login', (uid: string) => {
     userId = uid;
     userSocketMap.set(uid, socket.id);
   });
 
-  socket.on('send_message', async (data: { to: string; content: string; contentType?: string; imageUrl?: string }) => {
+  socket.on('send_message', async (data: any) => {
     // data: { to, content, contentType, imageUrl }
     const msg = await Message.create({
       from: userId,
@@ -94,7 +94,7 @@ io.on('connection', (socket: Socket) => {
     socket.emit('new_message', msg);
   });
 
-  socket.on('read_messages', async (data: { from: string }) => {
+  socket.on('read_messages', async (data: any) => {
     // data: { from }
     await Message.updateMany({ from: data.from, to: userId, read: false }, { read: true });
     const toSocket = userSocketMap.get(data.from);
