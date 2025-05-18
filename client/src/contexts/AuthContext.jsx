@@ -23,12 +23,15 @@ export function AuthProvider({ children }) {
             setUser(data);
             setIsLoading(false);
           } else {
+            setUser(null);
             setIsLoading(false);
           }
         } catch (error) {
+          setUser(null);
           setIsLoading(false);
         }
       } else {
+        setUser(null);
         setIsLoading(false);
       }
     };
@@ -36,8 +39,37 @@ export function AuthProvider({ children }) {
     validateToken();
   }, []);
 
+  // 注册
+  const register = async (username, email, password, handle) => {
+    const res = await apiRegister(username, email, password, handle);
+    if (res.token && res.user) {
+      localStorage.setItem('token', res.token);
+      setUser(res.user);
+    } else {
+      throw new Error(res.message || 'Registration failed');
+    }
+  };
+
+  // 登录
+  const login = async (email, password) => {
+    const res = await apiLogin(email, password);
+    if (res.token && res.user) {
+      localStorage.setItem('token', res.token);
+      setUser(res.user);
+    } else {
+      throw new Error(res.message || 'Login failed');
+    }
+  };
+
+  // 登出
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    apiLogout && apiLogout();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading }}>
+    <AuthContext.Provider value={{ user, isLoading, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
