@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { login as apiLogin, register as apiRegister, logout as apiLogout } from '../services/api';
-import { User } from '../types';
 
 const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check for stored token and validate it
@@ -42,23 +41,23 @@ export function AuthProvider({ children }) {
     validateToken();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email, password) => {
     try {
       const { user: userData, token } = await apiLogin(email, password);
       localStorage.setItem('token', token);
       setUser({ ...userData, id: userData._id });
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Login error:', error);
       throw error instanceof Error ? error : new Error('Unknown error');
     }
   };
 
-  const register = async (username: string, email: string, password: string, handle: string) => {
+  const register = async (username, email, password, handle) => {
     try {
       const { user, token } = await apiRegister(username, email, password, handle);
       localStorage.setItem('token', token);
       setUser(user);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Registration error in AuthContext:', error);
       throw error instanceof Error ? error : new Error('Unknown error');
     }
@@ -69,7 +68,7 @@ export function AuthProvider({ children }) {
       await apiLogout();
       localStorage.removeItem('token');
       setUser(null);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Logout error:', error);
       throw error instanceof Error ? error : new Error('Unknown error');
     }
