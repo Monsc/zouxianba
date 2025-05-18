@@ -15,7 +15,7 @@ import Chat from './pages/Chat';
 import HashtagPage from './pages/HashtagPage';
 import Mentions from './pages/Mentions';
 import './styles/global.css';
-import 'emoji-mart/css/emoji-mart.css';
+import '../../node_modules/emoji-mart/css/emoji-mart.css';
 
 function App() {
   return (
