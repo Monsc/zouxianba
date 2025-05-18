@@ -1,29 +1,50 @@
 export interface User {
   _id: string;
+  id?: string;
   username: string;
   handle: string;
+  avatar: string;
   email: string;
-  avatar?: string;
   bio?: string;
   location?: string;
   website?: string;
-  followers: number;
-  following: number;
+  isVerified?: boolean;
+  followers?: number;
+  following?: number;
   isFollowing?: boolean;
-  isBlocked?: boolean;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface Message {
+  _id: string;
+  from: string;
+  to: string;
+  text: string;
+  timestamp: string;
+  read: boolean;
+}
+
+export interface Author {
+  _id: string;
+  username: string;
+  handle: string;
+  avatar: string;
+  isVerified?: boolean;
 }
 
 export interface Post {
   _id: string;
   content: string;
+  author: Author;
   media?: string[];
-  author: User;
   likes: number;
   comments: number;
-  isLiked: boolean;
   createdAt: string;
   updatedAt: string;
+  liked: boolean;
+  isEdited?: boolean;
+  visibility?: 'public' | 'followers' | 'private';
   hashtags?: string[];
   mentions?: string[];
 }
@@ -31,38 +52,43 @@ export interface Post {
 export interface Comment {
   _id: string;
   content: string;
-  media?: string[];
-  author: User;
+  author: Author;
   post: string;
+  media?: string[];
   likes: number;
-  isLiked: boolean;
   createdAt: string;
   updatedAt: string;
+  liked: boolean;
+  isEdited?: boolean;
+  parentComment?: string;
+  replies?: Comment[];
 }
 
 export interface Notification {
   _id: string;
   type: 'like' | 'comment' | 'follow' | 'mention';
   read: boolean;
-  sender: User;
-  post?: Post;
-  comment?: Comment;
   createdAt: string;
+  actor: Author;
+  post?: {
+    _id: string;
+    content: string;
+  };
 }
 
-export interface Message {
-  _id: string;
+export interface ConversationListItem {
+  user: Author;
   content: string;
-  sender: string;
-  receiver: string;
-  read: boolean;
   createdAt: string;
+  unreadCount?: number;
 }
 
-export interface Conversation {
-  _id: string;
-  participants: User[];
-  lastMessage?: Message;
-  unreadCount: number;
-  updatedAt: string;
+export interface Hashtag {
+  tag: string;
+  count: number;
+}
+
+export interface Topic {
+  tag: string;
+  count: number;
 } 

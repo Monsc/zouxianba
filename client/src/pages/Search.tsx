@@ -5,18 +5,18 @@ import PostCard from '../components/PostCard';
 
 interface SearchResult {
   users: Array<{
-    id: string;
+    _id: string;
     username: string;
     handle: string;
     avatar: string;
     bio?: string;
   }>;
   posts: Array<{
-    id: string;
+    _id: string;
     content: string;
     media?: string[];
     author: {
-      id: string;
+      _id: string;
       username: string;
       handle: string;
       avatar: string;
@@ -24,7 +24,7 @@ interface SearchResult {
     createdAt: string;
     likes: number;
     comments: number;
-    isLiked: boolean;
+    liked: boolean;
   }>;
 }
 
@@ -90,9 +90,9 @@ function Search() {
                 <div className="users-list">
                   {results.users.map(user => (
                     <div
-                      key={user.id}
+                      key={user._id}
                       className="user-card"
-                      onClick={() => navigate(`/profile/${user.id}`)}
+                      onClick={() => navigate(`/profile/${user._id}`)}
                     >
                       <img
                         src={user.avatar || '/default-avatar.png'}
@@ -116,7 +116,7 @@ function Search() {
                 <div className="posts-list">
                   {results.posts.map(post => (
                     <PostCard
-                      key={post.id}
+                      key={post._id}
                       post={post}
                       onLike={() => {}}
                     />

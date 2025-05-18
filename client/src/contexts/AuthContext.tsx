@@ -52,9 +52,9 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
 
   const login = async (email: string, password: string) => {
     try {
-      const { user, token } = await apiLogin(email, password);
+      const { user: userData, token } = await apiLogin(email, password);
       localStorage.setItem('token', token);
-      setUser(user);
+      setUser({ ...userData, id: userData._id });
     } catch (error: unknown) {
       console.error('Login error:', error);
       throw error instanceof Error ? error : new Error('Unknown error');
