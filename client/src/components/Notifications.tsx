@@ -1,58 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getNotifications, markNotificationAsRead, getUnreadNotificationCount } from '../services/api';
+import { getNotifications, markNotificationAsRead } from '../services/api';
+import { Notification } from '../types';
 import { formatDistanceToNow } from 'date-fns';
-
-interface Notification {
-  id: string;
-  type: 'like' | 'comment' | 'follow' | 'mention';
-  read: boolean;
-  createdAt: string;
-  actor: {
-    id: string;
-    username: string;
-    handle: string;
-    avatar: string;
-  };
-  post?: {
-    id: string;
-    content: string;
-  };
-}
+import { zhCN } from 'date-fns/locale';
 
 function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadNotifications();
   }, []);
 
-  // 进入页面自动标记所有未读为已读
-  useEffect(() => {
-    const markAllAsRead = async () => {
-      try {
-        const data = await getNotifications();
-        const unread = data.filter((n: any) => !n.read);
-        await Promise.all(unread.map((n: any) => markNotificationAsRead(n.id)));
-        // 刷新未读数
-        await getUnreadNotificationCount();
-      } catch {}
-    };
-    markAllAsRead();
-  }, []);
-
   const loadNotifications = async () => {
     try {
-      setIsLoading(true);
-      setError(null);
       const data = await getNotifications();
       setNotifications(data);
-    } catch (err) {
-      setError('Failed to load notifications');
-      console.error('Notifications error:', err);
+    } catch (error) {
+      console.error('Failed to load notifications:', error);
     } finally {
       setIsLoading(false);
     }
@@ -61,44 +28,22 @@ function Notifications() {
   const handleNotificationClick = async (notification: Notification) => {
     if (!notification.read) {
       try {
-        await markNotificationAsRead(notification.id);
+        await markNotificationAsRead(notification._id);
         setNotifications(prev =>
           prev.map(n =>
-            n.id === notification.id ? { ...n, read: true } : n
+            n._id === notification._id ? { ...n, read: true } : n
           )
         );
-      } catch (err) {
-        console.error('Failed to mark notification as read:', err);
+      } catch (error) {
+        console.error('Failed to mark notification as read:', error);
       }
     }
 
-    // Navigate based on notification type
-    switch (notification.type) {
-      case 'like':
-      case 'comment':
-      case 'mention':
-        if (notification.post) {
-          navigate(`/post/${notification.post.id}`);
-        }
-        break;
-      case 'follow':
-        navigate(`/profile/${notification.actor.id}`);
-        break;
-    }
-  };
-
-  const getNotificationText = (notification: Notification) => {
-    switch (notification.type) {
-      case 'like':
-        return 'liked your post';
-      case 'comment':
-        return 'commented on your post';
-      case 'follow':
-        return 'started following you';
-      case 'mention':
-        return 'mentioned you in a post';
-      default:
-        return '';
+    // 根据通知类型导航到相应页面
+    if (notification.post) {
+      navigate(`/post/${notification.post._id}`);
+    } else if (notification.actor) {
+      navigate(`/profile/${notification.actor._id}`);
     }
   };
 
@@ -106,36 +51,36 @@ function Notifications() {
     return <div className="loading-spinner" />;
   }
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
-
   return (
-    <div className="notifications-container">
-      <h2 className="notifications-title">Notifications</h2>
+    <div className="notifications-page">
+      <h1 className="page-title">通知</h1>
       {notifications.length === 0 ? (
         <div className="no-notifications">
-          No notifications yet
+          暂无通知
         </div>
       ) : (
         <div className="notifications-list">
           {notifications.map(notification => (
             <div
-              key={notification.id}
+              key={notification._id}
               className={`notification-item ${notification.read ? 'read' : 'unread'}`}
               onClick={() => handleNotificationClick(notification)}
             >
-              <img
-                src={notification.actor.avatar || '/default-avatar.png'}
-                alt={notification.actor.username}
-                className="actor-avatar"
-              />
               <div className="notification-content">
                 <div className="notification-header">
-                  <span className="actor-name">{notification.actor.username}</span>
-                  <span className="notification-text">
-                    {getNotificationText(notification)}
-                  </span>
+                  <img
+                    src={notification.actor.avatar || '/default-avatar.png'}
+                    alt={notification.actor.username}
+                    className="actor-avatar"
+                  />
+                  <div className="notification-text">
+                    <span className="actor-name">{notification.actor.username}</span>
+                    {' '}
+                    {notification.type === 'like' && '赞了你的帖子'}
+                    {notification.type === 'comment' && '评论了你的帖子'}
+                    {notification.type === 'follow' && '关注了你'}
+                    {notification.type === 'mention' && '在帖子中提到了你'}
+                  </div>
                 </div>
                 {notification.post && (
                   <div className="post-preview">
@@ -143,7 +88,10 @@ function Notifications() {
                   </div>
                 )}
                 <div className="notification-time">
-                  {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(notification.createdAt), {
+                    addSuffix: true,
+                    locale: zhCN
+                  })}
                 </div>
               </div>
             </div>
