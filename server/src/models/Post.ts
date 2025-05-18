@@ -49,6 +49,8 @@ const postSchema = new mongoose.Schema(
       enum: ['public', 'followers', 'private'],
       default: 'public',
     },
+    hashtags: [{ type: String }],
+    mentions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,
@@ -59,6 +61,8 @@ const postSchema = new mongoose.Schema(
 postSchema.index({ content: 'text' });
 postSchema.index({ createdAt: -1 });
 postSchema.index({ author: 1, createdAt: -1 });
+postSchema.index({ hashtags: 1 });
+postSchema.index({ mentions: 1 });
 
 // Method to get post with populated fields
 postSchema.methods.getPopulatedPost = async function() {

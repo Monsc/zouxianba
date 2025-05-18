@@ -9,6 +9,11 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import PostDetail from './pages/PostDetail';
+import Discover from './pages/Discover';
+import Messages from './pages/Messages';
+import Chat from './pages/Chat';
+import HashtagPage from './pages/HashtagPage';
+import MentionsPage from './pages/MentionsPage';
 import './styles/global.css';
 
 function App() {
@@ -51,6 +56,46 @@ function App() {
               element={
                 <PrivateRoute>
                   <PostDetail />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/discover"
+              element={
+                <PrivateRoute>
+                  <Discover />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <PrivateRoute>
+                  <Messages />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages/:userId"
+              element={
+                <PrivateRoute>
+                  <Chat />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/hashtag/:tag"
+              element={
+                <PrivateRoute>
+                  <HashtagPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/mentions"
+              element={
+                <PrivateRoute>
+                  <MentionsPage />
                 </PrivateRoute>
               }
             />

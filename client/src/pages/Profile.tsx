@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getUserProfile, getUserPosts, followUser } from '../services/api';
+import { getUserProfile, getUserPosts, followUser, blockUser, unblockUser } from '../services/api';
 import PostCard from '../components/PostCard';
+import ReportModal from '../components/ReportModal';
 
 interface User {
   id: string;
@@ -41,6 +42,8 @@ function Profile() {
   const [error, setError] = useState<string | null>(null);
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
+  const [showReport, setShowReport] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   useEffect(() => {
     if (!userId) {
@@ -61,6 +64,12 @@ function Profile() {
       setIsLoading(false);
     });
   }, [userId, navigate]);
+
+  useEffect(() => {
+    if (currentUser && user) {
+      setIsBlocked(Array.isArray((currentUser as any).blocked) && (currentUser as any).blocked.includes(user.id));
+    }
+  }, [currentUser, user]);
 
   const handleFollow = async () => {
     if (!user) return;
@@ -88,6 +97,21 @@ function Profile() {
       }
       return post;
     }));
+  };
+
+  const handleBlock = async () => {
+    if (!user) return;
+    try {
+      if (isBlocked) {
+        await unblockUser(user.id);
+        setIsBlocked(false);
+      } else {
+        await blockUser(user.id);
+        setIsBlocked(true);
+      }
+    } catch (err) {
+      // 可选：错误提示
+    }
   };
 
   if (isLoading) {
@@ -150,12 +174,33 @@ function Profile() {
               </span>
             </div>
             {!isOwnProfile && (
-              <button
-                className={`btn ${user.isFollowing ? 'btn-secondary' : 'btn-primary'}`}
-                onClick={handleFollow}
-              >
-                {user.isFollowing ? 'Unfollow' : 'Follow'}
-              </button>
+              <div className="flex gap-2 mt-2">
+                <button
+                  className={`btn ${user.isFollowing ? 'btn-secondary' : 'btn-primary'}`}
+                  onClick={handleFollow}
+                >
+                  {user.isFollowing ? 'Unfollow' : 'Follow'}
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowReport(true)}
+                >
+                  举报
+                </button>
+                <button
+                  className={`btn ${isBlocked ? 'btn-error' : 'btn-secondary'}`}
+                  onClick={handleBlock}
+                >
+                  {isBlocked ? '取消屏蔽' : '屏蔽'}
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate(`/messages/${user.id}`)}
+                >
+                  发私信
+                </button>
+                <ReportModal open={showReport} onClose={() => setShowReport(false)} targetUser={user.id} />
+              </div>
             )}
           </div>
         </div>

@@ -8,6 +8,9 @@ import postRoutes from './routes/posts';
 import userRoutes from './routes/users';
 import notificationRoutes from './routes/notifications';
 import { errorHandler, notFound } from './middleware/errorHandler';
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import { Message } from './models/Message';
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -43,6 +46,50 @@ app.use('/api/health', (_req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
+const server = http.createServer(app);
+const io = new SocketIOServer(server, { cors: { origin: '*' } });
+
+const userSocketMap = new Map<string, string>(); // userId -> socketId
+
+io.on('connection', (socket) => {
+  let userId = '';
+  socket.on('login', (uid: string) => {
+    userId = uid;
+    userSocketMap.set(uid, socket.id);
+  });
+
+  socket.on('send_message', async (data) => {
+    // data: { to, content, contentType, imageUrl }
+    const msg = await Message.create({
+      from: userId,
+      to: data.to,
+      content: data.content,
+      contentType: data.contentType || 'text',
+      imageUrl: data.imageUrl,
+    });
+    // 推送给目标用户
+    const toSocket = userSocketMap.get(data.to);
+    if (toSocket) {
+      io.to(toSocket).emit('new_message', msg);
+    }
+    // 推送给自己（同步）
+    socket.emit('new_message', msg);
+  });
+
+  socket.on('read_messages', async (data) => {
+    // data: { from }
+    await Message.updateMany({ from: data.from, to: userId, read: false }, { read: true });
+    const toSocket = userSocketMap.get(data.from);
+    if (toSocket) {
+      io.to(toSocket).emit('messages_read', { from: userId });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    if (userId) userSocketMap.delete(userId);
+  });
+});
+
 // Connect to MongoDB
 const connectDB = async () => {
   try {
@@ -63,9 +110,6 @@ const connectDB = async () => {
 };
 
 // Start server
-const PORT = process.env.PORT || 5000;
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+server.listen(process.env.PORT || 5000, () => {
+  console.log('Server running');
 }); 

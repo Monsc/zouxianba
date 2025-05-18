@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getPost, getComments, createComment, likePost } from '../services/api';
 import PostCard from '../components/PostCard';
+import ReportModal from '../components/ReportModal';
 
 interface Comment {
   id: string;
@@ -43,8 +44,10 @@ function PostDetail() {
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user: currentUser } = useAuth();
   const navigate = useNavigate();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [reportCommentId, setReportCommentId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!postId) {
@@ -54,6 +57,20 @@ function PostDetail() {
 
     loadPost();
   }, [postId, navigate]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
+
+  const handleCommentFocus = () => {
+    if (textareaRef.current && window.innerWidth <= 600) {
+      setTimeout(() => {
+        textareaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
+  };
 
   const loadPost = async () => {
     try {
@@ -120,6 +137,11 @@ function PostDetail() {
     }
   };
 
+  // 过滤被屏蔽用户的评论
+  const visibleComments = currentUser && Array.isArray((currentUser as any).blocked)
+    ? comments.filter(comment => !(currentUser as any).blocked.includes(comment.author.id))
+    : comments;
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -146,16 +168,18 @@ function PostDetail() {
         <form onSubmit={handleCommentSubmit} className="comment-form">
           <div className="comment-input-container">
             <img
-              src={user?.avatar || '/default-avatar.png'}
-              alt={user?.username}
+              src={currentUser?.avatar || '/default-avatar.png'}
+              alt={currentUser?.username}
               className="avatar"
             />
             <textarea
+              ref={textareaRef}
               className="comment-input"
               placeholder="Write a comment..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               maxLength={280}
+              onFocus={handleCommentFocus}
             />
           </div>
           <button
@@ -168,8 +192,16 @@ function PostDetail() {
         </form>
 
         <div className="comments-list">
-          {comments.map(comment => (
-            <div key={comment.id} className="comment-card">
+          {visibleComments.map(comment => (
+            <div key={comment.id} className="comment-card relative">
+              <button
+                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors z-10"
+                onClick={() => setReportCommentId(comment.id)}
+                aria-label="举报评论"
+              >
+                <i className="icon-bell" />
+              </button>
+              <ReportModal open={reportCommentId === comment.id} onClose={() => setReportCommentId(null)} targetComment={comment.id} />
               <div className="comment-header">
                 <img
                   src={comment.author.avatar}

@@ -6,6 +6,7 @@ import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
 import { Request, Response } from '../types/express';
 import { upload } from '../middleware/upload';
+import { Notification } from '../models/Notification';
 
 const router = express.Router();
 
@@ -167,6 +168,14 @@ router.post('/:postId/like', auth, catchAsync(async (req: Request, res: Response
   const likeIndex = post.likes.indexOf(req.user.id);
   if (likeIndex === -1) {
     post.likes.push(req.user.id);
+    if (post.author.toString() !== req.user.id) {
+      await Notification.create({
+        type: 'like',
+        actor: req.user.id,
+        targetUser: post.author,
+        post: post._id,
+      });
+    }
   } else {
     post.likes.splice(likeIndex, 1);
   }
@@ -196,6 +205,16 @@ router.post('/:postId/comments', auth, catchAsync(async (req: Request, res: Resp
   await post.save();
 
   await comment.populate('author', 'username handle avatar isVerified');
+
+  if (post.author.toString() !== req.user.id) {
+    await Notification.create({
+      type: 'comment',
+      actor: req.user.id,
+      targetUser: post.author,
+      post: post._id,
+    });
+  }
+
   res.status(201).json(comment);
 }));
 
@@ -223,5 +242,62 @@ router.get('/:postId/comments', optionalAuth, catchAsync(async (req: Request, re
 
   res.json(comments);
 }));
+
+// 获取新帖数量
+router.get('/new-count', auth, catchAsync(async (req: Request, res: Response) => {
+  const since = req.query.since as string;
+  if (!since) return res.json({ count: 0 });
+  const sinceDate = new Date(since);
+  if (isNaN(sinceDate.getTime())) return res.status(400).json({ error: 'Invalid date' });
+
+  const count = await Post.countDocuments({
+    $or: [
+      { author: req.user.id },
+      { author: { $in: req.user.following } },
+    ],
+    visibility: { $in: ['public', 'followers'] },
+    createdAt: { $gt: sinceDate },
+  });
+  res.json({ count });
+}));
+
+// 获取热门话题
+router.get('/hashtags/trending', async (req: Request, res: Response) => {
+  try {
+    const hashtags = await Post.aggregate([
+      { $unwind: '$hashtags' },
+      { $group: { _id: '$hashtags', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    res.json(hashtags);
+  } catch (error) {
+    res.status(500).json({ message: '获取热门话题失败' });
+  }
+});
+
+// 获取话题相关帖子
+router.get('/hashtags/:tag', async (req: Request, res: Response) => {
+  try {
+    const posts = await Post.find({ hashtags: req.params.tag })
+      .populate('author', 'username avatar')
+      .sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: '获取话题帖子失败' });
+  }
+});
+
+// 获取用户提及
+router.get('/mentions', auth, async (req: Request, res: Response) => {
+  try {
+    const posts = await Post.find({ mentions: req.user._id })
+      .populate('author', 'username avatar')
+      .sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: '获取提及失败' });
+  }
+});
 
 export default router; 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getNotifications, markNotificationAsRead } from '../services/api';
+import { getNotifications, markNotificationAsRead, getUnreadNotificationCount } from '../services/api';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Notification {
@@ -28,6 +28,20 @@ function Notifications() {
 
   useEffect(() => {
     loadNotifications();
+  }, []);
+
+  // 进入页面自动标记所有未读为已读
+  useEffect(() => {
+    const markAllAsRead = async () => {
+      try {
+        const data = await getNotifications();
+        const unread = data.filter((n: any) => !n.read);
+        await Promise.all(unread.map((n: any) => markNotificationAsRead(n.id)));
+        // 刷新未读数
+        await getUnreadNotificationCount();
+      } catch {}
+    };
+    markAllAsRead();
   }, []);
 
   const loadNotifications = async () => {

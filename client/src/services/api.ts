@@ -130,6 +130,12 @@ export async function followUser(id: string) {
   });
 }
 
+export async function unfollowUser(id: string) {
+  return fetchApi(`/users/${id}/unfollow`, {
+    method: 'POST',
+  });
+}
+
 export async function updateProfile(data: {
   username?: string;
   email?: string;
@@ -210,4 +216,112 @@ export async function markNotificationAsRead(id: string) {
   return fetchApi(`/notifications/${id}/read`, {
     method: 'PUT',
   });
-} 
+}
+
+export async function getUnreadNotificationCount() {
+/**
+ * 获取推荐用户列表
+ */
+export const getRecommendedUsers = async () => {
+  try {
+    const response = await fetch(`${API_URL}/users/recommended`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch recommended users');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching recommended users:', error);
+    return [];
+  }
+};
+
+/**
+ * 获取热门话题列表
+ */
+export const getTrendingTopics = async () => {
+  try {
+    const response = await fetch(`${API_URL}/topics/trending`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch trending topics');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching trending topics:', error);
+    return [];
+  }
+};
+
+export async function getNewPostCount(since: string) {
+  return fetchApi<{ count: number }>(`/api/posts/new-count?since=${encodeURIComponent(since)}`);
+}
+
+export async function reportContent(data: { targetUser?: string; targetPost?: string; targetComment?: string; reason: string; detail?: string }) {
+  return fetchApi('/report', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function blockUser(userId: string) {
+  return fetchApi(`/block/${userId}`, { method: 'POST' });
+}
+
+export async function unblockUser(userId: string) {
+  return fetchApi(`/block/${userId}`, { method: 'DELETE' });
+}
+
+export async function getConversations() {
+  return fetchApi('/messages/conversations');
+}
+
+export async function getMessages(userId: string) {
+  return fetchApi(`/messages/${userId}`);
+}
+
+export async function sendMessage(userId: string, content: string) {
+  return fetchApi(`/messages/${userId}`, {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+  });
+}
+
+export async function getUnreadMessageCount() {
+  return fetchApi<{ count: number }>(`/messages/unread-count`);
+}
+
+// 获取热门话题
+export const getTrendingHashtags = async () => {
+  const response = await fetch('/api/posts/hashtags/trending');
+  if (!response.ok) throw new Error('获取热门话题失败');
+  return response.json();
+};
+
+// 获取话题相关帖子
+export const getHashtagPosts = async (tag: string) => {
+  const response = await fetch(`/api/posts/hashtags/${tag}`);
+  if (!response.ok) throw new Error('获取话题帖子失败');
+  return response.json();
+};
+
+// 获取用户提及
+export const getMentions = async () => {
+  const response = await fetch('/api/posts/mentions', {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  if (!response.ok) throw new Error('获取提及失败');
+  return response.json();
+}; 

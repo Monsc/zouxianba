@@ -3,11 +3,16 @@ import { Notification } from '../models/Notification';
 import { auth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { Request, Response } from '../types/express';
+import { Report } from '../models/Report';
 
 const router = express.Router();
 
-// 获取当前用户的所有通知
+// 获取当前用户的所有通知或未读数量
 router.get('/', auth, catchAsync(async (req: Request, res: Response) => {
+  if (req.query.unread === '1') {
+    const count = await Notification.countDocuments({ targetUser: req.user.id, read: false });
+    return res.json({ count });
+  }
   const notifications = await Notification.find({ targetUser: req.user.id })
     .sort({ createdAt: -1 })
     .populate('actor', 'username handle avatar')
@@ -24,6 +29,24 @@ router.put('/:id/read', auth, catchAsync(async (req: Request, res: Response) => 
   );
   if (!notification) return res.status(404).json({ error: 'Notification not found' });
   res.json(notification);
+}));
+
+// 举报内容
+router.post('/', auth, catchAsync(async (req: Request, res: Response) => {
+  const { targetUser, targetPost, targetComment, reason, detail } = req.body;
+  if (!reason) return res.status(400).json({ error: '举报原因必填' });
+  if (!targetUser && !targetPost && !targetComment) {
+    return res.status(400).json({ error: '必须指定举报对象' });
+  }
+  const report = await Report.create({
+    reporter: req.user.id,
+    targetUser,
+    targetPost,
+    targetComment,
+    reason,
+    detail,
+  });
+  res.status(201).json(report);
 }));
 
 export default router; 
