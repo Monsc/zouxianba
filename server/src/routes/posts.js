@@ -5,6 +5,8 @@ const { auth, optionalAuth } = require('../middleware/auth');
 const { catchAsync, AppError } = require('../middleware/errorHandler');
 const { upload } = require('../middleware/upload');
 const { Notification } = require('../models/Notification');
+const User = require('../models/User');
+const Tag = require('../models/Tag');
 
 const router = express.Router();
 
@@ -68,17 +70,59 @@ router.get('/user/:userId', optionalAuth, catchAsync(async (req, res) => {
 
 // Create post
 router.post('/', auth, upload.array('media', 4), catchAsync(async (req, res) => {
-  const { content, visibility } = req.body;
+  const { content, visibility, originalPostId } = req.body;
   let media = [];
   if (req.files && Array.isArray(req.files)) {
     media = req.files.map(file => '/uploads/' + file.filename);
   }
+
+  // Extract @mentions and #hashtags
+  const mentions = content.match(/@(\w+)/g)?.map(m => m.slice(1)) || [];
+  const hashtags = content.match(/#(\w+)/g)?.map(h => h.slice(1)) || [];
+  
+  // Find mentioned users
+  const mentionedUsers = await User.find({ handle: { $in: mentions } });
+  
   const post = await Post.create({
     author: req.user.id,
     content,
     media,
     visibility,
+    mentions: mentionedUsers.map(u => u._id),
+    hashtags,
+    originalPost: originalPostId
   });
+
+  // Update hashtag count
+  for (const hashtag of hashtags) {
+    await Tag.findOneAndUpdate(
+      { name: hashtag, type: 'hashtag' },
+      { 
+        $inc: { count: 1 },
+        $addToSet: { posts: post._id }
+      },
+      { upsert: true }
+    );
+  }
+
+  // If it's a repost, update original post repost count
+  if (originalPostId) {
+    await Post.findByIdAndUpdate(originalPostId, {
+      $inc: { repostCount: 1 },
+      $push: { 
+        reposts: {
+          user: req.user.id,
+          createdAt: new Date()
+        }
+      }
+    });
+  }
+
+  // Send notifications to mentioned users
+  for (const user of mentionedUsers) {
+    // Add notification sending logic here
+  }
+
   await post.populate('author', 'username handle avatar isVerified');
   res.status(201).json(post);
 }));
@@ -239,6 +283,59 @@ router.get('/:postId/comments', optionalAuth, catchAsync(async (req, res) => {
     });
 
   res.json(comments);
+}));
+
+// Repost post
+router.post('/:id/repost', auth, catchAsync(async (req, res) => {
+  const originalPost = await Post.findById(req.params.id);
+  if (!originalPost) {
+    return res.status(404).json({ message: 'Post not found' });
+  }
+
+  const post = await Post.create({
+    author: req.user.id,
+    content: req.body.content || '',
+    originalPost: originalPost._id
+  });
+
+  // Update original post repost count
+  await Post.findByIdAndUpdate(originalPost._id, {
+    $inc: { repostCount: 1 },
+    $push: {
+      reposts: {
+        user: req.user.id,
+        createdAt: new Date()
+      }
+    }
+  });
+
+  res.status(201).json(post);
+}));
+
+// Get post details
+router.get('/:id', optionalAuth, catchAsync(async (req, res) => {
+  const post = await Post.findById(req.params.id)
+    .populate('author', 'username handle avatar')
+    .populate('originalPost')
+    .populate('mentions', 'username handle avatar');
+  
+  if (!post) {
+    return res.status(404).json({ message: 'Post not found' });
+  }
+
+  res.json(post);
+}));
+
+// Get repost list
+router.get('/:id/reposts', optionalAuth, catchAsync(async (req, res) => {
+  const post = await Post.findById(req.params.id)
+    .populate('reposts.user', 'username handle avatar');
+  
+  if (!post) {
+    return res.status(404).json({ message: 'Post not found' });
+  }
+
+  res.json(post.reposts);
 }));
 
 module.exports = router; 

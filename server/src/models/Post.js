@@ -1,84 +1,74 @@
 const mongoose = require('mongoose');
 
-const postSchema = new mongoose.Schema(
-  {
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    content: {
-      type: String,
-      required: true,
-      maxlength: 280,
-    },
-    media: [{
-      type: String, // URL to media file
-      maxlength: 4, // Maximum 4 media items per post
-    }],
-    likes: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    }],
-    comments: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Comment',
-    }],
-    reposts: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    }],
-    isRepost: {
-      type: Boolean,
-      default: false,
-    },
-    originalPost: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Post',
-    },
-    isEdited: {
-      type: Boolean,
-      default: false,
-    },
-    isPinned: {
-      type: Boolean,
-      default: false,
-    },
-    visibility: {
-      type: String,
-      enum: ['public', 'followers', 'private'],
-      default: 'public',
-    },
-    hashtags: [{ type: String }],
-    mentions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+const postSchema = new mongoose.Schema({
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  {
-    timestamps: true,
+  content: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  images: [{
+    type: String
+  }],
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  comments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment'
+  }],
+  reposts: [{
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  repostCount: {
+    type: Number,
+    default: 0
+  },
+  originalPost: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post'
+  },
+  mentions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  hashtags: [{
+    type: String
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
-);
+});
 
-// Create indexes for search and sorting
-postSchema.index({ content: 'text' });
-postSchema.index({ createdAt: -1 });
+// 索引优化
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ hashtags: 1 });
 postSchema.index({ mentions: 1 });
+postSchema.index({ repostCount: -1 });
 
-// Method to get post with populated fields
-postSchema.methods.getPopulatedPost = async function() {
-  return this.populate([
-    {
-      path: 'author',
-      select: 'username handle avatar isVerified',
-    },
-    {
-      path: 'comments',
-      populate: {
-        path: 'author',
-        select: 'username handle avatar isVerified',
-      },
-    },
-  ]);
-};
+// 更新时自动更新 updatedAt
+postSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
 
-module.exports = { Post: mongoose.model('Post', postSchema) }; 
+const Post = mongoose.model('Post', postSchema);
+
+module.exports = Post; 

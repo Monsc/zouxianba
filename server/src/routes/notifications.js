@@ -65,4 +65,13 @@ router.delete('/:notificationId', auth, catchAsync(async (req, res) => {
   res.json({ message: 'Notification deleted' });
 }));
 
+// 获取未读通知数量
+router.get('/unread/count', auth, catchAsync(async (req, res) => {
+  const count = await Notification.countDocuments({
+    targetUser: req.user.id,
+    read: false,
+  });
+  res.json({ count });
+}));
+
 module.exports = router; 
