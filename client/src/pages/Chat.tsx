@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getMessages, sendMessage } from '../services/api';
+import { getMessages, sendMessage, sendImageMessage } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Picker } from 'emoji-mart';
 import io from 'socket.io-client';
@@ -85,23 +85,21 @@ function Chat() {
     if (!user?._id || !userId) return;
 
     if (image && socket) {
-      const formData = new FormData();
-      formData.append('image', image);
-      const res = await fetch(`/api/messages/${userId}/image`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        body: formData,
-      });
-      const msg = await res.json();
-      socket.emit('send_message', { to: userId, contentType: 'image', imageUrl: msg.imageUrl });
-      setImage(null);
-      setImagePreview(null);
+      try {
+        const msg = await sendImageMessage(userId, image);
+        socket.emit('send_message', { to: userId, contentType: 'image', imageUrl: msg.imageUrl });
+        setImage(null);
+        setImagePreview(null);
+      } catch (err) {
+        setError('发送图片失败');
+      }
       return;
     }
+
     if (!input.trim() || !socket) return;
     try {
-      await sendMessage(userId, input);
-      socket.emit('send_message', { to: userId, content: input, contentType: 'text' });
+      const msg = await sendMessage(userId, input);
+      socket.emit('send_message', { to: userId, content: msg.content, contentType: 'text' });
       setInput('');
     } catch (err) {
       setError('发送失败');
@@ -126,7 +124,7 @@ function Chat() {
   if (error) return <div className="error-message">{error}</div>;
 
   // 判断最后一条消息是否已读
-  const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
+  const lastMsg = messages[messages.length - 1] ?? null;
   const isLastRead = lastMsg?.from === user._id && lastMsg?.read;
 
   return (
