@@ -5,7 +5,7 @@ import { createPost } from '../services/api';
 
 function CreatePostBox() {
   const [content, setContent] = useState('');
-  const [media, setMedia] = useState<File[]>([]);
+  const [images, setImages] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -33,7 +33,7 @@ function CreatePostBox() {
       return;
     }
 
-    if (!content.trim() && media.length === 0) {
+    if (!content.trim() && images.length === 0) {
       setError('请输入内容或上传媒体');
       return;
     }
@@ -41,9 +41,9 @@ function CreatePostBox() {
     try {
       setIsLoading(true);
       setError(null);
-      await createPost({ content, media });
+      await createPost({ content, images });
       setContent('');
-      setMedia([]);
+      setImages([]);
     } catch (err) {
       setError('发帖失败，请重试');
       console.error('Error creating post:', err);
@@ -54,7 +54,7 @@ function CreatePostBox() {
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length + media.length > 4) {
+    if (files.length + images.length > 4) {
       setError('最多只能上传4个文件');
       return;
     }
@@ -67,11 +67,11 @@ function CreatePostBox() {
       return true;
     });
 
-    setMedia([...media, ...validFiles]);
+    setImages([...images, ...validFiles]);
   };
 
   const removeMedia = (index: number) => {
-    setMedia(media.filter((_, i) => i !== index));
+    setImages(images.filter((_, i) => i !== index));
   };
 
   if (!user) return null;
@@ -107,9 +107,9 @@ function CreatePostBox() {
           onFocus={handleFocus}
         />
 
-        {media.length > 0 && (
+        {images.length > 0 && (
           <div className="media-preview grid grid-cols-2 gap-2 mt-2">
-            {media.map((file, index) => (
+            {images.map((file, index) => (
               <div key={index} className="media-item relative group rounded-lg overflow-hidden shadow">
                 <img
                   src={URL.createObjectURL(file)}
@@ -147,7 +147,7 @@ function CreatePostBox() {
           <button
             type="submit"
             className="btn btn-primary px-6 py-2 rounded-full font-bold text-white bg-primary hover:bg-primary-hover dark:bg-primary dark:hover:bg-blue-400 shadow transition-all disabled:opacity-60"
-            disabled={isLoading || (!content.trim() && media.length === 0)}
+            disabled={isLoading || (!content.trim() && images.length === 0)}
           >
             {isLoading ? '发布中...' : '发布'}
           </button>
