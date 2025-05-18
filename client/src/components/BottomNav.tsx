@@ -17,14 +17,14 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="bottom-nav">
+    <nav className="bottom-nav fixed bottom-0 left-0 right-0 z-40 flex justify-around items-center bg-white/95 dark:bg-[#15202b]/95 border-t border-gray-200 dark:border-gray-800 shadow-lg md:hidden transition-colors duration-200">
       {navItems.map(item => (
         <button
           key={item.path}
-          className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+          className={`nav-item flex flex-col items-center gap-1 px-2 py-1 rounded-lg transition-colors duration-150 text-xs font-medium ${location.pathname === item.path ? 'active text-primary' : 'text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-primary'}`}
           onClick={() => navigate(item.path)}
         >
-          <i className={item.icon} />
+          <i className={`${item.icon} text-xl`} />
           <span>{item.label}</span>
         </button>
       ))}
