@@ -25,8 +25,16 @@ console.log('Environment check:', {
 // Create Express app
 const app = express();
 
-// Enable CORS for all origins
-app.use(cors());
+// Enable CORS for specific origins
+app.use(cors({
+  origin: [
+    'https://zouxianba.vercel.app', // 正式前端域名
+    'http://localhost:3000',        // 本地开发
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Middleware
 app.use(express.json());
@@ -47,7 +55,17 @@ app.use(notFound);
 app.use(errorHandler);
 
 const server = http.createServer(app);
-const io = new SocketIOServer(server, { cors: { origin: '*' } });
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: [
+      'https://zouxianba.vercel.app',
+      'http://localhost:3000',
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }
+});
 
 const userSocketMap = new Map<string, string>(); // userId -> socketId
 
