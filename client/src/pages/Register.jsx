@@ -32,7 +32,7 @@ function Register() {
       navigate('/');
     } catch (err) {
       setError('Registration failed. Please try again.');
-      console.error('Registration error in Register.tsx:', err);
+      console.error('Registration error in Register.jsx:', err);
     } finally {
       setIsLoading(false);
     }
