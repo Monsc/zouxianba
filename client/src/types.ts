@@ -6,15 +6,19 @@ export interface Message {
   timestamp: string;
 }
 
+export interface Author {
+  _id: string;
+  id: string;
+  username: string;
+  handle: string;
+  avatar: string;
+}
+
 export interface Post {
+  _id: string;
   id: string;
   content: string;
-  author: {
-    id: string;
-    username: string;
-    handle: string;
-    avatar: string;
-  };
+  author: Author;
   media?: string[];
   likes: number;
   comments: number;
