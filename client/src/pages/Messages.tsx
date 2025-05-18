@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getConversations } from '../services/api';
+import { Message } from '../types';
 
 function Messages() {
-  const [conversations, setConversations] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ function Messages() {
       setIsLoading(true);
       setError(null);
       const data = await getConversations();
-      setConversations(data);
+      setMessages(data);
     } catch (err) {
       setError('加载会话失败');
     } finally {
@@ -31,11 +32,11 @@ function Messages() {
   return (
     <div className="messages-page max-w-lg mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6 text-primary">私信</h1>
-      {conversations.length === 0 ? (
+      {messages.length === 0 ? (
         <div className="text-gray-400 text-center py-8">暂无会话</div>
       ) : (
         <div className="space-y-4">
-          {conversations.map(conv => (
+          {messages.map(conv => (
             <div
               key={conv.user?._id || conv.user?.id}
               className="conversation-card flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"

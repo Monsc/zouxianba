@@ -304,8 +304,8 @@ export async function getConversations() {
   return fetchApi<ConversationListItem[]>('/api/messages/conversations');
 }
 
-export async function getMessages(userId: string) {
-  return fetchApi(`/api/messages/${userId}`);
+export async function getMessages(userId: string): Promise<Message[]> {
+  return fetchApi<Message[]>(`/api/messages/${userId}`);
 }
 
 export async function sendMessage(userId: string, content: string) {
