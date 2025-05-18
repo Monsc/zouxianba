@@ -43,7 +43,7 @@ const HashtagList: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-primary font-medium">#{topic.tag}</span>
-                {topic.name && (
+                {topic?.name && (
                   <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                     {topic.name}
                   </span>

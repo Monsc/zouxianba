@@ -59,7 +59,7 @@ const TopicPage: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           #{topic.tag}
         </h1>
-        {topic.name && (
+        {topic?.name && (
           <h2 className="text-xl text-gray-700 dark:text-gray-300 mt-1">
             {topic.name}
           </h2>
