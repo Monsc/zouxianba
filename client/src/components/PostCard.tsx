@@ -15,11 +15,11 @@ function PostCard({ post, onLike }: PostCardProps) {
 
   const handleAuthorClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/profile/${post.author._id}`);
+    navigate(`/profile/${post.author.id}`);
   };
 
   const handlePostClick = () => {
-    navigate(`/post/${post._id}`);
+    navigate(`/post/${post.id}`);
   };
 
   return (
@@ -88,7 +88,7 @@ function PostCard({ post, onLike }: PostCardProps) {
             className="action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-500 dark:text-gray-400"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/post/${post._id}`);
+              navigate(`/post/${post.id}`);
             }}
           >
             <i className="icon-comment text-lg" />
