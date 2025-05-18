@@ -39,9 +39,9 @@ const app = express();
 // Enable CORS for specific origins
 app.use(cors({
   origin: [
-    'https://zouxianba-client.onrender.com', // 新增生产前端域名
-    'https://zouxianba.vercel.app', // 保留原有
-    'http://localhost:3000',        // 本地开发
+    'http://localhost:3000',
+    'https://zouxianba-client.onrender.com',
+    'https://zouxianba.vercel.app',
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
