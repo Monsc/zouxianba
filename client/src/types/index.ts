@@ -66,7 +66,7 @@ export interface Notification {
 export interface Topic {
   _id: string;
   tag: string;
-  name: string;
+  name?: string;
   description?: string;
   followers: string[];
   followed: boolean;
