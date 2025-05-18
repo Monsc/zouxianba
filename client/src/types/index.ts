@@ -70,6 +70,7 @@ export interface Topic {
   description?: string;
   followers: string[];
   followed: boolean;
+  count: number;
   createdAt: string;
   updatedAt: string;
 }
