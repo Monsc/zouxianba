@@ -75,7 +75,7 @@ function PostCard({ post, onLike }: PostCardProps) {
 
         <div className="post-actions flex gap-6 mt-2">
           <button
-            className={`action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-pink-50 dark:hover:bg-pink-900/30 ${post.isLiked ? 'text-pink-600 dark:text-pink-400' : 'text-gray-500 dark:text-gray-400'}`}
+            className={`action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-pink-50 dark:hover:bg-pink-900/30 ${post.liked ? 'text-pink-600 dark:text-pink-400' : 'text-gray-500 dark:text-gray-400'}`}
             onClick={(e) => {
               e.stopPropagation();
               onLike?.();

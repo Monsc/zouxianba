@@ -17,7 +17,7 @@ interface Comment {
   };
   createdAt: string;
   likes: number;
-  isLiked: boolean;
+  liked: boolean;
   replies: number;
 }
 
@@ -34,7 +34,7 @@ interface Post {
   createdAt: string;
   likes: number;
   comments: number;
-  isLiked: boolean;
+  liked: boolean;
 }
 
 function PostDetail() {
@@ -97,8 +97,8 @@ function PostDetail() {
       await likePost(post.id);
       setPost({
         ...post,
-        likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-        isLiked: !post.isLiked
+        likes: post.liked ? post.likes - 1 : post.likes + 1,
+        liked: !post.liked
       });
     } catch (err) {
       console.error('Error liking post:', err);
@@ -106,16 +106,13 @@ function PostDetail() {
   };
 
   const handleCommentLike = async (commentId: string) => {
-    setComments(comments.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
-          isLiked: !comment.isLiked
-        };
-      }
-      return comment;
-    }));
+    setComments(comments.map(c => 
+      c._id === commentId ? {
+        ...c,
+        likes: c.liked ? c.likes - 1 : c.likes + 1,
+        liked: !c.liked
+      } : c
+    ));
   };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -238,7 +235,7 @@ function PostDetail() {
 
               <div className="comment-actions">
                 <button
-                  className={`action-button ${comment.isLiked ? 'liked' : ''}`}
+                  className={`action-button ${comment.liked ? 'liked' : ''}`}
                   onClick={() => handleCommentLike(comment.id)}
                 >
                   <i className="icon-heart" />

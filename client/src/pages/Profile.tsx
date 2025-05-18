@@ -31,7 +31,7 @@ interface Post {
   createdAt: string;
   likes: number;
   comments: number;
-  isLiked: boolean;
+  liked: boolean;
 }
 
 function Profile() {
@@ -87,16 +87,13 @@ function Profile() {
   };
 
   const handleLike = async (postId: string) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-          isLiked: !post.isLiked
-        };
-      }
-      return post;
-    }));
+    setPosts(posts.map(p => 
+      p._id === postId ? {
+        ...p,
+        likes: p.liked ? p.likes - 1 : p.likes + 1,
+        liked: !p.liked
+      } : p
+    ));
   };
 
   const handleBlock = async () => {
