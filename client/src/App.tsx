@@ -24,7 +24,7 @@ function App() {
     const fetchUnread = async () => {
       try {
         const data = await getUnreadNotificationCount();
-        setUnreadCount(data || 0);
+        setUnreadCount(data.count || 0);
       } catch {}
     };
 
