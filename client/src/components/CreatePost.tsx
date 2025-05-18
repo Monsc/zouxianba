@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { createPost } from '../services/api';
 import { Mention, MentionsInput } from 'react-mentions';
@@ -75,7 +75,9 @@ const CreatePost: React.FC = () => {
           <div className="flex-1">
             <MentionsInput
               value={content}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setContent(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                setContent(e.target.value)
+              }
               placeholder="有什么新鲜事？"
               className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               style={{
@@ -172,4 +174,4 @@ const CreatePost: React.FC = () => {
   );
 };
 
-export default CreatePost; 
+export default CreatePost;

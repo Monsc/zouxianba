@@ -25,7 +25,9 @@ function App() {
       try {
         const data = await getUnreadNotificationCount();
         setUnreadCount(data.count || 0);
-      } catch {}
+      } catch (error) {
+        console.error('Failed to fetch unread notifications:', error);
+      }
     };
 
     fetchUnread();
@@ -123,4 +125,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

@@ -20,7 +20,7 @@ function Header() {
             />
           </div>
         )}
-        
+
         {/* 中间应用名 */}
         <h1
           className="header-title text-2xl font-extrabold text-primary cursor-pointer tracking-tight hover:opacity-80 transition-opacity duration-150"
@@ -36,4 +36,4 @@ function Header() {
   );
 }
 
-export default Header; 
+export default Header;

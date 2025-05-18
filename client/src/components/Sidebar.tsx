@@ -29,8 +29,10 @@ function Sidebar() {
   return (
     <aside className="sidebar-left hidden lg:flex flex-col w-64 p-4 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-[#192734]">
       {/* 用户信息 */}
-      <div className="user-info flex items-center gap-3 mb-6 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-           onClick={() => navigate(`/profile/${user._id}`)}>
+      <div
+        className="user-info flex items-center gap-3 mb-6 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+        onClick={() => navigate(`/profile/${user._id}`)}
+      >
         <img
           src={user.avatar || '/default-avatar.png'}
           alt={user.username}
@@ -80,4 +82,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar; 
+export default Sidebar;

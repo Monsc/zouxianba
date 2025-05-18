@@ -1,1 +1,1 @@
-declare module 'react-mentions'; 
+declare module 'react-mentions';

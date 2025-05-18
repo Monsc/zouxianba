@@ -30,9 +30,7 @@ function Notifications() {
       try {
         await markNotificationAsRead(notification._id);
         setNotifications(prev =>
-          prev.map(n =>
-            n._id === notification._id ? { ...n, read: true } : n
-          )
+          prev.map(n => (n._id === notification._id ? { ...n, read: true } : n))
         );
       } catch (error) {
         console.error('Failed to mark notification as read:', error);
@@ -55,9 +53,7 @@ function Notifications() {
     <div className="notifications-page">
       <h1 className="page-title">通知</h1>
       {notifications.length === 0 ? (
-        <div className="no-notifications">
-          暂无通知
-        </div>
+        <div className="no-notifications">暂无通知</div>
       ) : (
         <div className="notifications-list">
           {notifications.map(notification => (
@@ -74,8 +70,7 @@ function Notifications() {
                     className="actor-avatar"
                   />
                   <div className="notification-text">
-                    <span className="actor-name">{notification.actor.username}</span>
-                    {' '}
+                    <span className="actor-name">{notification.actor.username}</span>{' '}
                     {notification.type === 'like' && '赞了你的帖子'}
                     {notification.type === 'comment' && '评论了你的帖子'}
                     {notification.type === 'follow' && '关注了你'}
@@ -83,14 +78,12 @@ function Notifications() {
                   </div>
                 </div>
                 {notification.post && (
-                  <div className="post-preview">
-                    {notification.post.content}
-                  </div>
+                  <div className="post-preview">{notification.post.content}</div>
                 )}
                 <div className="notification-time">
                   {formatDistanceToNow(new Date(notification.createdAt), {
                     addSuffix: true,
-                    locale: zhCN
+                    locale: zhCN,
                   })}
                 </div>
               </div>
@@ -102,4 +95,4 @@ function Notifications() {
   );
 }
 
-export default Notifications; 
+export default Notifications;

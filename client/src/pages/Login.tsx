@@ -36,11 +36,7 @@ function Login() {
       <div className="auth-container">
         <h1 className="auth-title">Login to ZouXianBa</h1>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -49,7 +45,7 @@ function Login() {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
             />
@@ -61,24 +57,20 @@ function Login() {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary w-full"
-            disabled={isLoading}
-          >
+          <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <p className="auth-footer">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-primary">
+        <p className="text-center text-gray-600 mt-4">
+          Don&apos;t have an account?{' '}
+          <Link to="/register" className="text-primary hover:underline">
             Sign up
           </Link>
         </p>
@@ -87,4 +79,4 @@ function Login() {
   );
 }
 
-export default Login; 
+export default Login;

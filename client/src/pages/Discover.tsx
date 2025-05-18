@@ -20,7 +20,7 @@ function Discover() {
       setIsLoading(true);
       const [recommendedUsers, trendingTopics] = await Promise.all([
         getRecommendedUsers(),
-        getTrendingTopics()
+        getTrendingTopics(),
       ]);
       setUsers(recommendedUsers);
       setTopics(trendingTopics);
@@ -72,7 +72,7 @@ function Discover() {
                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                     : 'bg-primary text-white hover:bg-primary-hover'
                 }`}
-                onClick={async (e) => {
+                onClick={async e => {
                   e.stopPropagation();
                   if (!user._id) return;
                   try {
@@ -81,9 +81,11 @@ function Discover() {
                     } else {
                       await followUser(user._id);
                     }
-                    setUsers(prev => prev.map(u =>
-                      u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
-                    ));
+                    setUsers(prev =>
+                      prev.map(u =>
+                        u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
+                      )
+                    );
                   } catch (err) {
                     // 错误处理
                   }
@@ -120,4 +122,4 @@ function Discover() {
   );
 }
 
-export default Discover; 
+export default Discover;

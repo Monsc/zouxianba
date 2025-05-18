@@ -20,12 +20,14 @@ function Followers() {
     fetch(`/api/users/${userId}/followers`)
       .then(res => res.json())
       .then(data => {
-        setFollowers(data.map((u: any) => ({
-          id: u._id,
-          username: u.username,
-          handle: u.handle,
-          avatar: u.avatar
-        })));
+        setFollowers(
+          data.map((u: any) => ({
+            id: u._id,
+            username: u.username,
+            handle: u.handle,
+            avatar: u.avatar,
+          }))
+        );
         setIsLoading(false);
       })
       .catch(() => {
@@ -42,9 +44,20 @@ function Followers() {
       <h2>Followers</h2>
       <ul>
         {followers.map(user => (
-          <li key={user._id} onClick={() => navigate(`/profile/${user._id}`)} style={{cursor:'pointer'}}>
-            <img src={user.avatar || '/default-avatar.png'} alt={user.username} width={32} height={32} />
-            <span>{user.username} (@{user.handle})</span>
+          <li
+            key={user._id}
+            onClick={() => navigate(`/profile/${user._id}`)}
+            style={{ cursor: 'pointer' }}
+          >
+            <img
+              src={user.avatar || '/default-avatar.png'}
+              alt={user.username}
+              width={32}
+              height={32}
+            />
+            <span>
+              {user.username} (@{user.handle})
+            </span>
           </li>
         ))}
       </ul>
@@ -52,4 +65,4 @@ function Followers() {
   );
 }
 
-export default Followers; 
+export default Followers;

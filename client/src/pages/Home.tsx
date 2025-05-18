@@ -6,12 +6,12 @@ import PostCard from '../components/PostCard';
 import CreatePostBox from '../components/CreatePostBox';
 import PullToRefresh from 'react-pull-to-refresh';
 
-interface Post {
-  id: string;
+interface ApiPost {
+  _id: string;
   content: string;
   media?: string[];
   author: {
-    id: string;
+    _id: string;
     username: string;
     handle: string;
     avatar: string;
@@ -20,6 +20,10 @@ interface Post {
   likes: number;
   comments: number;
   liked: boolean;
+}
+
+interface Post extends Omit<ApiPost, '_id'> {
+  id: string;
 }
 
 function Home() {
@@ -53,7 +57,9 @@ function Home() {
       try {
         const data = await getNewPostCount(lastCheck);
         setNewCount(data.count);
-      } catch {}
+      } catch (error) {
+        console.error('Failed to fetch new post count:', error);
+      }
     }, 20000); // 20秒轮询
     return () => clearInterval(timer);
   }, [lastCheck]);
@@ -62,8 +68,8 @@ function Home() {
     try {
       setIsLoading(true);
       const data = await getFeed();
-      const postsWithId = (data as any[]).map(post => ({ ...post, id: post._id }));
-      setPosts(postsWithId as Post[]);
+      const postsWithId = (data as ApiPost[]).map(post => ({ ...post, id: post._id }));
+      setPosts(postsWithId);
       setError(null);
     } catch (err) {
       setError('加载失败，请稍后重试');
@@ -76,13 +82,17 @@ function Home() {
   const handleLike = async (postId: string) => {
     try {
       await likePost(postId);
-      setPosts(posts.map(p => 
-        p._id === postId ? {
-          ...p,
-          likes: p.liked ? p.likes - 1 : p.likes + 1,
-          liked: !p.liked
-        } : p
-      ));
+      setPosts(
+        posts.map(p =>
+          p.id === postId
+            ? {
+                ...p,
+                likes: p.liked ? p.likes - 1 : p.likes + 1,
+                liked: !p.liked,
+              }
+            : p
+        )
+      );
     } catch (err) {
       console.error('Error liking post:', err);
     }
@@ -112,7 +122,7 @@ function Home() {
       )}
       {/* 发帖框 */}
       <CreatePostBox />
-      
+
       {/* 信息流 */}
       <PullToRefresh onRefresh={handleRefresh} className="pt-2" resistance={2}>
         {isLoading ? (
@@ -124,13 +134,11 @@ function Home() {
         ) : posts.length === 0 ? (
           <div className="text-gray-400 text-center py-8">暂无帖子</div>
         ) : (
-          posts.map(post => (
-            <PostCard key={post._id} post={post} onLike={handleLike} />
-          ))
+          posts.map(post => <PostCard key={post.id} post={post} onLike={handleLike} />)
         )}
       </PullToRefresh>
     </div>
   );
 }
 
-export default Home; 
+export default Home;

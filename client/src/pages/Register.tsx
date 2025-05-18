@@ -43,11 +43,7 @@ function Register() {
       <div className="auth-container">
         <h1 className="auth-title">Create Account</h1>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -56,7 +52,7 @@ function Register() {
               type="text"
               id="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               placeholder="Choose a username"
               required
             />
@@ -68,7 +64,7 @@ function Register() {
               type="text"
               id="handle"
               value={handle}
-              onChange={(e) => setHandle(e.target.value)}
+              onChange={e => setHandle(e.target.value)}
               placeholder="Choose a handle (e.g. @username)"
               required
             />
@@ -80,7 +76,7 @@ function Register() {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
             />
@@ -92,17 +88,13 @@ function Register() {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               placeholder="Choose a password"
               required
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary w-full"
-            disabled={isLoading}
-          >
+          <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
             {isLoading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
@@ -118,4 +110,4 @@ function Register() {
   );
 }
 
-export default Register; 
+export default Register;

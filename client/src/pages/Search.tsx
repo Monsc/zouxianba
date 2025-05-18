@@ -45,10 +45,7 @@ function Search() {
       try {
         setIsLoading(true);
         setError(null);
-        const [users, posts] = await Promise.all([
-          searchUsers(query),
-          searchPosts(query)
-        ]);
+        const [users, posts] = await Promise.all([searchUsers(query), searchPosts(query)]);
         setResults({ users, posts });
       } catch (err) {
         setError('Failed to search. Please try again.');
@@ -70,15 +67,11 @@ function Search() {
             className="search-input"
             placeholder="Search users and posts..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value)}
           />
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         {isLoading ? (
           <div className="loading-spinner" />
@@ -115,21 +108,18 @@ function Search() {
                 <h2 className="section-title">Posts</h2>
                 <div className="posts-list">
                   {results.posts.map(post => (
-                    <PostCard
-                      key={post._id}
-                      post={post}
-                      onLike={() => {}}
-                    />
+                    <PostCard key={post._id} post={post} onLike={() => {}} />
                   ))}
                 </div>
               </div>
             )}
 
-            {query.trim().length >= 2 && !isLoading && results.users.length === 0 && results.posts.length === 0 && (
-              <div className="no-results">
-                No results found for "{query}"
-              </div>
-            )}
+            {query.trim().length >= 2 &&
+              !isLoading &&
+              results.users.length === 0 &&
+              results.posts.length === 0 && (
+                <div className="no-results">No results found for "{query}"</div>
+              )}
           </>
         )}
       </div>
@@ -137,4 +127,4 @@ function Search() {
   );
 }
 
-export default Search; 
+export default Search;

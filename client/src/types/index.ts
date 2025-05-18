@@ -93,4 +93,4 @@ export interface Conversation {
   user: User;
   lastMessage: Message;
   unreadCount: number;
-} 
+}

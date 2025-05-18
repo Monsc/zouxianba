@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useTheme } from '../contexts/ThemeContext';
 
-const Mentions: React.FC = () => {
+const Mentions: React.FC = (): JSX.Element => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +45,9 @@ const Mentions: React.FC = () => {
   }
 
   return (
-    <div className={`container mx-auto px-4 py-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+    <div
+      className={`container mx-auto px-4 py-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
+    >
       <h1 className="text-2xl font-bold mb-6">Mentions</h1>
       {posts.length === 0 ? (
         <div className="text-center py-8">
@@ -53,7 +55,7 @@ const Mentions: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {posts.map((post) => (
+          {posts.map(post => (
             <PostCard key={post._id} post={post} />
           ))}
         </div>
@@ -62,4 +64,4 @@ const Mentions: React.FC = () => {
   );
 };
 
-export default Mentions; 
+export default Mentions;

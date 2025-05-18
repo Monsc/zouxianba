@@ -45,10 +45,7 @@ function PostDetail() {
     if (!postId) return;
     try {
       setIsLoading(true);
-      const [postData, commentsData] = await Promise.all([
-        getPost(postId),
-        getComments(postId)
-      ]);
+      const [postData, commentsData] = await Promise.all([getPost(postId), getComments(postId)]);
       setPost(postData);
       setComments(commentsData);
       setError(null);
@@ -65,24 +62,32 @@ function PostDetail() {
 
     try {
       await likePost(post._id);
-      setPost(prev => prev ? {
-        ...prev,
-        likes: prev.liked ? prev.likes - 1 : prev.likes + 1,
-        liked: !prev.liked
-      } : null);
+      setPost(prev =>
+        prev
+          ? {
+              ...prev,
+              likes: prev.liked ? prev.likes - 1 : prev.likes + 1,
+              liked: !prev.liked,
+            }
+          : null
+      );
     } catch (err) {
       console.error('Error liking post:', err);
     }
   };
 
   const handleCommentLike = async (commentId: string) => {
-    setComments(comments.map(c => 
-      c._id === commentId ? {
-        ...c,
-        likes: c.liked ? c.likes - 1 : c.likes + 1,
-        liked: !c.liked
-      } : c
-    ));
+    setComments(
+      comments.map(c =>
+        c._id === commentId
+          ? {
+              ...c,
+              likes: c.liked ? c.likes - 1 : c.likes + 1,
+              liked: !c.liked,
+            }
+          : c
+      )
+    );
   };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -93,10 +98,14 @@ function PostDetail() {
       const comment = await createComment(postId, { content: newComment });
       setComments([comment, ...comments]);
       setNewComment('');
-      setPost(prev => prev ? {
-        ...prev,
-        comments: prev.comments + 1
-      } : null);
+      setPost(prev =>
+        prev
+          ? {
+              ...prev,
+              comments: prev.comments + 1,
+            }
+          : null
+      );
     } catch (err) {
       console.error('Error creating comment:', err);
     }
@@ -142,16 +151,12 @@ function PostDetail() {
               className="comment-input"
               placeholder="Write a comment..."
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              onChange={e => setNewComment(e.target.value)}
               maxLength={280}
               onFocus={handleCommentFocus}
             />
           </div>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={!newComment.trim()}
-          >
+          <button type="submit" className="btn btn-primary" disabled={!newComment.trim()}>
             Comment
           </button>
         </form>
@@ -166,7 +171,11 @@ function PostDetail() {
               >
                 <i className="icon-bell" />
               </button>
-              <ReportModal open={reportCommentId === comment._id} onClose={() => setReportCommentId(null)} targetComment={comment._id} />
+              <ReportModal
+                open={reportCommentId === comment._id}
+                onClose={() => setReportCommentId(null)}
+                targetComment={comment._id}
+              />
               <div className="comment-header">
                 <img
                   src={comment.author.avatar}
@@ -222,4 +231,4 @@ function PostDetail() {
   );
 }
 
-export default PostDetail; 
+export default PostDetail;

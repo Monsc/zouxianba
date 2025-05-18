@@ -46,7 +46,10 @@ function PostCard({ post, onLike }: PostCardProps) {
           />
           <div className="post-meta flex-1">
             <div className="post-author flex items-center gap-2">
-              <span className="username font-bold text-md hover:underline" onClick={handleAuthorClick}>
+              <span
+                className="username font-bold text-md hover:underline"
+                onClick={handleAuthorClick}
+              >
                 {post.author.username}
               </span>
               <span className="handle text-gray-400 text-sm">@{post.author.handle}</span>
@@ -75,8 +78,10 @@ function PostCard({ post, onLike }: PostCardProps) {
 
         <div className="post-actions flex gap-6 mt-2">
           <button
-            className={`action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-pink-50 dark:hover:bg-pink-900/30 ${post.liked ? 'text-pink-600 dark:text-pink-400' : 'text-gray-500 dark:text-gray-400'}`}
-            onClick={(e) => {
+            className={`action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-pink-50 dark:hover:bg-pink-900/30 ${
+              post.liked ? 'text-pink-600 dark:text-pink-400' : 'text-gray-500 dark:text-gray-400'
+            }`}
+            onClick={e => {
               e.stopPropagation();
               onLike?.();
             }}
@@ -86,7 +91,7 @@ function PostCard({ post, onLike }: PostCardProps) {
           </button>
           <button
             className="action-button flex items-center gap-1 px-3 py-1 rounded-full transition-colors duration-150 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-500 dark:text-gray-400"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               navigate(`/post/${post._id}`);
             }}
@@ -100,4 +105,4 @@ function PostCard({ post, onLike }: PostCardProps) {
   );
 }
 
-export default PostCard; 
+export default PostCard;

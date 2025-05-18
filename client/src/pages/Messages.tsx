@@ -68,7 +68,9 @@ function Messages() {
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <p className="text-gray-600 dark:text-gray-300 truncate">
-                      {conv.lastMessage?.contentType === 'image' ? '图片消息' : conv.lastMessage?.content}
+                      {conv.lastMessage?.contentType === 'image'
+                        ? '图片消息'
+                        : conv.lastMessage?.content}
                     </p>
                     {conv.unreadCount > 0 && (
                       <span className="bg-primary text-white text-xs px-2 py-1 rounded-full">
@@ -86,4 +88,4 @@ function Messages() {
   );
 }
 
-export default Messages; 
+export default Messages;

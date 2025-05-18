@@ -104,17 +104,9 @@ function Settings() {
       <div className="settings-container">
         <h1 className="settings-title">Settings</h1>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
-        {success && (
-          <div className="success-message">
-            {success}
-          </div>
-        )}
+        {success && <div className="success-message">{success}</div>}
 
         <form onSubmit={handleProfileUpdate} className="settings-form">
           <h2>Profile Settings</h2>
@@ -123,16 +115,15 @@ function Settings() {
             <label htmlFor="avatar">Profile Picture</label>
             <div className="avatar-upload">
               <img
-                src={formData.avatar ? URL.createObjectURL(formData.avatar) : user?.avatar || '/default-avatar.png'}
+                src={
+                  formData.avatar
+                    ? URL.createObjectURL(formData.avatar)
+                    : user?.avatar || '/default-avatar.png'
+                }
                 alt="Profile"
                 className="avatar-preview"
               />
-              <input
-                type="file"
-                id="avatar"
-                accept="image/*"
-                onChange={handleAvatarChange}
-              />
+              <input type="file" id="avatar" accept="image/*" onChange={handleAvatarChange} />
             </div>
           </div>
 
@@ -193,11 +184,7 @@ function Settings() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isLoading}
-          >
+          <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
@@ -241,20 +228,13 @@ function Settings() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isLoading}
-          >
+          <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Updating...' : 'Update Password'}
           </button>
         </form>
 
         <div className="settings-actions">
-          <button
-            className="btn btn-secondary"
-            onClick={handleLogout}
-          >
+          <button className="btn btn-secondary" onClick={handleLogout}>
             Logout
           </button>
         </div>
@@ -263,4 +243,4 @@ function Settings() {
   );
 }
 
-export default Settings; 
+export default Settings;

@@ -29,11 +29,11 @@ const PostList: React.FC<PostListProps> = ({ posts, loading, error }) => {
 
   return (
     <div className="space-y-4">
-      {posts.map((post) => (
+      {posts.map(post => (
         <PostCard key={post._id} post={post} />
       ))}
     </div>
   );
 };
 
-export default PostList; 
+export default PostList;

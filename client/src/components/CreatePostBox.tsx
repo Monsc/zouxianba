@@ -102,7 +102,7 @@ function CreatePostBox() {
           className="post-input w-full min-h-[80px] rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#15202b] p-3 text-md resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-all"
           placeholder="有什么新鲜事？"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={e => setContent(e.target.value)}
           maxLength={280}
           onFocus={handleFocus}
         />
@@ -110,7 +110,10 @@ function CreatePostBox() {
         {images.length > 0 && (
           <div className="media-preview grid grid-cols-2 gap-2 mt-2">
             {images.map((file, index) => (
-              <div key={index} className="media-item relative group rounded-lg overflow-hidden shadow">
+              <div
+                key={index}
+                className="media-item relative group rounded-lg overflow-hidden shadow"
+              >
                 <img
                   src={URL.createObjectURL(file)}
                   alt={`Media ${index + 1}`}
@@ -157,4 +160,4 @@ function CreatePostBox() {
   );
 }
 
-export default CreatePostBox; 
+export default CreatePostBox;

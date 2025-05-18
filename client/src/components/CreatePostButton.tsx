@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CreatePostBox from './CreatePostBox';
 
@@ -7,7 +6,6 @@ function CreatePostButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -35,8 +33,15 @@ function CreatePostButton() {
       </button>
 
       {isModalOpen && (
-        <div className="modal-overlay fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-fadeIn" onClick={handleClose}>
-          <div className="modal bg-white dark:bg-[#192734] rounded-2xl shadow-2xl p-6 w-full max-w-lg relative animate-slideUp" onClick={e => e.stopPropagation()} aria-hidden={isClosing}>
+        <div
+          className="modal-overlay fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-fadeIn"
+          onClick={handleClose}
+        >
+          <div
+            className="modal bg-white dark:bg-[#192734] rounded-2xl shadow-2xl p-6 w-full max-w-lg relative animate-slideUp"
+            onClick={e => e.stopPropagation()}
+            aria-hidden={isClosing}
+          >
             <div className="modal-header flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-primary">发帖</h2>
               <button
@@ -55,4 +60,4 @@ function CreatePostButton() {
   );
 }
 
-export default CreatePostButton; 
+export default CreatePostButton;

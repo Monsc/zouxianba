@@ -23,18 +23,20 @@ const HashtagList: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="animate-pulse space-y-2">
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
-      ))}
-    </div>;
+    return (
+      <div className="animate-pulse space-y-2">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        ))}
+      </div>
+    );
   }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">热门话题</h2>
       <div className="space-y-3">
-        {topics.map((topic) => (
+        {topics.map(topic => (
           <Link
             key={topic.tag}
             to={`/topic/${topic.tag}`}
@@ -54,9 +56,7 @@ const HashtagList: React.FC = () => {
               </span>
             </div>
             {topic.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                {topic.description}
-              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{topic.description}</p>
             )}
           </Link>
         ))}
@@ -65,4 +65,4 @@ const HashtagList: React.FC = () => {
   );
 };
 
-export default HashtagList; 
+export default HashtagList;

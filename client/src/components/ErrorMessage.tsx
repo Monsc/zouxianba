@@ -12,4 +12,4 @@ function ErrorMessage({ message }: ErrorMessageProps) {
   );
 }
 
-export default ErrorMessage; 
+export default ErrorMessage;

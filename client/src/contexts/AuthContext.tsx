@@ -24,10 +24,10 @@ export function AuthProvider({ children }: PropsWithChildren<{}>) {
         try {
           const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/me`, {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           });
-          
+
           if (response.ok) {
             const data = await response.json();
             setUser(data);
@@ -96,4 +96,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}

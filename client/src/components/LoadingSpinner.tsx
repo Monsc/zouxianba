@@ -8,4 +8,4 @@ function LoadingSpinner() {
   );
 }
 
-export default LoadingSpinner; 
+export default LoadingSpinner;

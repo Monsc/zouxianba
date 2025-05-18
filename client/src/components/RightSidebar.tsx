@@ -8,7 +8,6 @@ function RightSidebar() {
   const [users, setUsers] = useState<User[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +19,7 @@ function RightSidebar() {
       setIsLoading(true);
       const [recommendedUsers, trendingTopics] = await Promise.all([
         getRecommendedUsers(),
-        getTrendingTopics()
+        getTrendingTopics(),
       ]);
       setUsers(recommendedUsers);
       setTopics(trendingTopics);
@@ -81,7 +80,7 @@ function RightSidebar() {
                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                     : 'bg-primary text-white hover:bg-primary-hover'
                 }`}
-                onClick={async (e) => {
+                onClick={async e => {
                   e.stopPropagation();
                   try {
                     if (user.isFollowing) {
@@ -89,9 +88,11 @@ function RightSidebar() {
                     } else {
                       await followUser(user._id);
                     }
-                    setUsers(prev => prev.map(u =>
-                      u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
-                    ));
+                    setUsers(prev =>
+                      prev.map(u =>
+                        u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
+                      )
+                    );
                   } catch (err) {
                     // 可选：弹出错误提示
                   }
@@ -126,4 +127,4 @@ function RightSidebar() {
   );
 }
 
-export default RightSidebar; 
+export default RightSidebar;

@@ -15,24 +15,24 @@ function Layout() {
         <div className="flex">
           {/* 左侧边栏 */}
           <Sidebar />
-          
+
           {/* 主内容区 */}
           <main className="flex-1 max-w-2xl mx-auto px-4">
             <Outlet />
           </main>
-          
+
           {/* 右侧边栏 */}
           <RightSidebar />
         </div>
       </div>
-      
+
       {/* 移动端底部导航 */}
       <BottomNav />
-      
+
       {/* 移动端发帖按钮 */}
       <CreatePostButton />
     </div>
   );
 }
 
-export default Layout; 
+export default Layout;

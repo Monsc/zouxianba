@@ -22,17 +22,16 @@ function Profile() {
       navigate('/');
       return;
     }
-    Promise.all([
-      getUserProfile(userId),
-      getUserPosts(userId)
-    ]).then(([profile, posts]) => {
-      setUser(profile);
-      setPosts(posts);
-      setIsLoading(false);
-    }).catch(() => {
-      setError('Failed to load profile.');
-      setIsLoading(false);
-    });
+    Promise.all([getUserProfile(userId), getUserPosts(userId)])
+      .then(([profile, posts]) => {
+        setUser(profile);
+        setPosts(posts);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to load profile.');
+        setIsLoading(false);
+      });
   }, [userId, navigate]);
 
   useEffect(() => {
@@ -46,24 +45,32 @@ function Profile() {
 
     try {
       await followUser(user._id);
-      setUser(prev => prev ? {
-        ...prev,
-        followers: prev.isFollowing ? prev.followers - 1 : prev.followers + 1,
-        isFollowing: !prev.isFollowing
-      } : null);
+      setUser(prev =>
+        prev
+          ? {
+              ...prev,
+              followers: prev.isFollowing ? prev.followers - 1 : prev.followers + 1,
+              isFollowing: !prev.isFollowing,
+            }
+          : null
+      );
     } catch (err) {
       console.error('Error following user:', err);
     }
   };
 
   const handleLike = async (postId: string) => {
-    setPosts(posts.map(p => 
-      p._id === postId ? {
-        ...p,
-        likes: p.liked ? p.likes - 1 : p.likes + 1,
-        liked: !p.liked
-      } : p
-    ));
+    setPosts(
+      posts.map(p =>
+        p._id === postId
+          ? {
+              ...p,
+              likes: p.liked ? p.likes - 1 : p.likes + 1,
+              liked: !p.liked,
+            }
+          : p
+      )
+    );
   };
 
   const handleBlock = async () => {
@@ -148,10 +155,7 @@ function Profile() {
                 >
                   {user.isFollowing ? 'Unfollow' : 'Follow'}
                 </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowReport(true)}
-                >
+                <button className="btn btn-secondary" onClick={() => setShowReport(true)}>
                   举报
                 </button>
                 <button
@@ -166,7 +170,11 @@ function Profile() {
                 >
                   发私信
                 </button>
-                <ReportModal open={showReport} onClose={() => setShowReport(false)} targetUser={user._id} />
+                <ReportModal
+                  open={showReport}
+                  onClose={() => setShowReport(false)}
+                  targetUser={user._id}
+                />
               </div>
             )}
           </div>
@@ -175,15 +183,11 @@ function Profile() {
 
       <div className="profile-posts">
         {posts.map(post => (
-          <PostCard
-            key={post._id}
-            post={post}
-            onLike={() => handleLike(post._id)}
-          />
+          <PostCard key={post._id} post={post} onLike={() => handleLike(post._id)} />
         ))}
       </div>
     </div>
   );
 }
 
-export default Profile; 
+export default Profile;

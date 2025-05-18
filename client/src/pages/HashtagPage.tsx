@@ -4,7 +4,7 @@ import { getTrendingTopics } from '../services/api';
 import PostList from '../components/PostList';
 import { Post, Topic } from '../types';
 
-const TopicPage: React.FC = () => {
+const TopicPage: React.FC = (): JSX.Element => {
   const { tag } = useParams<{ tag: string }>();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -38,11 +38,13 @@ const TopicPage: React.FC = () => {
   }, [tag]);
 
   if (loading) {
-    return <div className="animate-pulse space-y-4">
-      {[...Array(3)].map((_, i) => (
-        <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-      ))}
-    </div>;
+    return (
+      <div className="animate-pulse space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+        ))}
+      </div>
+    );
   }
 
   if (error) {
@@ -56,23 +58,15 @@ const TopicPage: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          #{topic.tag}
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">#{topic.tag}</h1>
         {topic?.name && (
-          <h2 className="text-xl text-gray-700 dark:text-gray-300 mt-1">
-            {topic.name}
-          </h2>
+          <h2 className="text-xl text-gray-700 dark:text-gray-300 mt-1">{topic.name}</h2>
         )}
         {topic.description && (
-          <p className="text-gray-500 dark:text-gray-400 mt-2">
-            {topic.description}
-          </p>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">{topic.description}</p>
         )}
         <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-500 dark:text-gray-400">
-            {topic.followers.length} 人关注
-          </span>
+          <span className="text-gray-500 dark:text-gray-400">{topic.followers.length} 人关注</span>
           <button
             className={`px-4 py-2 rounded-full ${
               topic.followed
@@ -93,4 +87,4 @@ const TopicPage: React.FC = () => {
   );
 };
 
-export default TopicPage; 
+export default TopicPage;

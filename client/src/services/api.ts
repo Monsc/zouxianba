@@ -19,10 +19,7 @@ const getCsrfToken = () => {
   return '';
 };
 
-async function fetchApi<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem('token');
   let headers: HeadersInit = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -63,7 +60,10 @@ async function fetchApi<T>(
 }
 
 // Auth
-export async function login(email: string, password: string): Promise<{ user: User; token: string }> {
+export async function login(
+  email: string,
+  password: string
+): Promise<{ user: User; token: string }> {
   return fetchApi<{ user: User; token: string }>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
@@ -96,7 +96,9 @@ export async function getPost(id: string): Promise<Post> {
   return fetchApi<Post>(`/api/posts/${id}`);
 }
 
-export async function createPost(data: { content: string; images?: File[] } | FormData): Promise<Post> {
+export async function createPost(
+  data: { content: string; images?: File[] } | FormData
+): Promise<Post> {
   if (data instanceof FormData) {
     return fetchApi<Post>('/api/posts', {
       method: 'POST',
@@ -124,7 +126,10 @@ export async function getComments(postId: string): Promise<Comment[]> {
   return fetchApi<Comment[]>(`/api/posts/${postId}/comments`);
 }
 
-export async function createComment(postId: string, data: { content: string; images?: File[] } | FormData): Promise<Comment> {
+export async function createComment(
+  postId: string,
+  data: { content: string; images?: File[] } | FormData
+): Promise<Comment> {
   if (data instanceof FormData) {
     return fetchApi<Comment>(`/api/posts/${postId}/comments`, {
       method: 'POST',
@@ -163,12 +168,16 @@ export async function unfollowUser(id: string): Promise<void> {
   });
 }
 
-export async function updateProfile(data: {
-  username?: string;
-  email?: string;
-  bio?: string;
-  avatar?: File;
-} | FormData): Promise<User> {
+export async function updateProfile(
+  data:
+    | {
+        username?: string;
+        email?: string;
+        bio?: string;
+        avatar?: File;
+      }
+    | FormData
+): Promise<User> {
   if (data instanceof FormData) {
     return fetchApi<User>('/api/users/profile', {
       method: 'PUT',
@@ -236,12 +245,12 @@ export async function getNewPostCount(since: string): Promise<{ count: number }>
   return fetchApi<{ count: number }>(`/api/posts/new/count?since=${encodeURIComponent(since)}`);
 }
 
-export async function reportContent(data: { 
-  targetUser?: string; 
-  targetPost?: string; 
-  targetComment?: string; 
-  reason: string; 
-  detail?: string 
+export async function reportContent(data: {
+  targetUser?: string;
+  targetPost?: string;
+  targetComment?: string;
+  reason: string;
+  detail?: string;
 }): Promise<void> {
   return fetchApi<void>('/api/reports', {
     method: 'POST',
@@ -292,4 +301,4 @@ export async function getUnreadMessageCount(): Promise<number> {
 
 export async function getMentions(): Promise<User[]> {
   return fetchApi<User[]>('/api/mentions');
-} 
+}

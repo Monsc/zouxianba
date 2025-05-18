@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getMessages, sendMessage, sendImageMessage } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Picker } from 'emoji-mart';
 import io from 'socket.io-client';
 import { Message } from '../types';
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || window.location.origin.replace(/^http/, 'ws');
+const SOCKET_URL =
+  process.env.REACT_APP_SOCKET_URL || window.location.origin.replace(/^http/, 'ws');
 
 function Chat() {
   const { userId } = useParams<{ userId: string }>();
@@ -21,6 +22,7 @@ function Chat() {
   const [socket, setSocket] = useState<any>(null);
   const [readMap, setReadMap] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // 初始化Socket.io连接
@@ -28,7 +30,9 @@ function Chat() {
     const s = io(SOCKET_URL, { transports: ['websocket'] });
     s.emit('login', user._id);
     setSocket(s);
-    return () => { s.disconnect(); };
+    return () => {
+      s.disconnect();
+    };
   }, [user]);
 
   useEffect(() => {
@@ -50,8 +54,12 @@ function Chat() {
   }, [socket, userId]);
 
   useEffect(() => {
-    if (userId) loadMessages();
-  }, [userId]);
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    loadMessages();
+  }, [user, navigate, loadMessages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -145,23 +153,37 @@ function Chat() {
                   className="max-w-[60%] rounded-lg shadow border border-gray-200 dark:border-gray-700"
                 />
               ) : (
-                <div className={`inline-block px-4 py-2 rounded-2xl shadow text-sm max-w-[70%] ${msg.from === user._id ? 'bg-primary text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}>
+                <div
+                  className={`inline-block px-4 py-2 rounded-2xl shadow text-sm max-w-[70%] ${
+                    msg.from === user._id
+                      ? 'bg-primary text-white'
+                      : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                  }`}
+                >
                   {msg.content}
-                  <div className="text-xs text-gray-400 mt-1 text-right">{msg.createdAt && new Date(msg.createdAt).toLocaleTimeString()}</div>
+                  <div className="text-xs text-gray-400 mt-1 text-right">
+                    {msg.createdAt && new Date(msg.createdAt).toLocaleTimeString()}
+                  </div>
                 </div>
               )}
             </div>
           ))
         )}
         <div ref={messagesEndRef} />
-        {isLastRead && (
-          <div className="text-xs text-green-500 text-right pr-2">已读</div>
-        )}
+        {isLastRead && <div className="text-xs text-green-500 text-right pr-2">已读</div>}
       </div>
       {imagePreview && (
         <div className="mb-2 flex items-center gap-2">
           <img src={imagePreview} alt="预览" className="w-24 h-24 object-cover rounded-lg border" />
-          <button className="btn btn-error" onClick={() => { setImage(null); setImagePreview(null); }}>移除</button>
+          <button
+            className="btn btn-error"
+            onClick={() => {
+              setImage(null);
+              setImagePreview(null);
+            }}
+          >
+            移除
+          </button>
         </div>
       )}
       <form onSubmit={handleSend} className="flex gap-2 items-center">
@@ -170,7 +192,12 @@ function Chat() {
         </button>
         {showEmoji && (
           <div className="absolute bottom-20 left-4 z-50">
-            <Picker onSelect={handleEmojiSelect} theme="auto" showPreview={false} showSkinTones={false} />
+            <Picker
+              onSelect={handleEmojiSelect}
+              theme="auto"
+              showPreview={false}
+              showSkinTones={false}
+            />
           </div>
         )}
         <label className="cursor-pointer text-2xl">
@@ -197,4 +224,4 @@ function Chat() {
   );
 }
 
-export default Chat; 
+export default Chat;
