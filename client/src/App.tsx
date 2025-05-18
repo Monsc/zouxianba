@@ -13,7 +13,7 @@ import Discover from './pages/Discover';
 import Messages from './pages/Messages';
 import Chat from './pages/Chat';
 import HashtagPage from './pages/HashtagPage';
-import MentionsPage from './pages/MentionsPage';
+import Mentions from './pages/Mentions';
 import './styles/global.css';
 
 function App() {
@@ -95,7 +95,7 @@ function App() {
               path="/mentions"
               element={
                 <PrivateRoute>
-                  <MentionsPage />
+                  <Mentions />
                 </PrivateRoute>
               }
             />
