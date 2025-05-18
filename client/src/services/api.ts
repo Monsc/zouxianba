@@ -317,11 +317,5 @@ export const getHashtagPosts = async (tag: string) => {
 
 // 获取用户提及
 export const getMentions = async () => {
-  const response = await fetch('/api/posts/mentions', {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  });
-  if (!response.ok) throw new Error('获取提及失败');
-  return response.json();
+  return fetchApi<Post[]>('/api/posts/mentions');
 }; 
