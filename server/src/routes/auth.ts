@@ -5,6 +5,7 @@ import { auth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
 import { Request, Response } from '../types/express';
+import { upload } from '../middleware/upload';
 
 const router = express.Router();
 
@@ -73,9 +74,9 @@ router.get('/me', auth, catchAsync(async (req: Request, res: Response) => {
 }));
 
 // Update user profile
-router.patch('/me', auth, catchAsync(async (req: Request, res: Response) => {
+router.patch('/me', auth, upload.single('avatar'), catchAsync(async (req: Request, res: Response) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ['username', 'email', 'password', 'avatar', 'bio', 'location', 'website'];
+  const allowedUpdates = ['username', 'email', 'password', 'bio', 'location', 'website'];
   const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
   if (!isValidOperation) {
@@ -85,6 +86,11 @@ router.patch('/me', auth, catchAsync(async (req: Request, res: Response) => {
   updates.forEach(update => {
     req.user[update] = req.body[update];
   });
+
+  // 处理头像上传
+  if (req.file) {
+    req.user.avatar = '/uploads/' + req.file.filename;
+  }
 
   await req.user.save();
   res.json((req.user as any).getPublicProfile());
