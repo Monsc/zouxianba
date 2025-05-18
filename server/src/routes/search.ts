@@ -1,7 +1,7 @@
 import express from 'express';
 import { User } from '../models/User';
 import { Post } from '../models/Post';
-import { Request, Response } from '../types/express';
+import { Request, Response } from 'express';
 import { catchAsync } from '../middleware/errorHandler';
 
 const router = express.Router();

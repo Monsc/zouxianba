@@ -4,7 +4,7 @@ import { Comment } from '../models/Comment';
 import { auth, optionalAuth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
-import { Request, Response } from '../types/express';
+import { Request, Response } from 'express';
 import { upload } from '../middleware/upload';
 import { Notification } from '../models/Notification';
 

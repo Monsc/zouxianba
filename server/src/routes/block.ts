@@ -2,7 +2,7 @@ import express from 'express';
 import { User } from '../models/User';
 import { auth } from '../middleware/auth';
 import { catchAsync } from '../middleware/errorHandler';
-import { Request, Response } from '../types/express';
+import { Request, Response } from 'express';
 
 const router = express.Router();
 
