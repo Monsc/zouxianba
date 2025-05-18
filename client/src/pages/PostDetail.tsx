@@ -94,7 +94,7 @@ function PostDetail() {
     if (!post) return;
 
     try {
-      await likePost(post.id);
+      await likePost(post._id);
       setPost({
         ...post,
         likes: post.liked ? post.likes - 1 : post.likes + 1,
@@ -136,7 +136,7 @@ function PostDetail() {
 
   // 过滤被屏蔽用户的评论
   const visibleComments = currentUser && Array.isArray((currentUser as any).blocked)
-    ? comments.filter(comment => !(currentUser as any).blocked.includes(comment.author.id))
+    ? comments.filter(comment => !(currentUser as any).blocked.includes(comment.author._id))
     : comments;
 
   if (isLoading) {
@@ -190,21 +190,21 @@ function PostDetail() {
 
         <div className="comments-list">
           {visibleComments.map(comment => (
-            <div key={comment.id} className="comment-card relative">
+            <div key={comment._id} className="comment-card relative">
               <button
                 className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors z-10"
-                onClick={() => setReportCommentId(comment.id)}
+                onClick={() => setReportCommentId(comment._id)}
                 aria-label="举报评论"
               >
                 <i className="icon-bell" />
               </button>
-              <ReportModal open={reportCommentId === comment.id} onClose={() => setReportCommentId(null)} targetComment={comment.id} />
+              <ReportModal open={reportCommentId === comment._id} onClose={() => setReportCommentId(null)} targetComment={comment._id} />
               <div className="comment-header">
                 <img
                   src={comment.author.avatar}
                   alt={comment.author.username}
                   className="avatar"
-                  onClick={() => navigate(`/profile/${comment.author.id}`)}
+                  onClick={() => navigate(`/profile/${comment.author._id}`)}
                 />
                 <div className="comment-meta">
                   <div className="comment-author">
@@ -236,7 +236,7 @@ function PostDetail() {
               <div className="comment-actions">
                 <button
                   className={`action-button ${comment.liked ? 'liked' : ''}`}
-                  onClick={() => handleCommentLike(comment.id)}
+                  onClick={() => handleCommentLike(comment._id)}
                 >
                   <i className="icon-heart" />
                   <span>{comment.likes}</span>

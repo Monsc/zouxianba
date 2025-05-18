@@ -38,9 +38,9 @@ function Messages() {
         <div className="space-y-4">
           {messages.map(conv => (
             <div
-              key={conv.user?._id || conv.user?.id}
+              key={conv.user?._id}
               className="conversation-card flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-              onClick={() => navigate(`/messages/${conv.user?._id || conv.user?.id}`)}
+              onClick={() => navigate(`/messages/${conv.user?._id}`)}
             >
               <img
                 src={conv.user?.avatar || '/default-avatar.png'}

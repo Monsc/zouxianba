@@ -125,7 +125,7 @@ function Home() {
           <div className="text-gray-400 text-center py-8">暂无帖子</div>
         ) : (
           posts.map(post => (
-            <PostCard key={post.id} post={post} onLike={handleLike} />
+            <PostCard key={post._id} post={post} onLike={handleLike} />
           ))
         )}
       </PullToRefresh>

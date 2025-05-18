@@ -67,7 +67,7 @@ function Profile() {
 
   useEffect(() => {
     if (currentUser && user) {
-      setIsBlocked(Array.isArray((currentUser as any).blocked) && (currentUser as any).blocked.includes(user.id));
+      setIsBlocked(Array.isArray((currentUser as any).blocked) && (currentUser as any).blocked.includes(user._id));
     }
   }, [currentUser, user]);
 
@@ -75,7 +75,7 @@ function Profile() {
     if (!user) return;
 
     try {
-      await followUser(user.id);
+      await followUser(user._id);
       setUser({
         ...user,
         followers: user.isFollowing ? user.followers - 1 : user.followers + 1,
@@ -100,10 +100,10 @@ function Profile() {
     if (!user) return;
     try {
       if (isBlocked) {
-        await unblockUser(user.id);
+        await unblockUser(user._id);
         setIsBlocked(false);
       } else {
-        await blockUser(user.id);
+        await blockUser(user._id);
         setIsBlocked(true);
       }
     } catch (err) {
@@ -127,7 +127,7 @@ function Profile() {
     );
   }
 
-  const isOwnProfile = currentUser?.id === user.id;
+  const isOwnProfile = currentUser?._id === user._id;
 
   return (
     <div className="profile-page">
@@ -192,11 +192,11 @@ function Profile() {
                 </button>
                 <button
                   className="btn btn-primary"
-                  onClick={() => navigate(`/messages/${user.id}`)}
+                  onClick={() => navigate(`/messages/${user._id}`)}
                 >
                   发私信
                 </button>
-                <ReportModal open={showReport} onClose={() => setShowReport(false)} targetUser={user.id} />
+                <ReportModal open={showReport} onClose={() => setShowReport(false)} targetUser={user._id} />
               </div>
             )}
           </div>
@@ -206,9 +206,9 @@ function Profile() {
       <div className="profile-posts">
         {posts.map(post => (
           <PostCard
-            key={post.id}
+            key={post._id}
             post={post}
-            onLike={() => handleLike(post.id)}
+            onLike={() => handleLike(post._id)}
           />
         ))}
       </div>

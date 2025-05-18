@@ -42,7 +42,7 @@ function Followers() {
       <h2>Followers</h2>
       <ul>
         {followers.map(user => (
-          <li key={user.id} onClick={() => navigate(`/profile/${user.id}`)} style={{cursor:'pointer'}}>
+          <li key={user._id} onClick={() => navigate(`/profile/${user._id}`)} style={{cursor:'pointer'}}>
             <img src={user.avatar || '/default-avatar.png'} alt={user.username} width={32} height={32} />
             <span>{user.username} (@{user.handle})</span>
           </li>

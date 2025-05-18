@@ -16,7 +16,7 @@ function Header() {
               src={user.avatar || '/default-avatar.png'}
               alt={user.username}
               className="header-avatar w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 object-cover shadow hover:scale-105 transition-transform duration-200 cursor-pointer"
-              onClick={() => navigate(`/profile/${user.id}`)}
+              onClick={() => navigate(`/profile/${user._id}`)}
             />
           </div>
         )}

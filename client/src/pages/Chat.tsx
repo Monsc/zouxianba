@@ -25,7 +25,7 @@ function Chat() {
     // 初始化Socket.io连接
     if (!user) return;
     const s = io(SOCKET_URL, { transports: ['websocket'] });
-    s.emit('login', user.id);
+    s.emit('login', user._id);
     setSocket(s);
     return () => { s.disconnect(); };
     // eslint-disable-next-line
@@ -124,7 +124,7 @@ function Chat() {
 
   // 判断最后一条消息是否已读
   const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
-  const isLastRead = lastMsg && lastMsg.from === user.id && lastMsg.read;
+  const isLastRead = lastMsg && lastMsg.from === user._id && lastMsg.read;
 
   return (
     <div className="chat-page max-w-lg mx-auto flex flex-col h-[80vh] p-4">
@@ -134,8 +134,8 @@ function Chat() {
         ) : (
           messages.map(msg => (
             <div
-              key={msg._id || msg.id}
-              className={`flex ${msg.from === user.id ? 'justify-end' : 'justify-start'} mb-2`}
+              key={msg._id}
+              className={`flex ${msg.from === user._id ? 'justify-end' : 'justify-start'} mb-2`}
             >
               {msg.contentType === 'image' ? (
                 <img
@@ -144,7 +144,7 @@ function Chat() {
                   className="max-w-[60%] rounded-lg shadow border border-gray-200 dark:border-gray-700"
                 />
               ) : (
-                <div className={`inline-block px-4 py-2 rounded-2xl shadow text-sm max-w-[70%] ${msg.from === user.id ? 'bg-primary text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}>
+                <div className={`inline-block px-4 py-2 rounded-2xl shadow text-sm max-w-[70%] ${msg.from === user._id ? 'bg-primary text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}>
                   {msg.content}
                   <div className="text-xs text-gray-400 mt-1 text-right">{msg.createdAt && new Date(msg.createdAt).toLocaleTimeString()}</div>
                 </div>
