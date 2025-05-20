@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import Avatar from './Avatar';
-import Button from './Button';
+import { Button } from './button';
 
 const NavItem = ({ to, icon, label, active }) => (
   <Link to={to} className="block">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Avatar } from './Avatar';
-import { Button } from './Button';
+import { Button } from '@/components/ui/button';
 import { FollowService, User } from '@/services/FollowService';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';

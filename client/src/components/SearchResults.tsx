@@ -4,7 +4,7 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { SearchService } from '@/services/SearchService';
 import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
-import { Button } from './Button';
+import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from './LoadingSpinner';
 import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';

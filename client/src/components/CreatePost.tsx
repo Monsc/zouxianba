@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Button } from './Button';
+import { Button } from '@/components/ui/button';
 import { Icon } from './Icon';
 import { Avatar } from './Avatar';
 import { useAuth } from '@/hooks/useAuth';

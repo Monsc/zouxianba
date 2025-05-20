@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { Icon } from './Icon';
-import { Button } from './Button';
+import { Button } from '@/components/ui/button';
 import { ShareService, ShareOptions } from '@/services/ShareService';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
