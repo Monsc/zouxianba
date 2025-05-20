@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Feed } from '@/components/Feed';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { PullToRefresh } from 'react-pull-to-refresh-js';
+import PullToRefresh from 'react-pull-to-refresh-jsx';
 
 const Home = () => {
   const router = useRouter();
@@ -35,6 +35,7 @@ const Home = () => {
         onRefresh={handleRefresh}
         pullDownThreshold={100}
         resistance={2.5}
+        refreshing={refreshing}
       >
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Feed />
