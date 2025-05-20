@@ -1,0 +1,119 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      rollback:
+        description: 'Rollback to previous version'
+        required: false
+        type: boolean
+        default: false
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - production
+          - staging
+        default: 'production'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install Dependencies
+        run: |
+          cd client && npm install
+          cd ../server && npm install
+          
+      - name: Run Tests
+        run: |
+          cd client && npm test
+          cd ../server && npm test
+          
+      - name: Lint
+        run: |
+          cd client && npm run lint
+          cd ../server && npm run lint
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Build Client
+        run: |
+          cd client
+          npm install
+          npm run build
+          
+      - name: Build Server
+        run: |
+          cd server
+          npm install
+          npm run build
+          
+      - name: Upload Client Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-build
+          path: client/.next
+          
+      - name: Upload Server Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-build
+          path: server/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Client Build
+        uses: actions/download-artifact@v4
+        with:
+          name: client-build
+          path: client/.next
+          
+      - name: Download Server Build
+        uses: actions/download-artifact@v4
+        with:
+          name: server-build
+          path: server/dist
+          
+      - name: Deploy to Production
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+        run: |
+          if [ "${{ github.event.inputs.rollback }}" = "true" ]; then
+            echo "Rolling back to previous version..."
+            ssh -i $DEPLOY_KEY $USERNAME@$HOST "cd /app && docker-compose down && git reset --hard HEAD^ && docker-compose up -d"
+          else
+            echo "Deploying to ${{ github.event.inputs.environment || 'production' }}..."
+            ssh -i $DEPLOY_KEY $USERNAME@$HOST "cd /app && git pull && docker-compose down && docker-compose up -d"
+          fi 
