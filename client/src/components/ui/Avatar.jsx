@@ -1,56 +1,38 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import * as React from "react";
+import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import { cn } from "@/lib/utils";
 
-const Avatar = ({
-  src,
-  alt,
-  size = 'md',
-  username,
-  linkToProfile = true,
-  className = '',
-  ...props
-}) => {
-  const sizeClasses = {
-    xs: 'w-6 h-6',
-    sm: 'w-8 h-8',
-    md: 'w-10 h-10',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16',
-  };
+const Avatar = React.forwardRef(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Root
+    ref={ref}
+    className={cn(
+      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+      className
+    )}
+    {...props}
+  />
+));
+Avatar.displayName = AvatarPrimitive.Root.displayName;
 
-  const avatarContent = (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className={`relative ${sizeClasses[size]} ${className}`}
-      {...props}
-    >
-      {src ? (
-        <img
-          src={src}
-          alt={alt || username}
-          className="w-full h-full rounded-full object-cover"
-        />
-      ) : (
-        <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-          <span className="text-lg font-bold text-gray-500 dark:text-gray-400">
-            {username?.charAt(0).toUpperCase()}
-          </span>
-        </div>
-      )}
-    </motion.div>
-  );
+const AvatarImage = React.forwardRef(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Image
+    ref={ref}
+    className={cn("aspect-square h-full w-full", className)}
+    {...props}
+  />
+));
+AvatarImage.displayName = AvatarPrimitive.Image.displayName;
 
-  if (linkToProfile && username) {
-    return (
-      <Link to={`/profile/${username}`} className="block">
-        {avatarContent}
-      </Link>
-    );
-  }
+const AvatarFallback = React.forwardRef(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Fallback
+    ref={ref}
+    className={cn(
+      "flex h-full w-full items-center justify-center rounded-full bg-muted",
+      className
+    )}
+    {...props}
+  />
+));
+AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
-  return avatarContent;
-};
-
-export default Avatar; 
+export { Avatar, AvatarImage, AvatarFallback }; 
