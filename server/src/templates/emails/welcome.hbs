@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .welcome-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .welcome-header h1 {
+      color: #2563eb;
+      margin-bottom: 10px;
+    }
+    .features {
+      margin: 30px 0;
+      padding: 20px;
+      background-color: #f3f4f6;
+      border-radius: 4px;
+    }
+    .feature-item {
+      margin-bottom: 15px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .feature-item:before {
+      content: "✓";
+      color: #2563eb;
+      position: absolute;
+      left: 0;
+    }
+    .cta-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #2563eb;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="welcome-header">
+      <h1>欢迎加入走线吧！</h1>
+      <p>亲爱的 {{username}}，感谢您加入我们的社区</p>
+    </div>
+
+    <p>我们很高兴您选择加入走线吧。在这里，您可以：</p>
+
+    <div class="features">
+      <div class="feature-item">分享您的经验和见解</div>
+      <div class="feature-item">与其他用户交流互动</div>
+      <div class="feature-item">获取最新的行业资讯</div>
+      <div class="feature-item">参与有趣的讨论话题</div>
+    </div>
+
+    <p>为了帮助您快速开始，我们建议您：</p>
+    <ol>
+      <li>完善您的个人资料</li>
+      <li>关注感兴趣的话题</li>
+      <li>参与社区讨论</li>
+    </ol>
+
+    <div style="text-align: center;">
+      <a href="{{frontendUrl}}/explore" class="cta-button">开始探索</a>
+    </div>
+
+    <div class="footer">
+      <p>此邮件由系统自动发送，请勿回复。</p>
+      <p>如有任何问题，请联系我们的客服团队。</p>
+      <p>© 2024 走线吧. 保留所有权利。</p>
+    </div>
+  </div>
+</body>
+</html> 

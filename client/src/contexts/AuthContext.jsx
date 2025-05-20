@@ -1,84 +1,116 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login as apiLogin, register as apiRegister, logout as apiLogout } from '../services/api';
+import { api } from '../services/api';
+import { getToken, setToken, removeToken } from '../utils/auth';
 
-const AuthContext = createContext(undefined);
+const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
+  // 刷新 token
+  const refreshToken = async () => {
+    try {
+      setRefreshing(true);
+      const response = await api.post('/auth/refresh-token');
+      const { token } = response.data;
+      setToken(token);
+      return token;
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      removeToken();
+      setUser(null);
+      return null;
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // 初始化认证状态
   useEffect(() => {
-    // Check for stored token and validate it
-    const validateToken = async () => {
-      const token = localStorage.getItem('token');
+    const initAuth = async () => {
+      const token = getToken();
       if (token) {
         try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setUser(data);
-            setIsLoading(false);
-          } else {
-            setUser(null);
-            setIsLoading(false);
-          }
+          const userData = await api.get('/auth/me');
+          setUser(userData.data);
         } catch (error) {
-          setUser(null);
-          setIsLoading(false);
+          if (error.response?.status === 401) {
+            // Token 过期，尝试刷新
+            const newToken = await refreshToken();
+            if (newToken) {
+              // 使用新 token 重试获取用户信息
+              const userData = await api.get('/auth/me');
+              setUser(userData.data);
+            }
+          } else {
+            console.error('Failed to restore session:', error);
+            removeToken();
+          }
         }
-      } else {
-        setUser(null);
-        setIsLoading(false);
       }
+      setLoading(false);
     };
 
-    validateToken();
+    initAuth();
   }, []);
 
-  // 注册
-  const register = async (username, email, password, handle) => {
-    const res = await apiRegister(username, email, password, handle);
-    if (res.token && res.user) {
-      localStorage.setItem('token', res.token);
-      setUser(res.user);
-    } else {
-      throw new Error(res.message || 'Registration failed');
+  // 定期刷新 token
+  useEffect(() => {
+    if (user) {
+      const refreshInterval = setInterval(async () => {
+        await refreshToken();
+      }, 14 * 60 * 1000); // 每14分钟刷新一次
+
+      return () => clearInterval(refreshInterval);
+    }
+  }, [user]);
+
+  const login = async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    const { token, user: userData } = response.data;
+    setToken(token);
+    setUser(userData);
+    return userData;
+  };
+
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      removeToken();
+      setUser(null);
     }
   };
 
-  // 登录
-  const login = async (email, password) => {
-    const res = await apiLogin(email, password);
-    if (res.token && res.user) {
-      localStorage.setItem('token', res.token);
-      setUser(res.user);
-    } else {
-      throw new Error(res.message || 'Login failed');
-    }
+  const updateUser = (userData) => {
+    setUser(userData);
   };
 
-  // 登出
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    apiLogout && apiLogout();
+  const value = {
+    user,
+    loading,
+    refreshing,
+    login,
+    logout,
+    updateUser,
+    refreshToken
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, register, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};

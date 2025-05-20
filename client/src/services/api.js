@@ -1,4 +1,90 @@
-const API_URL = process.env.REACT_APP_API_URL || 'https://zouxianba.onrender.com/api';
+import axios from 'axios';
+import { withCache, preloadData } from './cache';
+import crypto from 'crypto-js';
+import { getToken, isTokenExpired, getTokenTimeLeft, setToken, removeToken } from '../utils/auth';
+import { generateRequestSignature } from '../utils/security';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
+const API_SECRET = process.env.REACT_APP_API_SECRET;
+
+// 生成请求签名
+const generateSignature = (data, timestamp) => {
+  const stringToSign = `${data}${timestamp}`;
+  return crypto.HmacSHA256(stringToSign, API_SECRET).toString();
+};
+
+// 配置 axios 实例
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // 启用跨域请求携带凭证
+});
+
+// 请求拦截器
+api.interceptors.request.use(
+  async (config) => {
+    const token = getToken();
+    
+    // 如果 token 存在且即将过期（剩余时间小于5分钟），尝试刷新
+    if (token && getTokenTimeLeft(token) < 5 * 60 * 1000) {
+      try {
+        const response = await api.post('/auth/refresh-token');
+        const { token: newToken } = response.data;
+        setToken(newToken);
+        config.headers.Authorization = `Bearer ${newToken}`;
+      } catch (error) {
+        console.error('Failed to refresh token:', error);
+      }
+    } else if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // 生成请求签名
+    const signature = await generateRequestSignature(config);
+    if (signature) {
+      config.headers['X-Request-Signature'] = signature;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// 响应拦截器
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // 处理 401 错误（未授权）
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // 如果是 token 过期，尝试刷新 token
+      if (error.response.data.error === 'Token expired') {
+        try {
+          const response = await api.post('/auth/refresh-token');
+          const { token } = response.data;
+          setToken(token);
+
+          // 重试原始请求
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        } catch (refreshError) {
+          removeToken();
+          return Promise.reject(refreshError);
+        }
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 // 获取 CSRF token
 const getCsrfToken = () => {
@@ -11,8 +97,19 @@ const getCsrfToken = () => {
   return '';
 };
 
+// 获取认证 token
+const getAuthToken = () => {
+  return localStorage.getItem('token');
+};
+
+// 处理认证错误
+const handleAuthError = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/login';
+};
+
 async function fetchApi(endpoint, options = {}) {
-  const token = localStorage.getItem('token');
+  const token = getAuthToken();
   let headers = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
@@ -31,45 +128,91 @@ async function fetchApi(endpoint, options = {}) {
     headers = { 'Content-Type': 'application/json', ...headers };
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-    credentials: 'include', // 添加这行以支持跨域 cookie
-  });
-
-  let data;
   try {
-    data = await response.json();
-  } catch {
-    throw new Error('Invalid server response');
-  }
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+      credentials: 'include',
+    });
 
-  if (!response.ok) {
-    throw new Error(data.error || data.message || 'Something went wrong');
-  }
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error('Invalid server response');
+    }
 
-  return data.data ?? data;
+    if (!response.ok) {
+      if (response.status === 401) {
+        handleAuthError();
+      }
+      throw new Error(data.error || data.message || 'Something went wrong');
+    }
+
+    return data.data ?? data;
+  } catch (error) {
+    if (error.message === 'Please authenticate') {
+      handleAuthError();
+    }
+    throw error;
+  }
 }
 
 // Auth
-export async function login(email, password) {
-  return fetchApi('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-  });
-}
+export const apiService = {
+  // 用户认证
+  login: (credentials) => api.post('/auth/login', credentials),
+  register: (userData) => api.post('/auth/register', userData),
+  logout: () => api.post('/auth/logout'),
 
-export async function register(username, email, password, handle) {
-  return fetchApi('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify({ username, email, password, handle }),
-  });
-}
+  // 用户资料
+  getProfile: (username) => api.get(`/users/${username}`),
+  updateProfile: (data) => api.put('/users/profile', data),
+  uploadAvatar: (file) => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return api.post('/users/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 
-export async function logout() {
-  return fetchApi('/auth/logout', {
-    method: 'POST',
-  });
+  // 用户关系
+  followUser: (userId) => api.post(`/users/${userId}/follow`),
+  unfollowUser: (userId) => api.delete(`/users/${userId}/follow`),
+  getFollowers: (userId, page = 1) => api.get(`/users/${userId}/followers?page=${page}`),
+  getFollowing: (userId, page = 1) => api.get(`/users/${userId}/following?page=${page}`),
+  getCommonFollowers: (userId) => api.get(`/users/${userId}/common-followers`),
+  getCommonFollowing: (userId) => api.get(`/users/${userId}/common-following`),
+  getSuggestedUsers: (page = 1) => api.get(`/users/suggestions?page=${page}`),
+
+  // 用户活动
+  getUserActivities: (userId, page = 1) => api.get(`/users/${userId}/activities?page=${page}`),
+  getFeed: (page = 1) => api.get(`/feed?page=${page}`),
+
+  // 帖子
+  createPost: (data) => api.post('/posts', data),
+  getPost: (postId) => api.get(`/posts/${postId}`),
+  updatePost: (postId, data) => api.put(`/posts/${postId}`, data),
+  deletePost: (postId) => api.delete(`/posts/${postId}`),
+  likePost: (postId) => api.post(`/posts/${postId}/like`),
+  unlikePost: (postId) => api.delete(`/posts/${postId}/like`),
+  getPostComments: (postId, page = 1) => api.get(`/posts/${postId}/comments?page=${page}`),
+  addComment: (postId, content) => api.post(`/posts/${postId}/comments`, { content }),
+  deleteComment: (postId, commentId) => api.delete(`/posts/${postId}/comments/${commentId}`),
+
+  // 搜索
+  searchUsers: (query) => api.get(`/search/users?q=${encodeURIComponent(query)}`),
+  searchPosts: (query) => api.get(`/search/posts?q=${encodeURIComponent(query)}`),
+
+  // 通知
+  getNotifications: (page = 1) => api.get(`/notifications?page=${page}`),
+  markNotificationAsRead: (notificationId) => api.put(`/notifications/${notificationId}/read`),
+  markAllNotificationsAsRead: () => api.put('/notifications/read-all'),
+};
+
+// User
+export async function getCurrentUser() {
+  return fetchApi('/auth/me');
 }
 
 // Posts
@@ -136,18 +279,6 @@ export async function getUserPosts(id) {
   return fetchApi(`/users/${id}/posts`);
 }
 
-export async function followUser(id) {
-  return fetchApi(`/users/${id}/follow`, {
-    method: 'POST',
-  });
-}
-
-export async function unfollowUser(id) {
-  return fetchApi(`/users/${id}/unfollow`, {
-    method: 'POST',
-  });
-}
-
 export async function updateProfile(data) {
   if (data instanceof FormData) {
     return fetchApi('/users/profile', {
@@ -186,12 +317,6 @@ export async function searchPosts(query) {
 // Notifications
 export async function getNotifications() {
   return fetchApi('/notifications');
-}
-
-export async function markNotificationAsRead(id) {
-  return fetchApi(`/notifications/${id}/read`, {
-    method: 'PATCH',
-  });
 }
 
 export async function getUnreadNotificationCount() {
@@ -267,3 +392,169 @@ export async function getUnreadMessageCount() {
 export async function getMentions() {
   return fetchApi('/users/mentions');
 }
+
+class ApiService {
+  // 认证相关
+  async login(credentials) {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+  }
+
+  async register(userData) {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  }
+
+  async logout() {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  }
+
+  async getCurrentUser() {
+    const response = await api.get('/auth/me');
+    return response.data;
+  }
+
+  // 用户相关
+  @withCache(5 * 60 * 1000) // 5分钟缓存
+  async getUserProfile(userId) {
+    const response = await api.get(`/users/${userId}`);
+    return response.data;
+  }
+
+  async updateProfile(data) {
+    const response = await api.put('/users/profile', data);
+    return response.data;
+  }
+
+  async uploadAvatar(file) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const response = await api.post('/users/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+
+  // 帖子相关
+  @withCache(60 * 1000) // 1分钟缓存
+  async getPosts(page = 1, limit = 20) {
+    const response = await api.get('/posts', { params: { page, limit } });
+    return response.data;
+  }
+
+  @withCache(5 * 60 * 1000) // 5分钟缓存
+  async getPost(postId) {
+    const response = await api.get(`/posts/${postId}`);
+    return response.data;
+  }
+
+  async createPost(data) {
+    const response = await api.post('/posts', data);
+    return response.data;
+  }
+
+  async likePost(postId) {
+    const response = await api.post(`/posts/${postId}/like`);
+    return response.data;
+  }
+
+  async unlikePost(postId) {
+    const response = await api.delete(`/posts/${postId}/like`);
+    return response.data;
+  }
+
+  // 评论相关
+  @withCache(60 * 1000) // 1分钟缓存
+  async getComments(postId, page = 1, limit = 20) {
+    const response = await api.get(`/posts/${postId}/comments`, {
+      params: { page, limit },
+    });
+    return response.data;
+  }
+
+  async createComment(postId, data) {
+    const response = await api.post(`/posts/${postId}/comments`, data);
+    return response.data;
+  }
+
+  // 通知相关
+  @withCache(30 * 1000) // 30秒缓存
+  async getNotifications() {
+    const response = await api.get('/notifications');
+    return response.data;
+  }
+
+  async getUnreadNotificationCount() {
+    const response = await api.get('/notifications/unread/count');
+    return response.data;
+  }
+
+  // 消息相关
+  async getConversations() {
+    const response = await api.get('/messages/conversations');
+    return response.data;
+  }
+
+  async getMessages(userId) {
+    const response = await api.get(`/messages/${userId}`);
+    return response.data;
+  }
+
+  async sendMessage(userId, content) {
+    const response = await api.post(`/messages/${userId}`, { content });
+    return response.data;
+  }
+
+  // 搜索相关
+  async searchUsers(query) {
+    const response = await api.get(`/search/users?q=${encodeURIComponent(query)}`);
+    return response.data;
+  }
+
+  async searchPosts(query) {
+    const response = await api.get(`/search/posts?q=${encodeURIComponent(query)}`);
+    return response.data;
+  }
+
+  // 预加载初始数据
+  async preloadInitialData() {
+    await Promise.all([
+      preloadData('getPosts:1', this.getPosts(1)),
+      preloadData('getNotifications', this.getNotifications()),
+    ]);
+  }
+
+  // 发送验证码
+  async sendVerificationCode(email) {
+    const response = await api.post('/auth/send-verification', { email });
+    return response.data;
+  }
+
+  // 验证邮箱
+  async verifyEmail(email, code) {
+    const response = await api.post('/auth/verify-email', { email, code });
+    return response.data;
+  }
+
+  // 忘记密码
+  async forgotPassword(email) {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  }
+
+  // 重置密码
+  async resetPassword(token, newPassword) {
+    const response = await api.post('/auth/reset-password', { token, newPassword });
+    return response.data;
+  }
+
+  // 修改密码
+  async changePassword(currentPassword, newPassword) {
+    const response = await api.put('/auth/change-password', { currentPassword, newPassword });
+    return response.data;
+  }
+}
+
+export const apiService = new ApiService();
+export default api;
