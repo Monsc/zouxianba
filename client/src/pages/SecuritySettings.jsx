@@ -1,10 +1,10 @@
 import React from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
-import { TwoFactorSetup } from '@/components/TwoFactorSetup';
-import { ActiveSessions } from '@/components/ActiveSessions';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
+import { TwoFactorSetup } from '../components/TwoFactorSetup';
+import { ActiveSessions } from '../components/ActiveSessions';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
+import { Button } from '../components/ui/button';
 
 const SecuritySettings = () => {
   const { user } = useAuth();

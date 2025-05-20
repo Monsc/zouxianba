@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
-import { Button } from '@/components/ui/button';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
+import { Button } from '../components/ui/button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/dialog';
+import { Alert, AlertDescription } from '../components/ui/alert';
 import { LogOut, Globe, Smartphone, Monitor } from 'lucide-react';
-import { api } from '@/services/api';
+import { api } from '../services/api';
 
 export const ActiveSessions = () => {
   const { user } = useAuth();
