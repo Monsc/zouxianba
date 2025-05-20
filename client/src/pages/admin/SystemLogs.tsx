@@ -3,7 +3,6 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -220,10 +219,9 @@ export default function SystemLogs() {
                     <TableCell>{log.description}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <Avatar className="w-6 h-6 mr-2">
-                          <AvatarImage src={log.operator.avatar} />
-                          <AvatarFallback>{log.operator.name[0]}</AvatarFallback>
-                        </Avatar>
+                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center mr-2">
+                          {log.operator.name[0]}
+                        </div>
                         {log.operator.name}
                       </div>
                     </TableCell>

@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
@@ -132,10 +131,9 @@ export default function PostDetail() {
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">{postData.title}</h2>
             <div className="flex items-center space-x-4 mb-4">
-              <Avatar>
-                <AvatarImage src={postData.author.avatar} />
-                <AvatarFallback>{postData.author.name[0]}</AvatarFallback>
-              </Avatar>
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                {postData.author.name[0]}
+              </div>
               <div>
                 <p className="font-medium">{postData.author.name}</p>
                 <p className="text-sm text-gray-500">
@@ -172,10 +170,9 @@ export default function PostDetail() {
             <div className="space-y-4">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex space-x-4">
-                  <Avatar>
-                    <AvatarImage src={comment.author.avatar} />
-                    <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                    {comment.author.name[0]}
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div>

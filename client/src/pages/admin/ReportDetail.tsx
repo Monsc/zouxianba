@@ -153,10 +153,9 @@ export default function ReportDetail() {
                 <User className="w-4 h-4 mr-2 text-gray-500" />
                 <span className="text-gray-600">举报人：</span>
                 <div className="ml-2 flex items-center">
-                  <Avatar className="w-6 h-6 mr-2">
-                    <AvatarImage src={reportData.reporter.avatar} />
-                    <AvatarFallback>{reportData.reporter.name[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center mr-2">
+                    {reportData.reporter.name[0]}
+                  </div>
                   <span>{reportData.reporter.name}</span>
                 </div>
               </div>
@@ -182,10 +181,9 @@ export default function ReportDetail() {
                 <User className="w-4 h-4 mr-2 text-gray-500" />
                 <span className="text-gray-600">作者：</span>
                 <div className="ml-2 flex items-center">
-                  <Avatar className="w-6 h-6 mr-2">
-                    <AvatarImage src={reportData.target.author.avatar} />
-                    <AvatarFallback>{reportData.target.author.name[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center mr-2">
+                    {reportData.target.author.name[0]}
+                  </div>
                   <span>{reportData.target.author.name}</span>
                 </div>
               </div>
@@ -203,10 +201,9 @@ export default function ReportDetail() {
             <div className="space-y-4">
               {reportData.history.map((record) => (
                 <div key={record.id} className="flex items-start space-x-4">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={record.operator.avatar} />
-                    <AvatarFallback>{record.operator.name[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                    {record.operator.name[0]}
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div>
