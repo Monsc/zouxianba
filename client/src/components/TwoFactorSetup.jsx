@@ -15,8 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield, Key } from 'lucide-react';
 
-const TwoFactorSetup = ({ open, onOpenChange }) => {
-  const { user } = useAuth();
+export const TwoFactorSetup = ({ open, onOpenChange }) => {
+  const { user, updateUser } = useAuth();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [setupData, setSetupData] = useState(null);
@@ -45,16 +45,11 @@ const TwoFactorSetup = ({ open, onOpenChange }) => {
   const handleEnable2FA = async () => {
     try {
       setLoading(true);
-      await api.post('/auth/2fa/enable', {
-        token: verificationCode
-      });
-      showToast('双因素认证已启用', 'success');
-      onOpenChange(false);
+      const response = await api.post('/auth/2fa/enable');
+      showToast('两步验证已启用', 'success');
+      updateUser({ ...user, twoFactorEnabled: true });
     } catch (error) {
-      showToast(
-        error.response?.data?.message || '启用双因素认证失败',
-        'error'
-      );
+      showToast(error.response?.data?.message || '启用两步验证失败', 'error');
     } finally {
       setLoading(false);
     }
@@ -63,16 +58,12 @@ const TwoFactorSetup = ({ open, onOpenChange }) => {
   const handleDisable2FA = async () => {
     try {
       setLoading(true);
-      await api.post('/auth/2fa/disable', {
-        token: verificationCode
-      });
-      showToast('双因素认证已禁用', 'success');
-      onOpenChange(false);
+      await api.post('/auth/2fa/disable', { code: verificationCode });
+      showToast('两步验证已禁用', 'success');
+      updateUser({ ...user, twoFactorEnabled: false });
+      setVerificationCode('');
     } catch (error) {
-      showToast(
-        error.response?.data?.message || '禁用双因素认证失败',
-        'error'
-      );
+      showToast(error.response?.data?.message || '禁用两步验证失败', 'error');
     } finally {
       setLoading(false);
     }
@@ -212,6 +203,4 @@ const TwoFactorSetup = ({ open, onOpenChange }) => {
       </DialogContent>
     </Dialog>
   );
-};
-
-export default TwoFactorSetup; 
+}; 

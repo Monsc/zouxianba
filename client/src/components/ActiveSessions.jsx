@@ -6,113 +6,135 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LogOut, Globe, Smartphone, Monitor } from 'lucide-react';
 import { api } from '@/services/api';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 
-const ActiveSessions = ({ open, onOpenChange }) => {
+export const ActiveSessions = () => {
+  const { user } = useAuth();
   const { showToast } = useToast();
-  const [loading, setLoading] = useState(false);
   const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      fetchSessions();
-    }
-  }, [open]);
+    fetchSessions();
+  }, []);
 
   const fetchSessions = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/auth/me/sessions');
-      setSessions(response.data.sessions);
+      const response = await api.get('/auth/sessions');
+      setSessions(response.data);
     } catch (error) {
-      showToast('获取活动会话失败', 'error');
-      onOpenChange(false);
+      showToast('获取会话列表失败', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogoutSession = async (token) => {
+  const handleLogoutSession = async (sessionId) => {
     try {
-      await api.delete(`/auth/me/sessions/${token}`);
+      setLoading(true);
+      await api.post(`/auth/sessions/${sessionId}/logout`);
       showToast('会话已注销', 'success');
       fetchSessions();
     } catch (error) {
       showToast('注销会话失败', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getDeviceIcon = (device) => {
-    if (device.toLowerCase().includes('mobile')) {
-      return <Smartphone className="w-4 h-4" />;
-    } else if (device.toLowerCase().includes('tablet')) {
-      return <Monitor className="w-4 h-4" />;
-    } else {
-      return <Globe className="w-4 h-4" />;
+  const handleLogoutAllSessions = async () => {
+    try {
+      setLoading(true);
+      await api.post('/auth/sessions/logout-all');
+      showToast('所有会话已注销', 'success');
+      fetchSessions();
+    } catch (error) {
+      showToast('注销所有会话失败', 'error');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const getDeviceIcon = (deviceType) => {
+    switch (deviceType) {
+      case 'mobile':
+        return <Smartphone className="w-4 h-4" />;
+      case 'desktop':
+        return <Monitor className="w-4 h-4" />;
+      default:
+        return <Globe className="w-4 h-4" />;
+    }
+  };
+
+  if (loading) {
+    return <div>加载中...</div>;
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <LogOut className="w-5 h-5" />
-            活动会话
-          </DialogTitle>
-          <DialogDescription>
-            查看和管理您的活动登录会话
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          {sessions.length === 0 ? (
-            <Alert>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">活跃会话</h3>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" disabled={loading}>
               <LogOut className="w-4 h-4 mr-2" />
-              <AlertDescription>
-                当前没有活动会话
-              </AlertDescription>
-            </Alert>
-          ) : (
-            sessions.map((session) => (
-              <div
-                key={session.token}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-muted rounded-full">
-                    {getDeviceIcon(session.device)}
-                  </div>
-                  <div>
-                    <p className="font-medium">{session.device}</p>
-                    <p className="text-sm text-muted-foreground">
-                      IP: {session.ip}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      最后活动: {new Date(session.lastActive).toLocaleString()}
-                    </p>
-                  </div>
+              注销所有会话
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>确认注销所有会话</AlertDialogTitle>
+              <AlertDialogDescription>
+                这将注销您在所有设备上的登录状态。您需要重新登录才能继续使用。
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>取消</AlertDialogCancel>
+              <AlertDialogAction onClick={handleLogoutAllSessions}>
+                确认
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+
+      {sessions.length === 0 ? (
+        <Alert>
+          <AlertDescription>暂无活跃会话</AlertDescription>
+        </Alert>
+      ) : (
+        <div className="space-y-2">
+          {sessions.map((session) => (
+            <div
+              key={session.id}
+              className="flex items-center justify-between p-4 border rounded-lg"
+            >
+              <div className="flex items-center space-x-4">
+                {getDeviceIcon(session.deviceType)}
+                <div>
+                  <p className="font-medium">{session.deviceName}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {session.location} · {session.lastActive}
+                  </p>
                 </div>
+              </div>
+              {session.current && (
+                <span className="text-sm text-muted-foreground">当前会话</span>
+              )}
+              {!session.current && (
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   size="sm"
-                  onClick={() => handleLogoutSession(session.token)}
+                  onClick={() => handleLogoutSession(session.id)}
+                  disabled={loading}
                 >
                   注销
                 </Button>
-              </div>
-            ))
-          )}
+              )}
+            </div>
+          ))}
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </div>
   );
-};
-
-export default ActiveSessions; 
+}; 
