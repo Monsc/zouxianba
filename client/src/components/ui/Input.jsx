@@ -1,45 +1,19 @@
-import React, { forwardRef } from 'react';
-import { motion } from 'framer-motion';
+import * as React from "react"
+import { cn } from "@/lib/utils"
 
-const Input = forwardRef(({
-  label,
-  error,
-  className = '',
-  type = 'text',
-  fullWidth = false,
-  ...props
-}, ref) => {
-  const baseClasses = 'w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-twitter-blue focus:bg-white dark:focus:bg-gray-700 focus:outline-none transition-colors duration-200';
-  const errorClasses = error ? 'border-red-500 focus:border-red-500' : '';
-  const widthClass = fullWidth ? 'w-full' : '';
-
+const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   return (
-    <div className={`${widthClass} ${className}`}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {label}
-        </label>
+    <input
+      type={type}
+      className={cn(
+        "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        className
       )}
-      <motion.input
-        ref={ref}
-        type={type}
-        className={`${baseClasses} ${errorClasses}`}
-        whileFocus={{ scale: 1.01 }}
-        {...props}
-      />
-      {error && (
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-1 text-sm text-red-500"
-        >
-          {error}
-        </motion.p>
-      )}
-    </div>
-  );
-});
+      ref={ref}
+      {...props}
+    />
+  )
+})
+Input.displayName = "Input"
 
-Input.displayName = 'Input';
-
-export default Input; 
+export { Input } 
