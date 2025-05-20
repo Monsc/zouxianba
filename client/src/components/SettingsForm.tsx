@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/useToast';
 import { UserService } from '@/services/UserService';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
-import { Input } from './Input';
+import { Input } from '@/components/ui/input';
 import { Textarea } from './Textarea';
 import { LoadingSpinner } from './LoadingSpinner';
 import { Icon } from './Icon';
