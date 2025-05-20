@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import PrivateRoute from './components/PrivateRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Post from './pages/Post';
+import NotFound from './pages/NotFound';
 import Settings from './pages/Settings';
 import PostDetail from './pages/PostDetail';
 import Discover from './pages/Discover';
@@ -14,8 +16,11 @@ import Messages from './pages/Messages';
 import Chat from './pages/Chat';
 import TopicPage from './pages/HashtagPage';
 import Mentions from './pages/Mentions';
+import SecuritySettings from './pages/SecuritySettings';
 import './styles/global.css';
 import { getUnreadNotificationCount } from './services/api';
+import { Toaster } from './components/ui/toaster';
+import { ToastProvider } from './contexts/ToastContext';
 
 function App() {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -34,94 +39,40 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-
-          {/* Protected routes */}
-          <Route element={<Layout />}>
+    <AuthProvider>
+      <ToastProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
             <Route
               path="/"
               element={
-                <PrivateRoute>
-                  <Home />
-                </PrivateRoute>
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
               }
-            />
-            <Route
-              path="/profile/:userId"
-              element={
-                <PrivateRoute>
-                  <Profile />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <PrivateRoute>
-                  <Settings />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/post/:postId"
-              element={
-                <PrivateRoute>
-                  <PostDetail />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/discover"
-              element={
-                <PrivateRoute>
-                  <Discover />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/messages"
-              element={
-                <PrivateRoute>
-                  <Messages />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/messages/:userId"
-              element={
-                <PrivateRoute>
-                  <Chat />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/topic/:tag"
-              element={
-                <PrivateRoute>
-                  <TopicPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/mentions"
-              element={
-                <PrivateRoute>
-                  <Mentions />
-                </PrivateRoute>
-              }
-            />
-          </Route>
+            >
+              <Route index element={<Home />} />
+              <Route path="profile/:userId" element={<Profile />} />
+              <Route path="post/:postId" element={<Post />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="settings/security" element={<SecuritySettings />} />
+              <Route path="post/:postId" element={<PostDetail />} />
+              <Route path="discover" element={<Discover />} />
+              <Route path="messages" element={<Messages />} />
+              <Route path="messages/:userId" element={<Chat />} />
+              <Route path="topic/:tag" element={<TopicPage />} />
+              <Route path="mentions" element={<Mentions />} />
+            </Route>
 
-          {/* Fallback route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
-    </Router>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+        </Router>
+      </ToastProvider>
+    </AuthProvider>
   );
 }
 

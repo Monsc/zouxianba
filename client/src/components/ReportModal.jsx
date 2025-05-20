@@ -1,84 +1,138 @@
 import React, { useState } from 'react';
-import { reportContent } from '../services/api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fetchApi } from '../services/api';
+import { toast } from 'react-hot-toast';
 
-const reasons = ['垃圾广告', '骚扰/辱骂', '虚假信息', '敏感/违法内容', '其他'];
-
-function ReportModal({ open, onClose, targetUser, targetPost, targetComment }) {
+function ReportModal({ type, targetId, onClose }) {
   const [reason, setReason] = useState('');
-  const [detail, setDetail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [category, setCategory] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  if (!open) return null;
+  const categories = {
+    user: [
+      { value: 'spam', label: '垃圾信息' },
+      { value: 'harassment', label: '骚扰' },
+      { value: 'hate_speech', label: '仇恨言论' },
+      { value: 'fake_account', label: '虚假账号' },
+      { value: 'other', label: '其他' },
+    ],
+    content: [
+      { value: 'spam', label: '垃圾信息' },
+      { value: 'harassment', label: '骚扰' },
+      { value: 'hate_speech', label: '仇恨言论' },
+      { value: 'violence', label: '暴力内容' },
+      { value: 'pornography', label: '色情内容' },
+      { value: 'copyright', label: '版权问题' },
+      { value: 'other', label: '其他' },
+    ],
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!reason) {
-      setError('请选择举报原因');
+    if (!category || !reason.trim()) {
+      toast.error('请选择举报类型并填写原因');
       return;
     }
-    setIsLoading(true);
-    setError('');
+
     try {
-      await reportContent({ targetUser, targetPost, targetComment, reason, detail });
-      setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-        onClose();
-      }, 1200);
+      setLoading(true);
+      await fetchApi('/api/reports', {
+        method: 'POST',
+        data: {
+          type,
+          targetId,
+          category,
+          reason: reason.trim(),
+        },
+      });
+
+      toast.success('举报已提交，我们会尽快处理');
+      onClose();
     } catch (err) {
-      setError('举报失败，请重试');
+      console.error('Failed to submit report:', err);
+      toast.error('提交失败，请重试');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-header flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold">举报</h2>
-          <button className="close-button" onClick={onClose}>
-            ×
-          </button>
-        </div>
-        {success ? (
-          <div className="text-green-600 text-center py-8">举报成功，感谢反馈！</div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && <div className="error-message">{error}</div>}
-            <div>
-              <div className="mb-2 font-medium">请选择举报原因：</div>
-              <div className="flex flex-wrap gap-2">
-                {reasons.map(r => (
-                  <button
-                    type="button"
-                    key={r}
-                    className={`px-3 py-1 rounded-full border ${
-                      reason === r ? 'bg-primary text-white' : 'bg-gray-100'
-                    } transition`}
-                    onClick={() => setReason(r)}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white dark:bg-twitter-gray-900 rounded-2xl w-full max-w-md mx-4 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* 头部 */}
+          <div className="p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold">举报{type === 'user' ? '用户' : '内容'}</h2>
+              <button
+                onClick={onClose}
+                className="text-twitter-blue hover:underline"
+              >
+                取消
+              </button>
             </div>
-            <textarea
-              className="border rounded p-2 min-h-[60px]"
-              placeholder="补充说明（可选）"
-              value={detail}
-              onChange={e => setDetail(e.target.value)}
-              maxLength={200}
-            />
-            <button type="submit" className="btn btn-primary mt-2" disabled={isLoading}>
-              {isLoading ? '提交中...' : '提交举报'}
+          </div>
+
+          <form onSubmit={handleSubmit} className="p-4">
+            {/* 举报类型 */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-twitter-gray-700 dark:text-twitter-gray-300 mb-1">
+                举报类型
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-twitter-gray-300 dark:border-twitter-gray-700 rounded-lg focus:ring-2 focus:ring-twitter-blue focus:border-transparent dark:bg-twitter-gray-800"
+                required
+              >
+                <option value="">请选择举报类型</option>
+                {categories[type].map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* 举报原因 */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-twitter-gray-700 dark:text-twitter-gray-300 mb-1">
+                举报原因
+              </label>
+              <textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                rows="4"
+                placeholder="请详细描述举报原因..."
+                className="w-full px-3 py-2 border border-twitter-gray-300 dark:border-twitter-gray-700 rounded-lg focus:ring-2 focus:ring-twitter-blue focus:border-transparent dark:bg-twitter-gray-800"
+                required
+              />
+            </div>
+
+            {/* 提交按钮 */}
+            <button
+              type="submit"
+              disabled={loading || !category || !reason.trim()}
+              className="w-full py-2 bg-twitter-blue text-white font-bold rounded-full hover:bg-twitter-blue/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? '提交中...' : '提交举报'}
             </button>
           </form>
-        )}
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

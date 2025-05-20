@@ -1,7 +1,7 @@
 # Dependencies
 node_modules/
-server/node_modules/
-client/node_modules/
+.pnp/
+.pnp.js
 
 # Build outputs
 dist/
@@ -22,6 +22,7 @@ out/
 *.swp
 *.swo
 .DS_Store
+Thumbs.db
 
 # Logs
 logs/
@@ -35,5 +36,12 @@ coverage/
 
 # Misc
 .cache/
-.temp/
-.tmp/ 
+.npm/
+.eslintcache
+.stylelintcache
+*.pem
+.vercel
+.turbo
+
+# Uploads
+uploads/ 
