@@ -416,7 +416,6 @@ class ApiService {
   }
 
   // 用户相关
-  @withCache(5 * 60 * 1000) // 5分钟缓存
   async getUserProfile(userId) {
     const response = await api.get(`/users/${userId}`);
     return response.data;
@@ -437,13 +436,11 @@ class ApiService {
   }
 
   // 帖子相关
-  @withCache(60 * 1000) // 1分钟缓存
   async getPosts(page = 1, limit = 20) {
-    const response = await api.get('/posts', { params: { page, limit } });
+    const response = await api.get(`/posts?page=${page}&limit=${limit}`);
     return response.data;
   }
 
-  @withCache(5 * 60 * 1000) // 5分钟缓存
   async getPost(postId) {
     const response = await api.get(`/posts/${postId}`);
     return response.data;
@@ -465,11 +462,8 @@ class ApiService {
   }
 
   // 评论相关
-  @withCache(60 * 1000) // 1分钟缓存
   async getComments(postId, page = 1, limit = 20) {
-    const response = await api.get(`/posts/${postId}/comments`, {
-      params: { page, limit },
-    });
+    const response = await api.get(`/posts/${postId}/comments?page=${page}&limit=${limit}`);
     return response.data;
   }
 
@@ -479,7 +473,6 @@ class ApiService {
   }
 
   // 通知相关
-  @withCache(30 * 1000) // 30秒缓存
   async getNotifications() {
     const response = await api.get('/notifications');
     return response.data;
