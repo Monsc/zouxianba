@@ -5,7 +5,7 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useAuth } from '@/hooks/useAuth';
 import { PostService } from '@/services/PostService';
 import { LazyImage } from '@/components/LazyImage';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { EmptyState } from '@/components/EmptyState';
 import { useToast } from '@/hooks/useToast';
