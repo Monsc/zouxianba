@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Button } from './ui/button';
-import { useToast } from '../contexts/ToastContext';
-import { api } from '../services/api';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
+import { Button } from '@/components/ui/button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LogOut, Globe, Smartphone, Monitor } from 'lucide-react';
+import { api } from '@/services/api';
 import {
   Dialog,
   DialogContent,
@@ -10,9 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import { LogOut, Globe, Smartphone, Monitor } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/dialog';
 
 const ActiveSessions = ({ open, onOpenChange }) => {
   const { showToast } = useToast();
