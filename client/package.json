@@ -28,7 +28,6 @@
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hot-toast": "^2.4.1",
-    "react-pull-to-refresh-jsx": "https://github.com/react-pull-to-refresh-jsx/react-pull-to-refresh-jsx.git",
     "react-router-dom": "^6.22.1",
     "socket.io-client": "^4.7.4",
     "swr": "^2.2.4",

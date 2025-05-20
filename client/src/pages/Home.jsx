@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/useToast';
 import { Feed } from '@/components/Feed';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import PullToRefresh from 'react-pull-to-refresh-jsx';
+import PullToRefresh from '@/components/PullToRefresh';
 
 const Home = () => {
   const router = useRouter();
@@ -33,9 +33,8 @@ const Home = () => {
     <ErrorBoundary>
       <PullToRefresh
         onRefresh={handleRefresh}
-        pullDownThreshold={100}
+        threshold={100}
         resistance={2.5}
-        refreshing={refreshing}
       >
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Feed />
