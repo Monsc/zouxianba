@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
@@ -17,12 +17,11 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className={cn('flex justify-center items-center', className)}>
       <div
         className={cn(
-          'border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin',
-          sizeClasses[size],
-          className
+          'animate-spin rounded-full border-2 border-gray-300 border-t-blue-600',
+          sizeClasses[size]
         )}
       />
     </div>
