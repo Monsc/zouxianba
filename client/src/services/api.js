@@ -158,58 +158,6 @@ async function fetchApi(endpoint, options = {}) {
   }
 }
 
-// Auth
-export const apiService = {
-  // 用户认证
-  login: (credentials) => api.post('/auth/login', credentials),
-  register: (userData) => api.post('/auth/register', userData),
-  logout: () => api.post('/auth/logout'),
-
-  // 用户资料
-  getProfile: (username) => api.get(`/users/${username}`),
-  updateProfile: (data) => api.put('/users/profile', data),
-  uploadAvatar: (file) => {
-    const formData = new FormData();
-    formData.append('avatar', file);
-    return api.post('/users/avatar', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-
-  // 用户关系
-  followUser: (userId) => api.post(`/users/${userId}/follow`),
-  unfollowUser: (userId) => api.delete(`/users/${userId}/follow`),
-  getFollowers: (userId, page = 1) => api.get(`/users/${userId}/followers?page=${page}`),
-  getFollowing: (userId, page = 1) => api.get(`/users/${userId}/following?page=${page}`),
-  getCommonFollowers: (userId) => api.get(`/users/${userId}/common-followers`),
-  getCommonFollowing: (userId) => api.get(`/users/${userId}/common-following`),
-  getSuggestedUsers: (page = 1) => api.get(`/users/suggestions?page=${page}`),
-
-  // 用户活动
-  getUserActivities: (userId, page = 1) => api.get(`/users/${userId}/activities?page=${page}`),
-  getFeed: (page = 1) => api.get(`/feed?page=${page}`),
-
-  // 帖子
-  createPost: (data) => api.post('/posts', data),
-  getPost: (postId) => api.get(`/posts/${postId}`),
-  updatePost: (postId, data) => api.put(`/posts/${postId}`, data),
-  deletePost: (postId) => api.delete(`/posts/${postId}`),
-  likePost: (postId) => api.post(`/posts/${postId}/like`),
-  unlikePost: (postId) => api.delete(`/posts/${postId}/like`),
-  getPostComments: (postId, page = 1) => api.get(`/posts/${postId}/comments?page=${page}`),
-  addComment: (postId, content) => api.post(`/posts/${postId}/comments`, { content }),
-  deleteComment: (postId, commentId) => api.delete(`/posts/${postId}/comments/${commentId}`),
-
-  // 搜索
-  searchUsers: (query) => api.get(`/search/users?q=${encodeURIComponent(query)}`),
-  searchPosts: (query) => api.get(`/search/posts?q=${encodeURIComponent(query)}`),
-
-  // 通知
-  getNotifications: (page = 1) => api.get(`/notifications?page=${page}`),
-  markNotificationAsRead: (notificationId) => api.put(`/notifications/${notificationId}/read`),
-  markAllNotificationsAsRead: () => api.put('/notifications/read-all'),
-};
-
 // User
 export async function getCurrentUser() {
   return fetchApi('/auth/me');
