@@ -2,18 +2,9 @@ import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { Icon } from './Icon';
 import { Button } from '@/components/ui/button';
-import { ShareService, ShareOptions } from '@/services/ShareService';
+import { ShareService } from '@/services/ShareService';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
-
-interface ShareDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  postId: string;
-  title: string;
-  description?: string;
-  image?: string;
-}
 
 const SHARE_PLATFORMS = [
   {
@@ -40,9 +31,9 @@ const SHARE_PLATFORMS = [
     icon: 'link',
     color: 'text-gray-500',
   },
-] as const;
+];
 
-export const ShareDialog: React.FC<ShareDialogProps> = ({
+export const ShareDialog = ({
   isOpen,
   onClose,
   postId,
@@ -51,11 +42,11 @@ export const ShareDialog: React.FC<ShareDialogProps> = ({
   image,
 }) => {
   const { showToast } = useToast();
-  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
-  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const [qrCode, setQrCode] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleShare = async (platform: ShareOptions['platform']) => {
+  const handleShare = async (platform) => {
     try {
       setIsLoading(true);
       setSelectedPlatform(platform);
@@ -123,7 +114,7 @@ export const ShareDialog: React.FC<ShareDialogProps> = ({
               {SHARE_PLATFORMS.map((platform) => (
                 <button
                   key={platform.id}
-                  onClick={() => handleShare(platform.id as ShareOptions['platform'])}
+                  onClick={() => handleShare(platform.id)}
                   disabled={isLoading}
                   className={cn(
                     'flex flex-col items-center justify-center rounded-lg p-4 transition-colors',
