@@ -43,9 +43,9 @@ const app = express();
 // Enable CORS for specific origins
 app.use(cors({
   origin: [
-    'http://localhost:3000',
-    'https://zouxianba-client.onrender.com',
-    'https://zouxianba.vercel.app',
+    'https://zouxianba-client.onrender.com', // 生产前端域名
+    'http://localhost:5173', // Vite 本地开发端口
+    'http://localhost:3000', // 兼容旧端口
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
