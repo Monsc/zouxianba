@@ -4,8 +4,8 @@ import crypto from 'crypto-js';
 import { getToken, isTokenExpired, getTokenTimeLeft, setToken, removeToken } from '../utils/auth';
 import { generateRequestSignature } from '../utils/security';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
-const API_SECRET = process.env.REACT_APP_API_SECRET;
+const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+const API_SECRET = import.meta.env.VITE_API_SECRET;
 
 // 生成请求签名
 const generateSignature = (data, timestamp) => {
