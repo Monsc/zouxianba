@@ -190,4 +190,4 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
   );
 };
 
-export default PostCard;
+export { PostCard };

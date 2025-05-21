@@ -227,4 +227,4 @@ export const CreatePost = ({ onPostCreated }) => {
   );
 };
 
-export default CreatePost;
+export { CreatePost };
