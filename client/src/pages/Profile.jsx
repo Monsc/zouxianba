@@ -5,7 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import { apiService } from '../services/api';
 import { Button } from '../components/Button';
 import { Feed } from '../components/Feed';
-import PostCard from '../components/PostCard';
+import { PostCard } from '../components/PostCard';
 import ReportModal from '../components/ReportModal';
 
 export const Profile = () => {
