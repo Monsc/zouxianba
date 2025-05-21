@@ -21,13 +21,13 @@ import { Feed } from './components/Feed';
 
 // 管理页面组件
 import Dashboard from './pages/admin/Dashboard';
-import { Users } from './pages/admin/Users';
-import { Posts } from './pages/admin/Posts';
-import { Comments } from './pages/admin/Comments';
-import { EmailTemplates } from './pages/admin/EmailTemplates';
-import { Analytics } from './pages/admin/Analytics';
-import { ReportDetail } from './pages/admin/ReportDetail';
-import { SystemLogs } from './pages/admin/SystemLogs';
+import Users from './pages/admin/Users';
+import Posts from './pages/admin/Posts';
+import Comments from './pages/admin/Comments';
+import EmailTemplates from './pages/admin/EmailTemplates';
+import Analytics from './pages/admin/Analytics';
+import ReportDetail from './pages/admin/ReportDetail';
+import SystemLogs from './pages/admin/SystemLogs';
 
 // 样式
 import './styles/global.css';
