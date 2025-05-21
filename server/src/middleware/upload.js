@@ -1,25 +1,25 @@
 const multer = require('multer');
-const path = require('path');
+const config = require('../config');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve(__dirname, '../../uploads'));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
-  }
-});
+// 配置 multer 存储
+const storage = multer.memoryStorage();
 
+// 文件过滤器
 const fileFilter = (req, file, cb) => {
-  // 只允许图片和视频
-  if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
+  if (config.upload.allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Only image and video files are allowed!'), false);
+    cb(new Error('Invalid file type'), false);
   }
 };
 
-const upload = multer({ storage, fileFilter, limits: { fileSize: 10 * 1024 * 1024 } });
+// 创建 multer 实例
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: config.upload.maxSize
+  }
+});
 
-module.exports = { upload }; 
+module.exports = upload; 

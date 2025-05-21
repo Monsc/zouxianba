@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 
@@ -23,7 +25,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 8,
+      minlength: 6,
     },
     name: {
       type: String,
@@ -32,11 +34,11 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: '',
+      default: 'default-avatar.png',
     },
     bio: {
       type: String,
-      maxlength: 160,
+      maxlength: 500,
     },
     location: {
       type: String,
@@ -104,6 +106,21 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    tokens: [{
+      token: {
+        type: String,
+        required: true,
+      },
+    }],
   },
   {
     timestamps: true,
@@ -112,12 +129,16 @@ const userSchema = new mongoose.Schema(
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  const user = this;
+
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+
+  if (!user.isModified('password')) return next();
 
   try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    this.passwordChangedAt = Date.now();
+    user.passwordChangedAt = Date.now();
     next();
   } catch (error) {
     next(error);
@@ -139,6 +160,7 @@ userSchema.methods.getPublicProfile = function() {
 
 // Create indexes for search
 userSchema.index({ username: 'text', handle: 'text' });
+userSchema.index({ email: 1 });
 
 // 检查密码是否在指定时间后更改
 userSchema.methods.changedPasswordAfter = function(timestamp) {
@@ -237,6 +259,43 @@ userSchema.methods.updateSessionActivity = async function(token) {
     session.lastActive = new Date();
     await this.save();
   }
+};
+
+// Method to generate authentication token
+userSchema.methods.generateAuthToken = async function() {
+  const user = this;
+  const token = jwt.sign(
+    { _id: user._id.toString() },
+    config.jwt.secret,
+    { expiresIn: config.jwt.expiresIn }
+  );
+
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+
+  return token;
+};
+
+userSchema.methods.toJSON = function() {
+  const user = this.toObject();
+  delete user.password;
+  delete user.tokens;
+  return user;
+};
+
+// Static method to find user by credentials
+userSchema.statics.findByCredentials = async (email, password) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error('Invalid login credentials');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error('Invalid login credentials');
+  }
+
+  return user;
 };
 
 const User = mongoose.model('User', userSchema);

@@ -19,6 +19,7 @@
   "dependencies": {
     "@react-email/components": "^0.0.41",
     "emoji-mart": "^5.6.0",
+    "express-validator": "^7.2.1",
     "handlebars": "^4.7.8",
     "helmet": "^8.1.0",
     "multer": "^1.4.5-lts.2",

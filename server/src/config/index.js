@@ -1,0 +1,95 @@
+require('dotenv').config();
+
+module.exports = {
+  // 服务器配置
+  server: {
+    port: process.env.PORT || 3000,
+    env: process.env.NODE_ENV || 'development'
+  },
+
+  // 数据库配置
+  database: {
+    mongodb: {
+      uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/zouxianba',
+      options: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      }
+    },
+    redis: {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: process.env.REDIS_PORT || 6379,
+      password: process.env.REDIS_PASSWORD
+    }
+  },
+
+  // JWT配置
+  jwt: {
+    secret: process.env.JWT_SECRET || 'your-secret-key',
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d'
+  },
+
+  // 文件上传配置
+  upload: {
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'audio/mpeg', 'audio/wav'],
+    path: process.env.UPLOAD_PATH || 'uploads'
+  },
+
+  // 缓存配置
+  cache: {
+    ttl: 60 * 60, // 1小时
+    prefix: 'zxb:'
+  },
+
+  // 限流配置
+  rateLimit: {
+    windowMs: 15 * 60 * 1000, // 15分钟
+    max: 100 // 限制每个IP 15分钟内最多100个请求
+  },
+
+  // 邮件配置
+  email: {
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  },
+
+  // 第三方服务配置
+  oauth: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET
+    }
+  },
+
+  // 日志配置
+  logger: {
+    level: process.env.LOG_LEVEL || 'info',
+    filename: process.env.LOG_FILE || 'logs/app.log'
+  },
+
+  // Cloudflare配置
+  cloudflare: {
+    token: process.env.CLOUDFLARE_TOKEN,
+    accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+    zoneId: process.env.CLOUDFLARE_ZONE_ID
+  },
+
+  // Socket.IO配置
+  socket: {
+    cors: {
+      origin: process.env.CLIENT_URL || 'http://localhost:3000',
+      methods: ['GET', 'POST']
+    }
+  }
+}; 

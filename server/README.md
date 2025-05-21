@@ -1,118 +1,156 @@
-# ZouXianBa Backend
+# ZouXianBa Server
 
-This is the backend server for the ZouXianBa application. It provides a RESTful API for user authentication, posts, comments, and user interactions.
+ZouXianBa 是一个现代化的社交媒体平台，提供实时语音聊天、文字聊天、图片分享等功能。这是服务器端代码。
 
-## Features
+## 功能特性
 
-- User authentication (register, login, profile management)
-- Post creation, editing, and deletion
-- Comments and replies
-- Like/unlike posts
-- Follow/unfollow users
-- User search
-- Privacy settings
-- Feed with posts from followed users
+- 用户认证和授权
+- 实时语音聊天
+- 语音转文字
+- 表情反应
+- 背景音乐
+- 录音和回放
+- 文件上传和存储
+- WebSocket 实时通信
+- RESTful API
 
-## Tech Stack
+## 技术栈
 
 - Node.js
 - Express.js
-- TypeScript
-- MongoDB with Mongoose
-- JWT for authentication
-- bcrypt for password hashing
+- MongoDB
+- Socket.IO
+- JWT 认证
+- Cloudflare R2 存储
+- Winston 日志
 
-## Prerequisites
+## 开始使用
 
-- Node.js (v14 or higher)
-- MongoDB (local or Atlas)
+### 环境要求
 
-## Setup
+- Node.js >= 14.0.0
+- MongoDB >= 4.0.0
+- npm >= 6.0.0
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### 安装
 
-3. Create a `.env` file in the root directory with the following variables:
-   ```
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/zouxianba
-   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-   NODE_ENV=development
-   ```
+1. 克隆仓库：
 
-4. Build the project:
-   ```bash
-   npm run build
-   ```
+```bash
+git clone https://github.com/yourusername/zouxianba-server.git
+cd zouxianba-server
+```
 
-5. Start the server:
-   ```bash
-   npm start
-   ```
+2. 安装依赖：
 
-For development with hot reload:
+```bash
+npm install
+```
+
+3. 配置环境变量：
+
+复制 `.env.example` 文件为 `.env`，并填写必要的配置信息：
+
+```bash
+cp .env.example .env
+```
+
+4. 启动开发服务器：
+
 ```bash
 npm run dev
 ```
 
-## API Endpoints
+### 生产环境部署
 
-### Authentication
-- POST `/api/auth/register` - Register a new user
-- POST `/api/auth/login` - Login user
-- GET `/api/auth/me` - Get current user
-- PATCH `/api/auth/me` - Update user profile
-- POST `/api/auth/change-password` - Change password
-- DELETE `/api/auth/me` - Delete account
+1. 构建项目：
 
-### Posts
-- GET `/api/posts/feed` - Get feed posts
-- GET `/api/posts/user/:userId` - Get user posts
-- POST `/api/posts` - Create post
-- GET `/api/posts/:postId` - Get post by ID
-- PATCH `/api/posts/:postId` - Update post
-- DELETE `/api/posts/:postId` - Delete post
-- POST `/api/posts/:postId/like` - Like/unlike post
-- POST `/api/posts/:postId/comments` - Add comment
-- GET `/api/posts/:postId/comments` - Get post comments
-
-### Users
-- GET `/api/users/:userId` - Get user profile
-- GET `/api/users/search/:query` - Search users
-- POST `/api/users/:userId/follow` - Follow/unfollow user
-- GET `/api/users/:userId/followers` - Get user followers
-- GET `/api/users/:userId/following` - Get user following
-- PATCH `/api/users/privacy` - Update privacy settings
-- GET `/api/users/suggestions` - Get suggested users
-
-## Error Handling
-
-The API uses a consistent error response format:
-```json
-{
-  "status": "error",
-  "message": "Error message"
-}
+```bash
+npm run build
 ```
 
-## Security
+2. 启动服务器：
 
-- Passwords are hashed using bcrypt
-- JWT tokens are used for authentication
-- Input validation and sanitization
-- Rate limiting (to be implemented)
-- CORS enabled
+```bash
+npm start
+```
 
-## Development
+## API 文档
 
-To run tests:
+### 认证
+
+- POST /api/auth/register - 用户注册
+- POST /api/auth/login - 用户登录
+- POST /api/auth/logout - 用户登出
+- GET /api/auth/me - 获取当前用户信息
+
+### 语音聊天
+
+- POST /api/voice-chat/rooms - 创建语音聊天房间
+- GET /api/voice-chat/rooms - 获取语音聊天房间列表
+- GET /api/voice-chat/rooms/:id - 获取单个语音聊天房间
+- POST /api/voice-chat/rooms/:id/join - 加入语音聊天房间
+- POST /api/voice-chat/rooms/:id/leave - 离开语音聊天房间
+- PATCH /api/voice-chat/rooms/:id/settings - 更新房间设置
+- POST /api/voice-chat/rooms/:id/recording/start - 开始录制
+- POST /api/voice-chat/rooms/:id/recording/stop - 停止录制
+- POST /api/voice-chat/rooms/:id/end - 结束房间
+
+## WebSocket 事件
+
+### 客户端到服务器
+
+- joinRoom - 加入房间
+- leaveRoom - 离开房间
+- mute - 静音/取消静音
+- raiseHand - 举手/取消举手
+- startRecording - 开始录制
+- stopRecording - 停止录制
+- reaction - 发送表情反应
+- transcript - 发送语音转文字
+- backgroundMusic - 控制背景音乐
+
+### 服务器到客户端
+
+- participantJoined - 新参与者加入
+- participantLeft - 参与者离开
+- participantMuted - 参与者静音状态变化
+- participantRaisedHand - 参与者举手状态变化
+- recordingStarted - 开始录制
+- recordingStopped - 停止录制
+- reaction - 收到表情反应
+- transcript - 收到语音转文字
+- backgroundMusic - 收到背景音乐控制
+- roomSettingsUpdated - 房间设置更新
+- roomEnded - 房间结束
+
+## 开发
+
+### 代码风格
+
+项目使用 ESLint 和 Prettier 进行代码格式化和检查：
+
+```bash
+npm run lint
+npm run format
+```
+
+### 测试
+
+运行测试：
+
 ```bash
 npm test
 ```
 
-## License
+## 贡献
 
-MIT 
+1. Fork 项目
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建 Pull Request
+
+## 许可证
+
+本项目采用 ISC 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。 

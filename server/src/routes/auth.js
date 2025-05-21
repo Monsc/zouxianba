@@ -4,115 +4,30 @@ const { User } = require('../models/User');
 const { auth } = require('../middleware/auth');
 const { catchAsync, AppError } = require('../middleware/errorHandler');
 const { upload } = require('../middleware/upload');
+const { body, validationResult } = require('express-validator');
+const AuthController = require('../controllers/AuthController');
 
 const router = express.Router();
 
 // Register
-router.post('/register', catchAsync(async (req, res) => {
-  const { username, email, password, handle } = req.body;
-
-  // Check if user already exists
-  const existingUser = await User.findOne({
-    $or: [{ email }, { username }, { handle }],
-  });
-
-  if (existingUser) {
-    throw new AppError('User already exists', 400);
-  }
-
-  // Create new user
-  const user = await User.create({
-    username,
-    email,
-    password,
-    handle,
-  });
-
-  // Generate token
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '7d',
-  });
-
-  res.status(201).json({
-    user: user.getPublicProfile(),
-    token,
-  });
-}));
+router.post('/register', AuthController.register);
 
 // Login
-router.post('/login', catchAsync(async (req, res) => {
-  const { email, password } = req.body;
+router.post('/login', AuthController.login);
 
-  // Find user
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new AppError('Invalid credentials', 401);
-  }
+// Logout
+router.post('/logout', auth, AuthController.logout);
 
-  // Check password
-  const isMatch = await user.comparePassword(password);
-  if (!isMatch) {
-    throw new AppError('Invalid credentials', 401);
-  }
-
-  // Generate token
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '7d',
-  });
-
-  res.json({
-    user: user.getPublicProfile(),
-    token,
-  });
-}));
+// Logout all devices
+router.post('/logout-all', auth, AuthController.logoutAll);
 
 // Get current user
-router.get('/me', auth, catchAsync(async (req, res) => {
-  res.json(req.user.getPublicProfile());
-}));
+router.get('/me', auth, AuthController.getCurrentUser);
 
 // Update user profile
-router.patch('/me', auth, upload.single('avatar'), catchAsync(async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ['username', 'email', 'password', 'bio', 'location', 'website'];
-  const isValidOperation = updates.every(update => allowedUpdates.includes(update));
-
-  if (!isValidOperation) {
-    throw new AppError('Invalid updates', 400);
-  }
-
-  updates.forEach(update => {
-    req.user[update] = req.body[update];
-  });
-
-  // 处理头像上传
-  if (req.file) {
-    req.user.avatar = '/uploads/' + req.file.filename;
-  }
-
-  await req.user.save();
-  res.json(req.user.getPublicProfile());
-}));
-
-// Change password
-router.post('/change-password', auth, catchAsync(async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-
-  const isMatch = await req.user.comparePassword(currentPassword);
-  if (!isMatch) {
-    throw new AppError('Current password is incorrect', 401);
-  }
-
-  req.user.password = newPassword;
-  await req.user.save();
-
-  res.json({ message: 'Password updated successfully' });
-}));
+router.patch('/me', auth, AuthController.updateUser);
 
 // Delete account
-router.delete('/me', auth, catchAsync(async (req, res) => {
-  await req.user.deleteOne();
-  res.json({ message: 'Account deleted successfully' });
-}));
+router.delete('/me', auth, AuthController.deleteUser);
 
 module.exports = router; 

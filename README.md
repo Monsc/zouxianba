@@ -1,97 +1,145 @@
-# 社交媒体平台
+# 走线吧 (Zouxianba) - 现代化社交媒体平台
 
-一个现代化的社交媒体平台，支持用户互动、内容分享和实时通信。
+一个面向百万级用户的现代化社交媒体平台，采用微服务架构设计，支持高并发、高可用的用户互动、内容分享和实时通信。
 
-## 功能特性
+## 系统架构
+
+### 前端架构
+- **框架**: Next.js 14 (App Router)
+- **UI**: React 18 + Tailwind CSS
+- **状态管理**: SWR + React Context
+- **实时通信**: Socket.IO Client
+- **构建工具**: Vite
+- **代码规范**: ESLint + Prettier
+- **测试**: Jest + React Testing Library
+
+### 后端架构
+- **主框架**: Node.js + Express
+- **数据库**: 
+  - MongoDB (主数据库)
+  - Redis (缓存层)
+  - Elasticsearch (搜索引擎)
+- **消息队列**: RabbitMQ
+- **实时通信**: Socket.IO
+- **认证**: JWT + Redis Session
+- **API文档**: Swagger/OpenAPI
+
+### 基础设施
+- **容器化**: Docker + Docker Compose
+- **编排**: Kubernetes
+- **CI/CD**: GitHub Actions
+- **监控**: Prometheus + Grafana
+- **日志**: ELK Stack
+- **CDN**: Cloudflare
+
+## 核心功能
 
 ### 用户系统
-- 用户注册和登录
-- 个人信息管理
-- 头像上传
-- 密码修改
-- 个人主页
+- 多方式注册登录 (邮箱、手机、第三方)
+- OAuth2.0 认证
+- 双因素认证 (2FA)
+- 用户画像系统
+- 账号安全中心
 
 ### 内容系统
-- 发布帖子
-- 支持图片上传
-- 编辑和删除帖子
-- 点赞和评论
-- 帖子详情页
+- 富文本编辑器
+- 图片/视频上传与处理
+- 内容审核系统
+- 内容推荐算法
+- 内容分发网络
 
 ### 社交系统
-- 关注/取消关注
-- 关注者列表
-- 关注中列表
-- 用户搜索
-
-### 通知系统
-- 点赞通知
-- 评论通知
-- 关注通知
-- @提及通知
-- 通知已读状态
+- 关注/粉丝系统
+- 用户关系图谱
+- 社交推荐
+- 用户互动分析
+- 社交影响力评估
 
 ### 消息系统
-- 私信列表
-- 实时聊天
-- 消息已读状态
-- 图片消息支持
+- 实时私信
+- 群组聊天
+- 消息加密
+- 消息撤回
+- 已读回执
+
+### 通知系统
+- 实时推送
+- 消息聚合
+- 智能通知
+- 通知偏好设置
+- 通知历史记录
 
 ### 搜索系统
-- 搜索帖子
-- 搜索用户
-- 实时搜索
-- 搜索结果分类
+- 全文搜索
+- 实时搜索建议
+- 搜索结果优化
+- 搜索历史记录
+- 热门搜索推荐
 
-### 设置系统
-- 个人信息设置
-- 头像设置
-- 密码设置
-- 主题设置（开发中）
-- 语言设置（开发中）
+## 技术特性
 
-## 技术栈
+### 高性能
+- 多级缓存策略
+- 数据库读写分离
+- 分布式会话管理
+- 请求合并与批处理
+- 静态资源优化
 
-### 前端
-- Next.js 14 (App Router)
-- React 18
-- JavaScript
-- Tailwind CSS
-- SWR (数据获取)
-- Socket.IO (实时通信)
+### 高可用
+- 服务自动扩缩容
+- 故障自动转移
+- 多区域部署
+- 灾备方案
+- 限流熔断
 
-### 后端
-- Node.js
-- Express
-- JavaScript
-- PostgreSQL
-- Redis
-- Socket.IO
+### 安全性
+- XSS/CSRF 防护
+- SQL 注入防护
+- 请求频率限制
+- 数据加密传输
+- 敏感信息脱敏
 
-### 工具和库
-- Prisma (ORM)
-- JWT (认证)
-- bcrypt (密码加密)
-- multer (文件上传)
-- date-fns (日期处理)
-- zod (数据验证)
+### 可扩展性
+- 微服务架构
+- 消息队列解耦
+- 分布式缓存
+- 服务发现
+- 配置中心
 
 ## 开发环境要求
 
 - Node.js 18+
-- PostgreSQL 14+
-- Redis 6+
+- MongoDB 6+
+- Redis 7+
+- RabbitMQ 3.9+
+- Docker 24+
 - pnpm 8+
 
-## 安装说明
+## 快速开始
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/social-media-platform.git
-cd social-media-platform
+git clone https://github.com/yourusername/zouxianba.git
+cd zouxianba
 ```
 
-2. 安装依赖
+2. 环境配置
+```bash
+# 复制环境变量文件
+cp .env.example .env
+cp .env.example .env.local
+
+# 编辑环境变量
+vim .env
+vim .env.local
+```
+
+3. 使用 Docker Compose 启动开发环境
+```bash
+docker-compose up -d
+```
+
+4. 安装依赖
 ```bash
 # 安装后端依赖
 cd server
@@ -102,30 +150,13 @@ cd ../client
 pnpm install
 ```
 
-3. 环境配置
-```bash
-# 后端环境变量
-cp .env.example .env
-# 编辑 .env 文件，配置数据库和 Redis 连接信息
-
-# 前端环境变量
-cp .env.example .env.local
-# 编辑 .env.local 文件，配置 API 地址
-```
-
-4. 数据库迁移
-```bash
-cd server
-pnpm prisma migrate dev
-```
-
 5. 启动开发服务器
 ```bash
-# 启动后端服务器
+# 启动后端服务
 cd server
 pnpm dev
 
-# 启动前端服务器
+# 启动前端服务
 cd ../client
 pnpm dev
 ```
@@ -144,24 +175,31 @@ pnpm dev
 │   │   └── utils/         # 工具函数
 │   └── public/            # 静态资源
 │
-└── server/                # 后端项目
-    ├── src/
-    │   ├── controllers/   # 控制器
-    │   ├── middleware/    # 中间件
-    │   ├── models/        # 数据模型
-    │   ├── routes/        # 路由
-    │   ├── services/      # 业务逻辑
-    │   └── utils/         # 工具函数
-    └── prisma/            # 数据库模型
+├── server/                # 后端项目
+│   ├── src/
+│   │   ├── config/       # 配置文件
+│   │   ├── core/         # 核心功能
+│   │   ├── api/          # API 路由
+│   │   ├── services/     # 业务逻辑层
+│   │   ├── repositories/ # 数据访问层
+│   │   ├── models/       # 数据模型
+│   │   ├── middlewares/  # 中间件
+│   │   └── utils/        # 工具函数
+│   └── tests/            # 测试文件
+│
+├── docker/               # Docker 配置
+├── scripts/             # 部署脚本
+└── docs/               # 项目文档
 ```
 
 ## 开发规范
 
-### 代码风格
+### 代码规范
 - 使用 ESLint 和 Prettier 进行代码格式化
 - 遵循 TypeScript 严格模式
 - 使用函数组件和 Hooks
 - 使用 Tailwind CSS 进行样式管理
+- 遵循 RESTful API 设计规范
 
 ### Git 提交规范
 - feat: 新功能
@@ -177,34 +215,39 @@ pnpm dev
 - develop: 开发分支，用于开发环境
 - feature/*: 功能分支，用于开发新功能
 - bugfix/*: 修复分支，用于修复问题
+- release/*: 发布分支，用于版本发布
 
 ## 部署
 
-### 前端部署
-1. 构建生产版本
+### 开发环境
 ```bash
-cd client
-pnpm build
+docker-compose up -d
 ```
 
-2. 部署到服务器
+### 测试环境
 ```bash
-# 使用 PM2 部署
-pm2 start npm --name "social-media-client" -- start
+kubectl apply -f k8s/test/
 ```
 
-### 后端部署
-1. 构建生产版本
+### 生产环境
 ```bash
-cd server
-pnpm build
+kubectl apply -f k8s/prod/
 ```
 
-2. 部署到服务器
-```bash
-# 使用 PM2 部署
-pm2 start npm --name "social-media-server" -- start
-```
+## 监控与运维
+
+### 系统监控
+- 使用 Prometheus 收集指标
+- 使用 Grafana 展示监控面板
+- 使用 ELK Stack 收集日志
+- 使用 Sentry 进行错误追踪
+
+### 性能优化
+- 使用 Redis 缓存热点数据
+- 使用 CDN 加速静态资源
+- 使用消息队列处理异步任务
+- 使用数据库索引优化查询
+- 使用负载均衡分发请求
 
 ## 贡献指南
 
