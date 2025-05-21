@@ -5,7 +5,7 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useAuth } from '@/hooks/useAuth';
 import { CommentService } from '@/services/CommentService';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from './ui/toaster';
 import { useToast } from '@/hooks/useToast';
 
 export const CommentList = ({
@@ -61,7 +61,7 @@ export const CommentList = ({
       )}
 
       {comments.length === 0 ? (
-        <EmptyState
+        <Toaster
           title="暂无评论"
           description="来发表第一条评论吧"
           icon="message"

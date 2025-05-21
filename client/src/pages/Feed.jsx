@@ -7,7 +7,7 @@ import { PostService } from '@/services/PostService';
 import { LazyImage } from '@/components/LazyImage';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { EmptyState } from '@/components/EmptyState';
+import { Toaster } from '../components/ui/toaster';
 import { useToast } from '@/hooks/useToast';
 
 export const Feed = () => {
@@ -85,7 +85,7 @@ export const Feed = () => {
 
   if (posts.length === 0) {
     return (
-      <EmptyState
+      <Toaster
         title="暂无内容"
         description="关注更多用户或发布新内容来丰富你的信息流"
         action={

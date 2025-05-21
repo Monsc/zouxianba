@@ -13,7 +13,7 @@ import { Avatar } from './Avatar';
 import { Button } from './Button';
 import { Textarea } from './Textarea';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from '../components/ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
@@ -135,7 +135,7 @@ export const PostDetail = ({ postId }) => {
 
   if (!post) {
     return (
-      <EmptyState
+      <Toaster
         title="帖子不存在"
         description="该帖子可能已被删除或不存在"
         icon="post"
@@ -260,7 +260,7 @@ export const PostDetail = ({ postId }) => {
           {/* 评论列表 */}
           <div className="mt-6 space-y-6">
             {comments.length === 0 ? (
-              <EmptyState
+              <Toaster
                 title="暂无评论"
                 description="来发表第一条评论吧"
                 icon="comment"

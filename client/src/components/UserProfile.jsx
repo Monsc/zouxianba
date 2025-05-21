@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from '../components/ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
@@ -99,7 +99,7 @@ export const UserProfile = ({ userId }) => {
 
   if (!user) {
     return (
-      <EmptyState
+      <Toaster
         title="用户不存在"
         description="该用户可能已被删除或不存在"
         icon="user"

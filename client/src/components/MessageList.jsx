@@ -7,7 +7,7 @@ import { MessageService } from '@/services/MessageService';
 import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from '../components/ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
@@ -65,7 +65,7 @@ export const MessageList = () => {
 
   if (conversations.length === 0) {
     return (
-      <EmptyState
+      <Toaster
         title="暂无消息"
         description="开始与其他用户聊天吧"
         icon="message"

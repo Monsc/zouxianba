@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from './ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
@@ -130,7 +130,7 @@ export const SearchResults = () => {
           <LoadingSpinner size="lg" />
         </div>
       ) : results.length === 0 ? (
-        <EmptyState
+        <Toaster
           title="暂无结果"
           description="尝试使用其他关键词搜索"
           icon="search"

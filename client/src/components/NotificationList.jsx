@@ -7,7 +7,7 @@ import { NotificationService } from '@/services/NotificationService';
 import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from './ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
@@ -132,7 +132,7 @@ export const NotificationList = () => {
 
   if (notifications.length === 0) {
     return (
-      <EmptyState
+      <Toaster
         title="暂无通知"
         description="当有人与你互动时，你会在这里收到通知"
         icon="bell"

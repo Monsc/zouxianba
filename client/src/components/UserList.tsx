@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from '../components/ui/toaster';
 import { Icon } from './Icon';
 
 export const UserList = ({ userId, type }) => {
@@ -105,7 +105,7 @@ export const UserList = ({ userId, type }) => {
 
   if (users.length === 0) {
     return (
-      <EmptyState
+      <Toaster
         title={`暂无${type === 'followers' ? '关注者' : '关注'}`}
         description={`该用户还没有${type === 'followers' ? '关注者' : '关注任何用户'}`}
         icon="users"

@@ -5,7 +5,7 @@ import { SearchService, SearchResult } from '@/services/SearchService';
 import { UserCard } from './UserCard';
 import { Post } from './Post';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EmptyState } from './EmptyState';
+import { Toaster } from './ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -177,7 +177,7 @@ export const Search: React.FC<SearchProps> = ({ className }) => {
                   results.posts.length === 0) ||
                   (activeTab === 'users' && results.users.length === 0) ||
                   (activeTab === 'posts' && results.posts.length === 0)) && (
-                  <EmptyState
+                  <Toaster
                     title="未找到结果"
                     description="尝试使用其他关键词搜索"
                     icon="search"
@@ -201,7 +201,7 @@ export const Search: React.FC<SearchProps> = ({ className }) => {
                 )}
               </>
             ) : (
-              <EmptyState
+              <Toaster
                 title="开始搜索"
                 description="输入关键词搜索用户或帖子"
                 icon="search"
