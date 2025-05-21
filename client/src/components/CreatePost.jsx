@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../components/ui/button';
 import { Icon } from './Icon';
 import { Avatar } from './Avatar';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
-import { PostService } from '@/services/PostService';
-import { cn } from '@/lib/utils';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
+import { PostService } from '../services/PostService';
+import { cn } from '../lib/utils';
 
 export const CreatePost = ({ onPostCreated }) => {
   const { user } = useAuth();
