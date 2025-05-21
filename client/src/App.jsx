@@ -11,13 +11,13 @@ import { Button } from './components/Button';
 import { notificationService } from './services/notification';
 
 // 页面组件
-import { Home } from './pages/Home';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import { Profile } from './pages/Profile';
 import Settings from './pages/Settings';
 import { NotFound } from './pages/NotFound';
-import { Feed } from './components/Feed';
+import Feed from './components/Feed';
 
 // 管理页面组件
 import Dashboard from './pages/admin/Dashboard';
