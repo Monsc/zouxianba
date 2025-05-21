@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { UserService, User } from '@/services/UserService';
-import { PostService, Post } from '@/services/PostService';
+import { UserService } from '@/services/UserService';
+import { PostService } from '@/services/PostService';
 import { FollowService } from '@/services/FollowService';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
@@ -17,19 +17,15 @@ import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
-interface UserProfileProps {
-  userId: string;
-}
-
-export const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
+export const UserProfile = ({ userId }) => {
   const router = useRouter();
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
-  const [user, setUser] = useState<User | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'posts' | 'likes'>('posts');
+  const [activeTab, setActiveTab] = useState('posts');
 
   // 使用无限滚动加载更多帖子
   const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({

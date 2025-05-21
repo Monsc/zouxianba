@@ -18,17 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical, Search, UserPlus } from 'lucide-react';
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  status: 'active' | 'suspended' | 'banned';
-  lastLogin: string;
-  createdAt: string;
-}
-
-const mockUsers: User[] = [
+const mockUsers = [
   {
     id: '1',
     username: '张三',
@@ -52,20 +42,20 @@ const mockUsers: User[] = [
 
 export default function Users() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState(mockUsers);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = (query) => {
     setSearchQuery(query);
     // 实现搜索逻辑
   };
 
-  const handleStatusChange = (userId: string, newStatus: User['status']) => {
+  const handleStatusChange = (userId, newStatus) => {
     setUsers(users.map(user => 
       user.id === userId ? { ...user, status: newStatus } : user
     ));
   };
 
-  const handleRoleChange = (userId: string, newRole: string) => {
+  const handleRoleChange = (userId, newRole) => {
     setUsers(users.map(user => 
       user.id === userId ? { ...user, role: newRole } : user
     ));

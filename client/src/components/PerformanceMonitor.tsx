@@ -3,14 +3,7 @@
 import React, { useEffect } from 'react';
 import { performanceConfig } from '@/config/performance';
 
-interface PerformanceMetrics {
-  fcp: number;
-  lcp: number;
-  fid: number;
-  cls: number;
-}
-
-export const PerformanceMonitor: React.FC = () => {
+export const PerformanceMonitor = () => {
   useEffect(() => {
     // 监控 First Contentful Paint (FCP)
     const fcpObserver = new PerformanceObserver((list) => {

@@ -13,7 +13,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
-export const SettingsForm: React.FC = () => {
+export const SettingsForm = () => {
   const router = useRouter();
   const { user, updateUser } = useAuth();
   const { showToast } = useToast();

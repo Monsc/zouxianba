@@ -104,7 +104,7 @@ const templateTypes = [
 ];
 
 export default function EmailTemplates() {
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
 
@@ -113,17 +113,17 @@ export default function EmailTemplates() {
     console.log('创建模板');
   };
 
-  const handleEdit = (id: string) => {
+  const handleEdit = (id) => {
     setSelectedTemplate(id);
     setIsEditing(true);
   };
 
-  const handlePreview = (id: string) => {
+  const handlePreview = (id) => {
     setSelectedTemplate(id);
     setIsPreviewing(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id) => {
     // 实现删除模板的逻辑
     console.log('删除模板', id);
   };
@@ -279,34 +279,26 @@ export default function EmailTemplates() {
             </div>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>模板名称</Label>
-                  <Input
-                    defaultValue={
-                      templates.find((t) => t.id === selectedTemplate)?.name
-                    }
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div>
-                  <Label>邮件主题</Label>
-                  <Input
-                    defaultValue={
-                      templates.find((t) => t.id === selectedTemplate)?.subject
-                    }
-                    disabled={!isEditing}
-                  />
-                </div>
+              <div>
+                <Label>模板名称</Label>
+                <Input
+                  defaultValue={templates.find((t) => t.id === selectedTemplate)?.name}
+                  disabled={!isEditing}
+                />
               </div>
               <div>
-                <Label>模板内容</Label>
-                <Textarea
-                  defaultValue={
-                    templates.find((t) => t.id === selectedTemplate)?.content
-                  }
-                  rows={10}
+                <Label>邮件主题</Label>
+                <Input
+                  defaultValue={templates.find((t) => t.id === selectedTemplate)?.subject}
                   disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <Label>邮件内容</Label>
+                <Textarea
+                  defaultValue={templates.find((t) => t.id === selectedTemplate)?.content}
+                  disabled={!isEditing}
+                  className="h-[400px]"
                 />
               </div>
               <div>

@@ -1,4 +1,4 @@
-import { api } from './api';
+import { api } from '@/lib/api';
 
 export class PostService {
   static async getPosts(page = 1, limit = 10) {

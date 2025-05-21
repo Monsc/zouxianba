@@ -1,17 +1,17 @@
-import { api } from './api';
+import { api } from '@/lib/api';
 
 export const LikeService = {
-  async like(postId: string) {
+  async like(postId) {
     const response = await api.post(`/posts/${postId}/like`);
     return response.data;
   },
 
-  async unlike(postId: string) {
+  async unlike(postId) {
     const response = await api.delete(`/posts/${postId}/like`);
     return response.data;
   },
 
-  async isLiked(postId: string) {
+  async isLiked(postId) {
     const response = await api.get(`/posts/${postId}/like`);
     return response.data;
   },

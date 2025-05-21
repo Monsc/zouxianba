@@ -55,7 +55,7 @@
 ### 前端
 - Next.js 14 (App Router)
 - React 18
-- TypeScript
+- JavaScript
 - Tailwind CSS
 - SWR (数据获取)
 - Socket.IO (实时通信)
@@ -63,7 +63,7 @@
 ### 后端
 - Node.js
 - Express
-- TypeScript
+- JavaScript
 - PostgreSQL
 - Redis
 - Socket.IO

@@ -10,12 +10,12 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { EmptyState } from '@/components/EmptyState';
 import { useToast } from '@/hooks/useToast';
 
-export const Feed: React.FC = () => {
+export const Feed = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   // 使用无限滚动加载更多帖子
   const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
@@ -52,13 +52,13 @@ export const Feed: React.FC = () => {
   }, []);
 
   // 处理新帖子发布
-  const handlePostCreated = (newPost: Post) => {
+  const handlePostCreated = (newPost) => {
     setPosts((prevPosts) => [newPost, ...prevPosts]);
     showToast('发布成功', 'success');
   };
 
   // 处理帖子删除
-  const handlePostDeleted = (postId: string) => {
+  const handlePostDeleted = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
     showToast('删除成功', 'success');
   };

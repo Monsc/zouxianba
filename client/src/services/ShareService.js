@@ -1,30 +1,17 @@
 import { api } from '@/lib/api';
 
-export interface ShareOptions {
-  postId: string;
-  platform: 'wechat' | 'weibo' | 'qq' | 'link';
-  title?: string;
-  description?: string;
-  image?: string;
-}
-
-export interface ShareResponse {
-  url: string;
-  qrCode?: string;
-}
-
 export class ShareService {
-  static async sharePost(options: ShareOptions): Promise<ShareResponse> {
+  static async sharePost(options) {
     const response = await api.post('/share', options);
     return response.data;
   }
 
-  static async getShareCount(postId: string): Promise<number> {
+  static async getShareCount(postId) {
     const response = await api.get(`/posts/${postId}/share-count`);
     return response.data.count;
   }
 
-  static async copyToClipboard(text: string): Promise<void> {
+  static async copyToClipboard(text) {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(text);
     } else {

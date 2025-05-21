@@ -1,16 +1,16 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
-import rateLimit from 'express-rate-limit';
-import session from 'express-session';
-import RedisStore from 'connect-redis';
-import { createClient } from 'redis';
-import { PrismaClient } from '@prisma/client';
-import { errorHandler } from './middleware/errorHandler';
-import { securityMiddleware } from './middleware/security';
-import { performanceMiddleware } from './middleware/performance';
-import routes from './routes';
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const session = require('express-session');
+const RedisStore = require('connect-redis').default;
+const { createClient } = require('redis');
+const { PrismaClient } = require('@prisma/client');
+const { errorHandler } = require('./middleware/errorHandler');
+const { securityMiddleware } = require('./middleware/security');
+const { performanceMiddleware } = require('./middleware/performance');
+const routes = require('./routes');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 // 会话配置
 app.use(session({
   store: new RedisStore({ client: redisClient }),
-  secret: process.env.SESSION_SECRET!,
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -81,4 +81,4 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-export default app; 
+module.exports = app; 

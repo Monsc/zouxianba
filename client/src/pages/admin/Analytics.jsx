@@ -56,19 +56,7 @@ const timeRanges = [
   { value: 'custom', label: '自定义' },
 ];
 
-const StatCard = ({
-  title,
-  value,
-  icon: Icon,
-  growth,
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  icon: React.ElementType;
-  growth?: number;
-  trend?: 'up' | 'down';
-}) => (
+const StatCard = ({ title, value, icon: Icon, growth, trend }) => (
   <Card className="p-6">
     <div className="flex items-center justify-between">
       <div>

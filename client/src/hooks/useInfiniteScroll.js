@@ -1,33 +1,18 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-interface UseInfiniteScrollOptions<T> {
-  fetchData: (page: number) => Promise<T[]>;
-  initialData: T[];
-  setData: (data: T[]) => void;
-  threshold?: number;
-  pageSize?: number;
-}
-
-interface UseInfiniteScrollResult {
-  loadMore: () => Promise<void>;
-  hasMore: boolean;
-  loading: boolean;
-  error: Error | null;
-}
-
-export function useInfiniteScroll<T>({
+export function useInfiniteScroll({
   fetchData,
   initialData,
   setData,
   threshold = 100,
   pageSize = 10,
-}: UseInfiniteScrollOptions<T>): UseInfiniteScrollResult {
+}) {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true);
-  const observer = useRef<IntersectionObserver | null>(null);
-  const loadingRef = useRef<HTMLDivElement>(null);
+  const observer = useRef(null);
+  const loadingRef = useRef(null);
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;

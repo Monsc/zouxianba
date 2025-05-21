@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { MessageService, Conversation } from '@/services/MessageService';
+import { MessageService } from '@/services/MessageService';
 import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
 import { LoadingSpinner } from './LoadingSpinner';
@@ -13,10 +13,10 @@ import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
-export const MessageList: React.FC = () => {
+export const MessageList = () => {
   const router = useRouter();
   const { showToast } = useToast();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // 使用无限滚动加载更多会话
@@ -53,7 +53,7 @@ export const MessageList: React.FC = () => {
   }, []);
 
   // 处理会话点击
-  const handleConversationClick = (conversationId: string) => {
+  const handleConversationClick = (conversationId) => {
     router.push(`/messages/${conversationId}`);
   };
 

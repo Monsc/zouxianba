@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { UserService, User } from '@/services/UserService';
+import { UserService } from '@/services/UserService';
 import { FollowService } from '@/services/FollowService';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
@@ -15,18 +15,13 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';
 
-interface UserListProps {
-  userId: string;
-  type: 'followers' | 'following';
-}
-
-export const UserList: React.FC<UserListProps> = ({ userId, type }) => {
+export const UserList = ({ userId, type }) => {
   const router = useRouter();
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
+  const [followingMap, setFollowingMap] = useState({});
 
   // 使用无限滚动加载更多用户
   const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
@@ -78,7 +73,7 @@ export const UserList: React.FC<UserListProps> = ({ userId, type }) => {
   }, [userId, type, currentUser]);
 
   // 关注/取消关注
-  const handleFollow = async (targetUserId: string) => {
+  const handleFollow = async (targetUserId) => {
     if (!currentUser) {
       router.push('/login');
       return;

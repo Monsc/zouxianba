@@ -1,14 +1,18 @@
 {
   "name": "zxb",
   "version": "1.0.0",
-  "description": "走线吧全栈应用",
+  "description": "Full-stack social media application",
+  "main": "index.js",
   "scripts": {
-    "dev:backend": "cd server && npm run dev",
-    "dev:frontend": "cd client && npm run dev",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
-    "build": "cd server && npm install && cd ../client && npm install && npm run build"
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "dev:backend": "cd server; pnpm dev",
+    "dev:frontend": "cd client; pnpm dev",
+    "install:all": "pnpm install; cd server; pnpm install; cd ../client; pnpm install",
+    "build": "cd server; pnpm build; cd ../client; pnpm build"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
   },

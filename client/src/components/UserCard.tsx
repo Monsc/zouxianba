@@ -1,25 +1,13 @@
 import React, { useState } from 'react';
 import { Avatar } from './Avatar';
 import { Button } from '@/components/ui/button';
-import { FollowService, User } from '@/services/FollowService';
+import { FollowService } from '@/services/FollowService';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-interface UserCardProps {
-  user: User;
-  onFollowChange?: (userId: string, isFollowing: boolean) => void;
-  showBio?: boolean;
-  showStats?: boolean;
-}
-
-export const UserCard: React.FC<UserCardProps> = ({
-  user,
-  onFollowChange,
-  showBio = true,
-  showStats = true,
-}) => {
+export const UserCard = ({ user, onFollowChange, showBio = true, showStats = true }) => {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);

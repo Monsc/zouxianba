@@ -26,19 +26,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Search, MoreVertical, Eye, Flag, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 
-interface Comment {
-  id: string;
-  content: string;
-  author: string;
-  postTitle: string;
-  status: 'pending' | 'approved' | 'rejected';
-  reportCount: number;
-  createdAt: string;
-  isReply: boolean;
-  parentComment?: string;
-}
-
-const mockComments: Comment[] = [
+const mockComments = [
   {
     id: '1',
     content: '这篇文章写得很好，对我帮助很大！',
@@ -65,25 +53,25 @@ const mockComments: Comment[] = [
 
 export default function Comments() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [comments, setComments] = useState<Comment[]>(mockComments);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [comments, setComments] = useState(mockComments);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = (query) => {
     setSearchQuery(query);
     // 实现搜索逻辑
   };
 
-  const handleStatusChange = (commentId: string, newStatus: Comment['status']) => {
+  const handleStatusChange = (commentId, newStatus) => {
     setComments(comments.map(comment => 
       comment.id === commentId ? { ...comment, status: newStatus } : comment
     ));
   };
 
-  const handleDelete = (commentId: string) => {
+  const handleDelete = (commentId) => {
     setComments(comments.filter(comment => comment.id !== commentId));
   };
 
-  const getStatusBadge = (status: Comment['status']) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
         return <Badge variant="secondary">待审核</Badge>;

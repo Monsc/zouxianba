@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { NotificationService, Notification } from '@/services/NotificationService';
+import { NotificationService } from '@/services/NotificationService';
 import { useToast } from '@/hooks/useToast';
 import { Avatar } from './Avatar';
 import { LoadingSpinner } from './LoadingSpinner';
@@ -13,10 +13,10 @@ import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
-export const NotificationList: React.FC = () => {
+export const NotificationList = () => {
   const router = useRouter();
   const { showToast } = useToast();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // 使用无限滚动加载更多通知
@@ -53,7 +53,7 @@ export const NotificationList: React.FC = () => {
   }, []);
 
   // 标记通知为已读
-  const handleMarkAsRead = async (notificationId: string) => {
+  const handleMarkAsRead = async (notificationId) => {
     try {
       await NotificationService.markAsRead(notificationId);
       setNotifications((prev) =>
@@ -70,7 +70,7 @@ export const NotificationList: React.FC = () => {
   };
 
   // 处理通知点击
-  const handleNotificationClick = async (notification: Notification) => {
+  const handleNotificationClick = async (notification) => {
     if (!notification.read) {
       await handleMarkAsRead(notification.id);
     }
@@ -93,7 +93,7 @@ export const NotificationList: React.FC = () => {
   };
 
   // 获取通知图标
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = (type) => {
     switch (type) {
       case 'like':
         return 'heart';
@@ -109,7 +109,7 @@ export const NotificationList: React.FC = () => {
   };
 
   // 获取通知文本
-  const getNotificationText = (notification: Notification) => {
+  const getNotificationText = (notification) => {
     switch (notification.type) {
       case 'like':
         return '赞了你的帖子';

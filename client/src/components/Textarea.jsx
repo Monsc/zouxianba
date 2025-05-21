@@ -1,11 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  error?: string;
-}
-
-export const Textarea: React.FC<TextareaProps> = ({ className, error, ...props }) => {
+export const Textarea = ({ className, error, ...props }) => {
   return (
     <div className="space-y-1">
       <textarea

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { PostService, Post, Comment } from '@/services/PostService';
+import { PostService } from '@/services/PostService';
 import { LikeService } from '@/services/LikeService';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
@@ -17,16 +17,12 @@ import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
-interface PostDetailProps {
-  postId: string;
-}
-
-export const PostDetail: React.FC<PostDetailProps> = ({ postId }) => {
+export const PostDetail = ({ postId }) => {
   const router = useRouter();
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [commentContent, setCommentContent] = useState('');

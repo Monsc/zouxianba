@@ -12,17 +12,13 @@ import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 
-type SearchType = 'all' | 'users' | 'posts';
-
-export const SearchResults: React.FC = () => {
+export const SearchResults = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { showToast } = useToast();
   const [query, setQuery] = useState(searchParams.get('q') || '');
-  const [type, setType] = useState<SearchType>(
-    (searchParams.get('type') as SearchType) || 'all'
-  );
-  const [results, setResults] = useState<any[]>([]);
+  const [type, setType] = useState('all');
+  const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // 使用无限滚动加载更多结果
@@ -41,7 +37,7 @@ export const SearchResults: React.FC = () => {
   });
 
   // 处理搜索
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
 
@@ -61,11 +57,11 @@ export const SearchResults: React.FC = () => {
   // 当 URL 参数变化时更新搜索
   useEffect(() => {
     const urlQuery = searchParams.get('q');
-    const urlType = searchParams.get('type') as SearchType;
+    const urlType = searchParams.get('type');
     if (urlQuery && urlQuery !== query) {
       setQuery(urlQuery);
       setType(urlType || 'all');
-      handleSearch(new Event('submit') as any);
+      handleSearch(new Event('submit'));
     }
   }, [searchParams]);
 
@@ -215,7 +211,7 @@ export const SearchResults: React.FC = () => {
                       </p>
                       {result.images && result.images.length > 0 && (
                         <div className="mt-2 grid grid-cols-2 gap-2">
-                          {result.images.slice(0, 2).map((image: string, index: number) => (
+                          {result.images.slice(0, 2).map((image, index) => (
                             <img
                               key={index}
                               src={image}

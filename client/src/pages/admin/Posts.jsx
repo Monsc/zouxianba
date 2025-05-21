@@ -26,18 +26,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Search, MoreVertical, Eye, Flag, CheckCircle, XCircle } from 'lucide-react';
 
-interface Post {
-  id: string;
-  title: string;
-  author: string;
-  content: string;
-  status: 'pending' | 'approved' | 'rejected';
-  reportCount: number;
-  createdAt: string;
-  category: string;
-}
-
-const mockPosts: Post[] = [
+const mockPosts = [
   {
     id: '1',
     title: '如何提高编程效率',
@@ -63,22 +52,22 @@ const mockPosts: Post[] = [
 
 export default function Posts() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [posts, setPosts] = useState<Post[]>(mockPosts);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [posts, setPosts] = useState(mockPosts);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = (query) => {
     setSearchQuery(query);
     // 实现搜索逻辑
   };
 
-  const handleStatusChange = (postId: string, newStatus: Post['status']) => {
+  const handleStatusChange = (postId, newStatus) => {
     setPosts(posts.map(post => 
       post.id === postId ? { ...post, status: newStatus } : post
     ));
   };
 
-  const getStatusBadge = (status: Post['status']) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
         return <Badge variant="secondary">待审核</Badge>;
