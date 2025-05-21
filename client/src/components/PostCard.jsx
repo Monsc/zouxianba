@@ -189,5 +189,3 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
     </div>
   );
 };
-
-export { PostCard };

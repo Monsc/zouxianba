@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchUsers, searchPosts } from '../services/api';
-import PostCard from '../components/PostCard';
+import { PostCard } from '../components/PostCard';
 
 function Search() {
   const [query, setQuery] = useState('');

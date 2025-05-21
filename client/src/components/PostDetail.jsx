@@ -16,6 +16,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { Toaster } from '../components/ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
+import { PostCard } from './PostCard';
 
 export const PostDetail = ({ postId }) => {
   const router = useRouter();

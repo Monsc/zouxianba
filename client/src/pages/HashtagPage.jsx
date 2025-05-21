@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getTrendingTopics } from '../services/api';
 import PostList from '../components/PostList';
+import { PostCard } from '../components/PostCard';
 
 const TopicPage = () => {
   const { tag } = useParams();

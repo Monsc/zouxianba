@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getMentions } from '../services/api';
-import PostCard from '../components/PostCard';
+import { PostCard } from '../components/PostCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useTheme } from '../contexts/ThemeContext';

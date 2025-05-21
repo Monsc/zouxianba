@@ -226,5 +226,3 @@ export const CreatePost = ({ onPostCreated }) => {
     </form>
   );
 };
-
-export { CreatePost };

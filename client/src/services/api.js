@@ -375,3 +375,20 @@ export default api;
 
 // 导出 fetchApi 函数
 export { fetchApi };
+
+// 导出 API 方法
+export const getMessages = apiService.getMessages.bind(apiService);
+export const sendImageMessage = apiService.sendImageMessage.bind(apiService);
+export const sendMessage = apiService.sendMessage.bind(apiService);
+export const getRecommendedUsers = apiService.getRecommendedUsers.bind(apiService);
+export const getTrendingTopics = apiService.getTrendingTopics.bind(apiService);
+export const unfollowUser = apiService.unfollowUser.bind(apiService);
+export const followUser = apiService.followUser.bind(apiService);
+export const getMentions = apiService.getMentions.bind(apiService);
+export const getConversations = apiService.getConversations.bind(apiService);
+export const getPost = apiService.getPost.bind(apiService);
+export const getComments = apiService.getComments.bind(apiService);
+export const likePost = apiService.likePost.bind(apiService);
+export const createComment = apiService.createComment.bind(apiService);
+export const searchUsers = apiService.searchUsers.bind(apiService);
+export const searchPosts = apiService.searchPosts.bind(apiService);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDebounce } from '@/hooks/useDebounce';
-import { SearchService, SearchResult } from '@/services/SearchService';
+import { SearchService } from '@/services/SearchService';
 import { UserCard } from './UserCard';
 import { Post } from './Post';
 import { LoadingSpinner } from './LoadingSpinner';
@@ -10,24 +10,20 @@ import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-interface SearchProps {
-  className?: string;
-}
-
-export const Search: React.FC<SearchProps> = ({ className }) => {
+export const Search = ({ className }) => {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<SearchResult | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'users' | 'posts'>('all');
+  const [results, setResults] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');
   const debouncedQuery = useDebounce(query, 300);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef(null);
 
   // 处理点击外部关闭搜索结果
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
@@ -58,12 +54,12 @@ export const Search: React.FC<SearchProps> = ({ className }) => {
     performSearch();
   }, [debouncedQuery, activeTab]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e) => {
     setQuery(e.target.value);
     setIsOpen(true);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query)}`);
       setIsOpen(false);
