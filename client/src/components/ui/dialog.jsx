@@ -93,6 +93,63 @@ const DialogDescription = React.forwardRef(({ className, ...props }, ref) => (
 ))
 DialogDescription.displayName = DialogPrimitive.Description.displayName
 
+export const AlertDialog = ({ children }) => {
+  return <div className="fixed inset-0 z-50 flex items-center justify-center">{children}</div>;
+};
+
+export const AlertDialogTrigger = ({ children }) => {
+  return <div className="cursor-pointer">{children}</div>;
+};
+
+export const AlertDialogContent = ({ children }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50" />
+      <div className="relative z-50 w-full max-w-lg p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+export const AlertDialogHeader = ({ children }) => {
+  return <div className="mb-4">{children}</div>;
+};
+
+export const AlertDialogTitle = ({ children }) => {
+  return <h2 className="text-lg font-semibold">{children}</h2>;
+};
+
+export const AlertDialogDescription = ({ children }) => {
+  return <p className="text-sm text-gray-500 dark:text-gray-400">{children}</p>;
+};
+
+export const AlertDialogFooter = ({ children }) => {
+  return <div className="mt-6 flex justify-end space-x-3">{children}</div>;
+};
+
+export const AlertDialogCancel = ({ children, ...props }) => {
+  return (
+    <button
+      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+export const AlertDialogAction = ({ children, ...props }) => {
+  return (
+    <button
+      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
 export {
   Dialog,
   DialogPortal,

@@ -4,55 +4,48 @@ import { zhCN } from 'date-fns/locale';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
 import { Icon } from './Icon';
-import { Notification } from '@/services/NotificationService';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-interface NotificationItemProps {
-  notification: Notification;
-  onDelete: (notificationId: string) => void;
-  onMarkAsRead: (notificationId: string) => void;
-}
-
-const getNotificationIcon = (type: Notification['type']) => {
-  switch (type) {
-    case 'like':
-      return 'heart-filled';
-    case 'comment':
-      return 'message';
-    case 'follow':
-      return 'user-plus';
-    case 'mention':
-      return 'at';
-    case 'system':
-      return 'bell';
-    default:
-      return 'bell';
-  }
-};
-
-const getNotificationColor = (type: Notification['type']) => {
-  switch (type) {
-    case 'like':
-      return 'text-red-500';
-    case 'comment':
-      return 'text-blue-500';
-    case 'follow':
-      return 'text-green-500';
-    case 'mention':
-      return 'text-purple-500';
-    case 'system':
-      return 'text-gray-500';
-    default:
-      return 'text-gray-500';
-  }
-};
-
-export const NotificationItem: React.FC<NotificationItemProps> = ({
+export const NotificationItem = ({
   notification,
   onDelete,
   onMarkAsRead,
 }) => {
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'like':
+        return 'heart-filled';
+      case 'comment':
+        return 'message';
+      case 'follow':
+        return 'user-plus';
+      case 'mention':
+        return 'at';
+      case 'system':
+        return 'bell';
+      default:
+        return 'bell';
+    }
+  };
+
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case 'like':
+        return 'text-red-500';
+      case 'comment':
+        return 'text-blue-500';
+      case 'follow':
+        return 'text-green-500';
+      case 'mention':
+        return 'text-purple-500';
+      case 'system':
+        return 'text-gray-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+
   const getNotificationLink = () => {
     if (notification.data.postId) {
       return `/posts/${notification.data.postId}`;

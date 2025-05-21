@@ -1,38 +1,37 @@
-import React, { createContext, useContext } from 'react';
-import toast from 'react-hot-toast';
+import React, { createContext, useContext, useState } from 'react';
 
-export const ToastContext = createContext();
+const ToastContext = createContext();
 
-export function ToastProvider({ children }) {
-  const showToast = (message, type = 'success') => {
-    switch (type) {
-      case 'success':
-        toast.success(message);
-        break;
-      case 'error':
-        toast.error(message);
-        break;
-      case 'loading':
-        toast.loading(message);
-        break;
-      default:
-        toast(message);
-    }
-  };
-
-  return (
-    <ToastContext.Provider value={{ showToast }}>
-      {children}
-    </ToastContext.Provider>
-  );
-}
-
-export function useToast() {
+export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
     throw new Error('useToast must be used within a ToastProvider');
   }
   return context;
-}
+};
 
-export default ToastContext; 
+export const ToastProvider = ({ children }) => {
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = 'info') => {
+    const id = Date.now();
+    setToasts((prevToasts) => [...prevToasts, { id, message, type }]);
+    setTimeout(() => {
+      removeToast(id);
+    }, 5000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+  };
+
+  const value = {
+    toasts,
+    addToast,
+    removeToast,
+  };
+
+  return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;
+};
+
+export default ToastProvider; 

@@ -104,7 +104,7 @@ const priorityTypes = [
   { value: 'low', label: '低优先级' },
 ];
 
-const RatingStars = ({ rating }: { rating: number }) => {
+const RatingStars = ({ rating }) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
     if (i <= rating) {
@@ -119,11 +119,11 @@ const RatingStars = ({ rating }: { rating: number }) => {
 };
 
 export default function Feedback() {
-  const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null);
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [isReplying, setIsReplying] = useState(false);
   const [reply, setReply] = useState('');
 
-  const handleReply = (id: string) => {
+  const handleReply = (id) => {
     setSelectedFeedback(id);
     setIsReplying(true);
   };
@@ -135,12 +135,12 @@ export default function Feedback() {
     setReply('');
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id) => {
     // 实现删除反馈的逻辑
     console.log('删除反馈', id);
   };
 
-  const handleStatusChange = (id: string, status: string) => {
+  const handleStatusChange = (id, status) => {
     // 实现更新状态的逻辑
     console.log('更新状态', id, status);
   };
@@ -255,55 +255,22 @@ export default function Feedback() {
         </div>
       </Card>
 
-      {/* 回复模态框 */}
-      {selectedFeedback && isReplying && (
-        <Card className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">回复反馈</h2>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setIsReplying(false);
-                  setReply('');
-                }}
-              >
-                关闭
-              </Button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label>反馈内容</Label>
-                <div className="mt-2 p-4 bg-gray-50 rounded-lg">
-                  {feedbacks.find((f) => f.id === selectedFeedback)?.content}
-                </div>
-              </div>
-              <div>
-                <Label>回复内容</Label>
-                <Textarea
-                  value={reply}
-                  onChange={(e) => setReply(e.target.value)}
-                  rows={4}
-                  placeholder="请输入回复内容..."
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsReplying(false);
-                    setReply('');
-                  }}
-                >
-                  取消
-                </Button>
-                <Button onClick={handleSubmitReply}>
-                  <Check className="w-4 h-4 mr-2" />
-                  提交回复
-                </Button>
-              </div>
-            </div>
+      {isReplying && (
+        <Card className="p-6 mt-6">
+          <h2 className="text-lg font-semibold mb-4">回复反馈</h2>
+          <Textarea
+            value={reply}
+            onChange={(e) => setReply(e.target.value)}
+            placeholder="请输入回复内容..."
+            rows={4}
+          />
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setIsReplying(false)}>
+              取消
+            </Button>
+            <Button onClick={handleSubmitReply}>
+              提交回复
+            </Button>
           </div>
         </Card>
       )}

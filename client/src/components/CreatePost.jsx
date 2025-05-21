@@ -1,238 +1,230 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { fetchApi } from '../services/api';
-import { Mention, MentionsInput } from 'react-mentions';
-import 'react-mentions/dist/style.css';
+import React, { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Icon } from './Icon';
+import { Avatar } from './Avatar';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
+import { PostService } from '@/services/PostService';
+import { cn } from '@/lib/utils';
 
-function CreatePost({ onSubmit, onClose }) {
+export const CreatePost = ({ onPostCreated }) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [content, setContent] = useState('');
-  const [media, setMedia] = useState([]);
+  const [images, setImages] = useState([]);
+  const [video, setVideo] = useState(null);
+  const [tags, setTags] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [hashtags, setHashtags] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const fileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
-  useEffect(() => {
-    // 获取用户列表用于提及功能
-    const fetchUsers = async () => {
-      try {
-        const response = await fetchApi('/api/users/search');
-        setUsers(response.data.map(user => ({
-          id: user._id,
-          display: user.username,
-          handle: user.handle
-        })));
-      } catch (err) {
-        console.error('Failed to fetch users:', err);
+  const handleContentChange = (e) => {
+    setContent(e.target.value);
+    // 提取标签
+    const tagMatches = e.target.value.match(/#[\w\u4e00-\u9fa5]+/g);
+    if (tagMatches) {
+      setTags(tagMatches.map(tag => tag.slice(1)));
+    }
+  };
+
+  const handleImageSelect = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length + images.length > 9) {
+      showToast('最多只能上传 9 张图片', 'warning');
+      return;
+    }
+
+    const validFiles = files.filter(file => {
+      if (!file.type.startsWith('image/')) {
+        showToast('只能上传图片文件', 'error');
+        return false;
       }
-    };
-
-    // 获取热门话题
-    const fetchHashtags = async () => {
-      try {
-        const response = await fetchApi('/api/hashtags/popular');
-        setHashtags(response.data.map(tag => ({
-          id: tag.name,
-          display: `#${tag.name}`
-        })));
-      } catch (err) {
-        console.error('Failed to fetch hashtags:', err);
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('图片大小不能超过 5MB', 'error');
+        return false;
       }
-    };
+      return true;
+    });
 
-    fetchUsers();
-    fetchHashtags();
-  }, []);
+    setImages(prev => [...prev, ...validFiles]);
+
+    // 生成预览 URL
+    validFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrls(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleVideoSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('video/')) {
+      showToast('只能上传视频文件', 'error');
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      showToast('视频大小不能超过 50MB', 'error');
+      return;
+    }
+
+    setVideo(file);
+    setImages([]);
+    setPreviewUrls([]);
+  };
+
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeVideo = () => {
+    setVideo(null);
+    if (videoInputRef.current) {
+      videoInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim() && media.length === 0) return;
+    if (!content.trim() && images.length === 0 && !video) {
+      showToast('请输入内容或上传媒体文件', 'warning');
+      return;
+    }
 
-    setIsSubmitting(true);
     try {
-      await onSubmit({ content, media });
-      setContent('');
-      setMedia([]);
-      onClose?.();
+      setIsSubmitting(true);
+      const formData = new FormData();
+      formData.append('content', content);
+      images.forEach(image => formData.append('images', image));
+      if (video) formData.append('video', video);
+      tags.forEach(tag => formData.append('tags', tag));
+
+      const response = await PostService.createPost(formData);
+      onPostCreated(response.post);
+      resetForm();
+      showToast('发布成功', 'success');
     } catch (error) {
-      console.error('Failed to create post:', error);
+      showToast('发布失败，请重试', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleMediaSelect = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length + media.length > 4) {
-      alert('最多只能上传4张图片');
-      return;
-    }
-    const newMedia = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file)
-    }));
-    setMedia([...media, ...newMedia]);
-  };
-
-  const removeMedia = (index) => {
-    const newMedia = [...media];
-    URL.revokeObjectURL(newMedia[index].preview);
-    newMedia.splice(index, 1);
-    setMedia(newMedia);
-  };
-
-  const mentionStyle = {
-    backgroundColor: '#e8f5fe',
-    color: '#1da1f2',
-    padding: '2px 4px',
-    borderRadius: '4px',
+  const resetForm = () => {
+    setContent('');
+    setImages([]);
+    setVideo(null);
+    setTags([]);
+    setPreviewUrls([]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (videoInputRef.current) videoInputRef.current.value = '';
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-2xl bg-white dark:bg-twitter-gray-900 rounded-2xl shadow-xl">
-        {/* 头部 */}
-        <div className="flex items-center justify-between p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800">
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-twitter-gray-100 dark:hover:bg-twitter-gray-800"
-          >
-            ✕
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={(!content.trim() && media.length === 0) || isSubmitting}
-            className="px-4 py-2 bg-twitter-blue text-white rounded-full font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            发布
-          </button>
-        </div>
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <div className="flex space-x-3">
+        <Avatar
+          src={user?.avatar}
+          alt={user?.username || ''}
+          size="md"
+          className="flex-shrink-0"
+        />
+        <div className="flex-1">
+          <textarea
+            value={content}
+            onChange={handleContentChange}
+            placeholder="分享你的想法..."
+            className="w-full h-24 p-2 border border-gray-200 dark:border-gray-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-900 dark:text-gray-100"
+          />
 
-        {/* 内容区 */}
-        <div className="p-4">
-          <div className="flex space-x-4">
-            {/* 用户头像 */}
-            <img
-              src={user?.avatar || 'https://via.placeholder.com/48'}
-              alt={user?.username}
-              className="w-12 h-12 rounded-full"
-            />
-
-            {/* 输入区 */}
-            <div className="flex-1">
-              <MentionsInput
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="有什么新鲜事？"
-                className="w-full min-h-[120px] p-2 bg-transparent border-none focus:ring-0 resize-none text-lg"
-                maxLength={280}
-                style={{
-                  control: {
-                    backgroundColor: 'transparent',
-                    fontSize: 16,
-                    fontWeight: 'normal',
-                  },
-                  input: {
-                    margin: 0,
-                    padding: 0,
-                  },
-                  suggestions: {
-                    list: {
-                      backgroundColor: 'white',
-                      border: '1px solid rgba(0,0,0,0.15)',
-                      fontSize: 14,
-                    },
-                    item: {
-                      padding: '5px 10px',
-                      borderBottom: '1px solid rgba(0,0,0,0.15)',
-                      '&focused': {
-                        backgroundColor: '#e8f5fe',
-                      },
-                    },
-                  },
-                }}
-              >
-                <Mention
-                  trigger="@"
-                  data={users}
-                  style={mentionStyle}
-                  appendSpaceOnAdd
-                  renderSuggestion={(suggestion) => (
-                    <div className="flex items-center space-x-2">
-                      <span className="font-bold">{suggestion.display}</span>
-                      <span className="text-twitter-gray-500">@{suggestion.handle}</span>
-                    </div>
-                  )}
-                />
-                <Mention
-                  trigger="#"
-                  data={hashtags}
-                  style={mentionStyle}
-                  appendSpaceOnAdd
-                />
-              </MentionsInput>
-
-              {/* 媒体预览 */}
-              {media.length > 0 && (
-                <div className="grid gap-2 mt-4">
-                  {media.map((item, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={item.preview}
-                        alt=""
-                        className="w-full h-48 object-cover rounded-xl"
-                      />
-                      <button
-                        onClick={() => removeMedia(index)}
-                        className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* 工具栏 */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-twitter-gray-200 dark:border-twitter-gray-800">
-                <div className="flex space-x-2">
+          {previewUrls.length > 0 && (
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={url}
+                    alt={`预览 ${index + 1}`}
+                    className="w-full h-24 object-cover rounded-lg"
+                  />
                   <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="p-2 text-twitter-blue rounded-full hover:bg-twitter-blue/10"
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-1 right-1 p-1 bg-black bg-opacity-50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    🖼️
-                  </button>
-                  <button className="p-2 text-twitter-blue rounded-full hover:bg-twitter-blue/10">
-                    📍
-                  </button>
-                  <button className="p-2 text-twitter-blue rounded-full hover:bg-twitter-blue/10">
-                    😊
+                    <Icon name="x" className="w-4 h-4" />
                   </button>
                 </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="text-twitter-gray-500">
-                    {content.length}/280
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
+          )}
+
+          {video && (
+            <div className="mt-4 relative">
+              <video
+                src={URL.createObjectURL(video)}
+                className="w-full rounded-lg"
+                controls
+              />
+              <button
+                type="button"
+                onClick={removeVideo}
+                className="absolute top-2 right-2 p-1 bg-black bg-opacity-50 rounded-full text-white"
+              >
+                <Icon name="x" className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex space-x-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageSelect}
+                accept="image/*"
+                multiple
+                className="hidden"
+              />
+              <input
+                type="file"
+                ref={videoInputRef}
+                onChange={handleVideoSelect}
+                accept="video/*"
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                className="flex items-center space-x-1"
+              >
+                <Icon name="image" className="w-5 h-5" />
+                <span>图片</span>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => videoInputRef.current && videoInputRef.current.click()}
+                className="flex items-center space-x-1"
+              >
+                <Icon name="video" className="w-5 h-5" />
+                <span>视频</span>
+              </Button>
+            </div>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? <Icon name="loader" className="w-4 h-4 animate-spin" /> : '发布'}
+            </Button>
           </div>
         </div>
-
-        {/* 隐藏的文件输入 */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleMediaSelect}
-          className="hidden"
-        />
       </div>
-    </div>
+    </form>
   );
-}
+};
 
 export default CreatePost;

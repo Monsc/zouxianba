@@ -1,155 +1,147 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
-import { useAuth } from '../contexts/AuthContext';
+import { Avatar } from './Avatar';
+import { Button } from './Button';
+import { Icon } from './Icon';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
+import { CommentService } from '@/services/CommentService';
+import { cn } from '@/lib/utils';
 
-function Comment({ comment, onLike, onReply }) {
+export const Comment = ({
+  comment,
+  onDelete,
+  onReply,
+}) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [isLiked, setIsLiked] = useState(comment.isLiked);
-  const [showActions, setShowActions] = useState(false);
-
-  // 处理话题标签和提及
-  const processContent = (content) => {
-    const hashtagRegex = /#(\w+)/g;
-    const mentionRegex = /@(\w+)/g;
-    
-    return content
-      .split(/(\s+)/)
-      .map((part, index) => {
-        if (part.match(hashtagRegex)) {
-          return (
-            <Link
-              key={index}
-              to={`/hashtag/${part.slice(1)}`}
-              className="text-twitter-blue hover:underline"
-            >
-              {part}
-            </Link>
-          );
-        }
-        if (part.match(mentionRegex)) {
-          return (
-            <Link
-              key={index}
-              to={`/profile/${part.slice(1)}`}
-              className="text-twitter-blue hover:underline"
-            >
-              {part}
-            </Link>
-          );
-        }
-        return part;
-      });
-  };
+  const [likes, setLikes] = useState(comment.likes);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleLike = async () => {
+    if (!user) {
+      showToast('请先登录', 'warning');
+      return;
+    }
+
     try {
-      await onLike(comment._id);
+      if (isLiked) {
+        await CommentService.unlikeComment(comment.id);
+        setLikes((prev) => prev - 1);
+      } else {
+        await CommentService.likeComment(comment.id);
+        setLikes((prev) => prev + 1);
+      }
       setIsLiked(!isLiked);
     } catch (error) {
-      console.error('Like failed:', error);
+      showToast('操作失败，请重试', 'error');
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('确定要删除这条评论吗？')) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await CommentService.deleteComment(comment.id);
+      onDelete?.(comment.id);
+      showToast('删除成功', 'success');
+    } catch (error) {
+      showToast('删除失败，请重试', 'error');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleReply = () => {
+    if (!user) {
+      showToast('请先登录', 'warning');
+      return;
+    }
+    onReply?.(comment.id, comment.author.username);
+  };
+
   return (
-    <article className="border-b border-twitter-gray-200 dark:border-twitter-gray-800 p-4 hover:bg-twitter-gray-50 dark:hover:bg-twitter-gray-900/50 transition-colors">
-      <div className="flex space-x-3">
-        {/* 用户头像 */}
-        <Link to={`/profile/${comment.author._id}`} className="flex-shrink-0">
-          <img
-            src={comment.author.avatar || 'https://via.placeholder.com/40'}
-            alt={comment.author.username}
-            className="w-10 h-10 rounded-full"
-          />
-        </Link>
-
-        {/* 内容区 */}
-        <div className="flex-1 min-w-0">
-          {/* 用户信息和时间 */}
-          <div className="flex items-center space-x-2 mb-1">
-            <Link to={`/profile/${comment.author._id}`} className="font-bold hover:underline">
+    <div className="flex space-x-3">
+      <Avatar
+        src={comment.author.avatar}
+        alt={comment.author.username}
+        size="sm"
+        className="flex-shrink-0"
+      />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
               {comment.author.username}
-            </Link>
-            <span className="text-twitter-gray-500">@{comment.author.handle}</span>
-            <span className="text-twitter-gray-500">·</span>
-            <span className="text-twitter-gray-500">
-              {formatDistanceToNow(new Date(comment.createdAt), { locale: zhCN, addSuffix: true })}
-            </span>
+            </h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {formatDistanceToNow(new Date(comment.createdAt), {
+                addSuffix: true,
+                locale: zhCN,
+              })}
+            </p>
           </div>
-
-          {/* 评论内容 */}
-          <div className="text-base mb-3 whitespace-pre-wrap break-words">
-            {processContent(comment.content)}
-          </div>
-
-          {/* 媒体内容 */}
-          {comment.media && comment.media.length > 0 && (
-            <div className="grid gap-2 mb-3">
-              {comment.media.map((media, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={media.url}
-                    alt=""
-                    className="w-full h-48 object-cover rounded-xl"
-                  />
-                </div>
-              ))}
-            </div>
+          {user?.id === comment.author.id && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="text-gray-500 hover:text-red-500"
+            >
+              <Icon name="trash" className="w-4 h-4" />
+            </Button>
           )}
+        </div>
 
-          {/* 互动按钮 */}
-          <div className="flex justify-between max-w-md">
-            <button
-              onClick={() => onReply(comment)}
-              className="group flex items-center text-twitter-gray-500 hover:text-twitter-blue"
-            >
-              <div className="p-2 rounded-full group-hover:bg-twitter-blue/10">
-                💬
-              </div>
-              <span className="text-sm">{comment.replyCount || 0}</span>
-            </button>
+        <div className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {comment.content}
+        </div>
 
-            <button
-              onClick={handleLike}
-              className={`group flex items-center ${
-                isLiked ? 'text-twitter-red' : 'text-twitter-gray-500 hover:text-twitter-red'
-              }`}
-            >
-              <div className="p-2 rounded-full group-hover:bg-twitter-red/10">
-                ❤️
-              </div>
-              <span className="text-sm">{comment.likeCount || 0}</span>
-            </button>
+        <div className="mt-2 flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLike}
+            className={cn(
+              'flex items-center space-x-1',
+              isLiked ? 'text-red-500' : 'text-gray-500'
+            )}
+          >
+            <Icon
+              name={isLiked ? 'heart-filled' : 'heart'}
+              className="w-4 h-4"
+            />
+            <span>{likes}</span>
+          </Button>
 
-            <button
-              onClick={() => setShowActions(!showActions)}
-              className="group flex items-center text-twitter-gray-500 hover:text-twitter-blue"
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReply}
+            className="flex items-center space-x-1 text-gray-500"
+          >
+            <Icon name="reply" className="w-4 h-4" />
+            <span>回复</span>
+          </Button>
+
+          {comment.replies > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-1 text-gray-500"
             >
-              <div className="p-2 rounded-full group-hover:bg-twitter-blue/10">
-                ⋯
-              </div>
-            </button>
-          </div>
+              <Icon name="message" className="w-4 h-4" />
+              <span>{comment.replies} 条回复</span>
+            </Button>
+          )}
         </div>
       </div>
-
-      {/* 展开的操作菜单 */}
-      {showActions && (
-        <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-twitter-gray-800 rounded-xl shadow-lg border border-twitter-gray-200 dark:border-twitter-gray-700">
-          <button className="w-full px-4 py-3 text-left text-twitter-red hover:bg-twitter-gray-100 dark:hover:bg-twitter-gray-700 rounded-t-xl">
-            举报
-          </button>
-          <button className="w-full px-4 py-3 text-left hover:bg-twitter-gray-100 dark:hover:bg-twitter-gray-700">
-            分享
-          </button>
-          <button className="w-full px-4 py-3 text-left hover:bg-twitter-gray-100 dark:hover:bg-twitter-gray-700 rounded-b-xl">
-            复制链接
-          </button>
-        </div>
-      )}
-    </article>
+    </div>
   );
-}
-
-export default Comment; 
+}; 

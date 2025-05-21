@@ -1,60 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getUserProfile, getUserPosts, followUser, blockUser, unblockUser } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
+import { apiService } from '../services/api';
+import { Button } from '../components/Button';
+import { Feed } from '../components/Feed';
 import PostCard from '../components/PostCard';
 import ReportModal from '../components/ReportModal';
 
-function Profile() {
-  const { userId } = useParams();
-  const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const Profile = () => {
+  const { username } = useParams();
   const { user: currentUser } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [posts, setPosts] = useState([]);
   const [showReport, setShowReport] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
 
   useEffect(() => {
-    if (!userId) {
-      navigate('/');
-      return;
-    }
-    Promise.all([getUserProfile(userId), getUserPosts(userId)])
-      .then(([profile, posts]) => {
-        setUser(profile);
-        setPosts(posts);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to load profile.');
-        setIsLoading(false);
-      });
-  }, [userId, navigate]);
+    const fetchProfile = async () => {
+      try {
+        const data = await apiService.getProfile(username);
+        setProfile(data);
+        setIsFollowing(data.isFollowing);
+        setPosts(data.posts);
+      } catch (error) {
+        addToast('Failed to load profile', 'error');
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [username, addToast, navigate]);
 
   useEffect(() => {
-    if (currentUser && user) {
-      setIsBlocked(Array.isArray(currentUser.blocked) && currentUser.blocked.includes(user._id));
+    if (currentUser && profile) {
+      setIsBlocked(Array.isArray(currentUser.blocked) && currentUser.blocked.includes(profile._id));
     }
-  }, [currentUser, user]);
+  }, [currentUser, profile]);
 
   const handleFollow = async () => {
-    if (!user?._id) return;
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
 
     try {
-      await followUser(user._id);
-      setUser(prev =>
-        prev
-          ? {
-              ...prev,
-              followers: prev.isFollowing ? prev.followers - 1 : prev.followers + 1,
-              isFollowing: !prev.isFollowing,
-            }
-          : null
-      );
-    } catch (err) {
-      console.error('Error following user:', err);
+      if (isFollowing) {
+        await apiService.unfollowUser(username);
+        setIsFollowing(false);
+        addToast('Unfollowed successfully', 'success');
+      } else {
+        await apiService.followUser(username);
+        setIsFollowing(true);
+        addToast('Followed successfully', 'success');
+      }
+    } catch (error) {
+      addToast(error.message || 'Operation failed', 'error');
     }
   };
 
@@ -73,13 +80,13 @@ function Profile() {
   };
 
   const handleBlock = async () => {
-    if (!user?._id) return;
+    if (!profile?._id) return;
     try {
       if (isBlocked) {
-        await unblockUser(user._id);
+        await apiService.unblockUser(profile._id);
         setIsBlocked(false);
       } else {
-        await blockUser(user._id);
+        await apiService.blockUser(profile._id);
         setIsBlocked(true);
       }
     } catch (err) {
@@ -87,106 +94,79 @@ function Profile() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="loading-spinner" />
-      </div>
-    );
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  if (error || !user) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-error">{error || 'User not found'}</p>
-      </div>
-    );
+  if (!profile) {
+    return <div>Profile not found</div>;
   }
-
-  const isOwnProfile = currentUser?._id === user._id;
 
   return (
-    <div className="profile-page">
-      <div className="profile-header">
-        <div className="profile-cover" />
-        <div className="profile-info">
-          <img
-            src={user.avatar || '/default-avatar.png'}
-            alt={user.username}
-            className="profile-avatar"
-          />
-          <div className="profile-details">
-            <h1 className="profile-name">{user.username}</h1>
-            <p className="profile-handle">@{user.handle}</p>
-            {user.bio && <p className="profile-bio">{user.bio}</p>}
-            <div className="profile-meta">
-              {user.location && (
-                <span className="profile-location">
-                  <i className="icon-location" />
-                  {user.location}
-                </span>
-              )}
-              {user.website && (
-                <a
-                  href={user.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="profile-website"
-                >
-                  <i className="icon-link" />
-                  {user.website}
-                </a>
-              )}
-            </div>
-            <div className="profile-stats">
-              <span>
-                <strong>{user.following}</strong> Following
-              </span>
-              <span>
-                <strong>{user.followers}</strong> Followers
-              </span>
-            </div>
-            {!isOwnProfile && (
-              <div className="flex gap-2 mt-2">
-                <button
-                  className={`btn ${user.isFollowing ? 'btn-secondary' : 'btn-primary'}`}
-                  onClick={handleFollow}
-                >
-                  {user.isFollowing ? 'Unfollow' : 'Follow'}
-                </button>
-                <button className="btn btn-secondary" onClick={() => setShowReport(true)}>
-                  举报
-                </button>
-                <button
-                  className={`btn ${isBlocked ? 'btn-error' : 'btn-secondary'}`}
-                  onClick={handleBlock}
-                >
-                  {isBlocked ? '取消屏蔽' : '屏蔽'}
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => navigate(`/messages/${user._id}`)}
-                >
-                  发私信
-                </button>
-                <ReportModal
-                  open={showReport}
-                  onClose={() => setShowReport(false)}
-                  targetUser={user._id}
-                />
-              </div>
-            )}
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {profile.username}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              @{profile.handle}
+            </p>
+          </div>
+          {currentUser && currentUser.username !== username && (
+            <Button
+              onClick={handleFollow}
+              variant={isFollowing ? 'secondary' : 'primary'}
+            >
+              {isFollowing ? 'Unfollow' : 'Follow'}
+            </Button>
+          )}
+        </div>
+        <div className="mt-4 flex space-x-4">
+          <div>
+            <span className="font-bold text-gray-900 dark:text-white">
+              {profile.followersCount}
+            </span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">Followers</span>
+          </div>
+          <div>
+            <span className="font-bold text-gray-900 dark:text-white">
+              {profile.followingCount}
+            </span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">Following</span>
           </div>
         </div>
+        {profile.bio && (
+          <p className="mt-4 text-gray-600 dark:text-gray-400">{profile.bio}</p>
+        )}
       </div>
-
+      <Feed username={username} />
       <div className="profile-posts">
         {posts.map(post => (
           <PostCard key={post._id} post={post} onLike={() => handleLike(post._id)} />
         ))}
       </div>
+      {!currentUser && (
+        <div className="flex gap-2 mt-2">
+          <button className="btn btn-secondary" onClick={() => setShowReport(true)}>
+            举报
+          </button>
+          <button
+            className={`btn ${isBlocked ? 'btn-error' : 'btn-secondary'}`}
+            onClick={handleBlock}
+          >
+            {isBlocked ? '取消屏蔽' : '屏蔽'}
+          </button>
+        </div>
+      )}
+      <ReportModal
+        open={showReport}
+        onClose={() => setShowReport(false)}
+        targetUser={profile._id}
+      />
     </div>
   );
-}
+};
 
 export default Profile;

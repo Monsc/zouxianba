@@ -1,46 +1,16 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
-import { Feed } from '@/components/Feed';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import PullToRefresh from '@/components/PullToRefresh';
+import React from 'react';
+import { Feed } from '../components/Feed';
+import { CreatePost } from '../components/CreatePost';
+import { useAuth } from '../contexts/AuthContext';
 
-const Home = () => {
-  const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
-  const { showToast } = useToast();
-  const [refreshing, setRefreshing] = useState(false);
-
-  const handleRefresh = async () => {
-    try {
-      setRefreshing(true);
-      // 刷新页面数据
-      window.location.reload();
-    } catch (error) {
-      showToast('刷新失败，请重试', 'error');
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  if (authLoading) {
-    return <LoadingSpinner />;
-  }
+export const Home = () => {
+  const { user } = useAuth();
 
   return (
-    <ErrorBoundary>
-      <PullToRefresh
-        onRefresh={handleRefresh}
-        threshold={100}
-        resistance={2.5}
-      >
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <Feed />
-        </div>
-      </PullToRefresh>
-    </ErrorBoundary>
+    <div className="max-w-2xl mx-auto">
+      {user && <CreatePost />}
+      <Feed />
+    </div>
   );
 };
 

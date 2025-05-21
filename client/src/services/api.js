@@ -312,6 +312,56 @@ class ApiService {
     const response = await api.put('/auth/change-password', { currentPassword, newPassword });
     return response.data;
   }
+
+  // 添加缺失的 API 方法
+  async getUserPosts(userId, page = 1, limit = 20) {
+    const response = await api.get(`/users/${userId}/posts?page=${page}&limit=${limit}`);
+    return response.data;
+  }
+
+  async followUser(userId) {
+    const response = await api.post(`/users/${userId}/follow`);
+    return response.data;
+  }
+
+  async unfollowUser(userId) {
+    const response = await api.delete(`/users/${userId}/follow`);
+    return response.data;
+  }
+
+  async blockUser(userId) {
+    const response = await api.post(`/users/${userId}/block`);
+    return response.data;
+  }
+
+  async unblockUser(userId) {
+    const response = await api.delete(`/users/${userId}/block`);
+    return response.data;
+  }
+
+  async getMentions(page = 1, limit = 20) {
+    const response = await api.get(`/mentions?page=${page}&limit=${limit}`);
+    return response.data;
+  }
+
+  async getRecommendedUsers() {
+    const response = await api.get('/users/recommended');
+    return response.data;
+  }
+
+  async getTrendingTopics() {
+    const response = await api.get('/topics/trending');
+    return response.data;
+  }
+
+  async sendImageMessage(userId, imageFile) {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    const response = await api.post(`/messages/${userId}/image`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
 }
 
 // 创建 API 服务实例
@@ -322,3 +372,6 @@ export { api, apiService, ApiService };
 
 // 默认导出 API 实例
 export default api;
+
+// 导出 fetchApi 函数
+export { fetchApi };

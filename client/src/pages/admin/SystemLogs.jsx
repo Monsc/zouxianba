@@ -115,12 +115,12 @@ export default function SystemLogs() {
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = (type) => {
     const option = typeOptions.find((opt) => opt.value === type);
     return option?.icon || Info;
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'success':
         return 'bg-green-500';

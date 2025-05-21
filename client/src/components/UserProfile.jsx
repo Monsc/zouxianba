@@ -198,65 +198,7 @@ export const UserProfile = ({ userId }) => {
 
       {/* 标签页 */}
       <div className="bg-white dark:bg-gray-900 rounded-lg shadow">
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="flex">
-            <button
-              onClick={() => setActiveTab('posts')}
-              className={cn(
-                'px-4 py-2 text-sm font-medium',
-                activeTab === 'posts'
-                  ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400'
-                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-              )}
-            >
-              帖子
-            </button>
-            <button
-              onClick={() => setActiveTab('likes')}
-              className={cn(
-                'px-4 py-2 text-sm font-medium',
-                activeTab === 'likes'
-                  ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400'
-                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-              )}
-            >
-              喜欢
-            </button>
-          </nav>
-        </div>
-
-        {/* 帖子列表 */}
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
-          {posts.length === 0 ? (
-            <EmptyState
-              title="暂无帖子"
-              description="该用户还没有发布任何帖子"
-              icon="post"
-            />
-          ) : (
-            posts.map((post) => (
-              <div key={post.id} className="p-4">
-                {/* 这里使用 Post 组件显示帖子内容 */}
-              </div>
-            ))
-          )}
-
-          {hasMore && (
-            <div className="flex justify-center py-4">
-              <button
-                onClick={loadMore}
-                disabled={loadingMore}
-                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                {loadingMore ? (
-                  <LoadingSpinner size="sm" />
-                ) : (
-                  '加载更多'
-                )}
-              </button>
-            </div>
-          )}
-        </div>
+        {/* 这里可以添加标签页内容，如帖子、评论等 */}
       </div>
     </div>
   );

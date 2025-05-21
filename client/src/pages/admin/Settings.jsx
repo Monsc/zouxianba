@@ -13,50 +13,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Globe, Shield, Mail, Bell, Database } from 'lucide-react';
+import { Save, Globe, Shield, Mail, Bell } from 'lucide-react';
 
-interface SiteSettings {
-  siteName: string;
-  siteDescription: string;
-  siteKeywords: string;
-  siteLogo: string;
-  siteFavicon: string;
-  allowRegistration: boolean;
-  allowComments: boolean;
-  maintenanceMode: boolean;
-}
-
-interface SecuritySettings {
-  enableTwoFactor: boolean;
-  passwordMinLength: number;
-  requireSpecialChars: boolean;
-  requireNumbers: boolean;
-  requireUppercase: boolean;
-  loginAttempts: number;
-  lockoutDuration: number;
-  sessionTimeout: number;
-}
-
-interface EmailSettings {
-  smtpHost: string;
-  smtpPort: number;
-  smtpUser: string;
-  smtpPassword: string;
-  smtpSecure: boolean;
-  fromEmail: string;
-  fromName: string;
-}
-
-interface NotificationSettings {
-  enableEmailNotifications: boolean;
-  enablePushNotifications: boolean;
-  notifyNewUsers: boolean;
-  notifyNewPosts: boolean;
-  notifyNewComments: boolean;
-  notifyReports: boolean;
-}
-
-const defaultSiteSettings: SiteSettings = {
+const defaultSiteSettings = {
   siteName: '走线吧',
   siteDescription: '一个现代化的社交平台',
   siteKeywords: '社交,社区,分享',
@@ -67,7 +26,7 @@ const defaultSiteSettings: SiteSettings = {
   maintenanceMode: false,
 };
 
-const defaultSecuritySettings: SecuritySettings = {
+const defaultSecuritySettings = {
   enableTwoFactor: false,
   passwordMinLength: 8,
   requireSpecialChars: true,
@@ -78,7 +37,7 @@ const defaultSecuritySettings: SecuritySettings = {
   sessionTimeout: 60,
 };
 
-const defaultEmailSettings: EmailSettings = {
+const defaultEmailSettings = {
   smtpHost: 'smtp.example.com',
   smtpPort: 587,
   smtpUser: 'noreply@example.com',
@@ -88,7 +47,7 @@ const defaultEmailSettings: EmailSettings = {
   fromName: '走线吧',
 };
 
-const defaultNotificationSettings: NotificationSettings = {
+const defaultNotificationSettings = {
   enableEmailNotifications: true,
   enablePushNotifications: true,
   notifyNewUsers: true,
@@ -98,10 +57,10 @@ const defaultNotificationSettings: NotificationSettings = {
 };
 
 export default function Settings() {
-  const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
-  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>(defaultSecuritySettings);
-  const [emailSettings, setEmailSettings] = useState<EmailSettings>(defaultEmailSettings);
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>(defaultNotificationSettings);
+  const [siteSettings, setSiteSettings] = useState(defaultSiteSettings);
+  const [securitySettings, setSecuritySettings] = useState(defaultSecuritySettings);
+  const [emailSettings, setEmailSettings] = useState(defaultEmailSettings);
+  const [notificationSettings, setNotificationSettings] = useState(defaultNotificationSettings);
 
   const handleSave = () => {
     // 实现保存逻辑
@@ -251,7 +210,7 @@ export default function Settings() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>登录尝试次数</Label>
+                  <Label>登录失败次数</Label>
                   <Input
                     type="number"
                     value={securitySettings.loginAttempts}
@@ -264,34 +223,60 @@ export default function Settings() {
                   />
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label>要求特殊字符</Label>
-                  <Switch
-                    checked={securitySettings.requireSpecialChars}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, requireSpecialChars: checked })
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>锁定时长(分钟)</Label>
+                  <Input
+                    type="number"
+                    value={securitySettings.lockoutDuration}
+                    onChange={(e) =>
+                      setSecuritySettings({
+                        ...securitySettings,
+                        lockoutDuration: parseInt(e.target.value),
+                      })
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label>要求数字</Label>
-                  <Switch
-                    checked={securitySettings.requireNumbers}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, requireNumbers: checked })
+                <div className="space-y-2">
+                  <Label>会话超时(分钟)</Label>
+                  <Input
+                    type="number"
+                    value={securitySettings.sessionTimeout}
+                    onChange={(e) =>
+                      setSecuritySettings({
+                        ...securitySettings,
+                        sessionTimeout: parseInt(e.target.value),
+                      })
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label>要求大写字母</Label>
-                  <Switch
-                    checked={securitySettings.requireUppercase}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, requireUppercase: checked })
-                    }
-                  />
-                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>密码需包含特殊字符</Label>
+                <Switch
+                  checked={securitySettings.requireSpecialChars}
+                  onCheckedChange={(checked) =>
+                    setSecuritySettings({ ...securitySettings, requireSpecialChars: checked })
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>密码需包含数字</Label>
+                <Switch
+                  checked={securitySettings.requireNumbers}
+                  onCheckedChange={(checked) =>
+                    setSecuritySettings({ ...securitySettings, requireNumbers: checked })
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>密码需包含大写字母</Label>
+                <Switch
+                  checked={securitySettings.requireUppercase}
+                  onCheckedChange={(checked) =>
+                    setSecuritySettings({ ...securitySettings, requireUppercase: checked })
+                  }
+                />
               </div>
             </div>
           </Card>
@@ -302,12 +287,10 @@ export default function Settings() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>SMTP 服务器</Label>
+                  <Label>SMTP 主机</Label>
                   <Input
                     value={emailSettings.smtpHost}
-                    onChange={(e) =>
-                      setEmailSettings({ ...emailSettings, smtpHost: e.target.value })
-                    }
+                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpHost: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -315,12 +298,7 @@ export default function Settings() {
                   <Input
                     type="number"
                     value={emailSettings.smtpPort}
-                    onChange={(e) =>
-                      setEmailSettings({
-                        ...emailSettings,
-                        smtpPort: parseInt(e.target.value),
-                      })
-                    }
+                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpPort: parseInt(e.target.value) })}
                   />
                 </div>
               </div>
@@ -329,9 +307,7 @@ export default function Settings() {
                   <Label>SMTP 用户名</Label>
                   <Input
                     value={emailSettings.smtpUser}
-                    onChange={(e) =>
-                      setEmailSettings({ ...emailSettings, smtpUser: e.target.value })
-                    }
+                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpUser: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -339,40 +315,34 @@ export default function Settings() {
                   <Input
                     type="password"
                     value={emailSettings.smtpPassword}
-                    onChange={(e) =>
-                      setEmailSettings({ ...emailSettings, smtpPassword: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>发件人邮箱</Label>
-                  <Input
-                    value={emailSettings.fromEmail}
-                    onChange={(e) =>
-                      setEmailSettings({ ...emailSettings, fromEmail: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>发件人名称</Label>
-                  <Input
-                    value={emailSettings.fromName}
-                    onChange={(e) =>
-                      setEmailSettings({ ...emailSettings, fromName: e.target.value })
-                    }
+                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpPassword: e.target.value })}
                   />
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <Label>启用 SSL/TLS</Label>
+                <Label>使用 SSL/TLS</Label>
                 <Switch
                   checked={emailSettings.smtpSecure}
                   onCheckedChange={(checked) =>
                     setEmailSettings({ ...emailSettings, smtpSecure: checked })
                   }
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>发件人邮箱</Label>
+                  <Input
+                    value={emailSettings.fromEmail}
+                    onChange={(e) => setEmailSettings({ ...emailSettings, fromEmail: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>发件人名称</Label>
+                  <Input
+                    value={emailSettings.fromName}
+                    onChange={(e) => setEmailSettings({ ...emailSettings, fromName: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           </Card>
@@ -386,10 +356,7 @@ export default function Settings() {
                 <Switch
                   checked={notificationSettings.enableEmailNotifications}
                   onCheckedChange={(checked) =>
-                    setNotificationSettings({
-                      ...notificationSettings,
-                      enableEmailNotifications: checked,
-                    })
+                    setNotificationSettings({ ...notificationSettings, enableEmailNotifications: checked })
                   }
                 />
               </div>
@@ -398,62 +365,45 @@ export default function Settings() {
                 <Switch
                   checked={notificationSettings.enablePushNotifications}
                   onCheckedChange={(checked) =>
-                    setNotificationSettings({
-                      ...notificationSettings,
-                      enablePushNotifications: checked,
-                    })
+                    setNotificationSettings({ ...notificationSettings, enablePushNotifications: checked })
                   }
                 />
               </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label>新用户注册通知</Label>
-                  <Switch
-                    checked={notificationSettings.notifyNewUsers}
-                    onCheckedChange={(checked) =>
-                      setNotificationSettings({
-                        ...notificationSettings,
-                        notifyNewUsers: checked,
-                      })
-                    }
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>新内容发布通知</Label>
-                  <Switch
-                    checked={notificationSettings.notifyNewPosts}
-                    onCheckedChange={(checked) =>
-                      setNotificationSettings({
-                        ...notificationSettings,
-                        notifyNewPosts: checked,
-                      })
-                    }
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>新评论通知</Label>
-                  <Switch
-                    checked={notificationSettings.notifyNewComments}
-                    onCheckedChange={(checked) =>
-                      setNotificationSettings({
-                        ...notificationSettings,
-                        notifyNewComments: checked,
-                      })
-                    }
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>举报通知</Label>
-                  <Switch
-                    checked={notificationSettings.notifyReports}
-                    onCheckedChange={(checked) =>
-                      setNotificationSettings({
-                        ...notificationSettings,
-                        notifyReports: checked,
-                      })
-                    }
-                  />
-                </div>
+              <div className="flex items-center justify-between">
+                <Label>新用户注册通知</Label>
+                <Switch
+                  checked={notificationSettings.notifyNewUsers}
+                  onCheckedChange={(checked) =>
+                    setNotificationSettings({ ...notificationSettings, notifyNewUsers: checked })
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>新帖子通知</Label>
+                <Switch
+                  checked={notificationSettings.notifyNewPosts}
+                  onCheckedChange={(checked) =>
+                    setNotificationSettings({ ...notificationSettings, notifyNewPosts: checked })
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>新评论通知</Label>
+                <Switch
+                  checked={notificationSettings.notifyNewComments}
+                  onCheckedChange={(checked) =>
+                    setNotificationSettings({ ...notificationSettings, notifyNewComments: checked })
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>举报通知</Label>
+                <Switch
+                  checked={notificationSettings.notifyReports}
+                  onCheckedChange={(checked) =>
+                    setNotificationSettings({ ...notificationSettings, notifyReports: checked })
+                  }
+                />
               </div>
             </div>
           </Card>

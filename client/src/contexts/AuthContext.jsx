@@ -1,8 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api } from '../services/api';
+import { apiService } from '../services/api';
 import { getToken, setToken, removeToken } from '../utils/auth';
 
-export const AuthContext = createContext(null);
+const AuthContext = createContext();
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -13,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   const refreshToken = async () => {
     try {
       setRefreshing(true);
-      const response = await api.post('/auth/refresh-token');
+      const response = await apiService.refreshToken();
       const { token } = response.data;
       setToken(token);
       return token;
@@ -29,31 +37,19 @@ export const AuthProvider = ({ children }) => {
 
   // 初始化认证状态
   useEffect(() => {
-    const initAuth = async () => {
-      const token = getToken();
-      if (token) {
-        try {
-          const userData = await api.get('/auth/me');
-          setUser(userData.data);
-        } catch (error) {
-          if (error.response?.status === 401) {
-            // Token 过期，尝试刷新
-            const newToken = await refreshToken();
-            if (newToken) {
-              // 使用新 token 重试获取用户信息
-              const userData = await api.get('/auth/me');
-              setUser(userData.data);
-            }
-          } else {
-            console.error('Failed to restore session:', error);
-            removeToken();
-          }
-        }
+    const checkAuth = async () => {
+      try {
+        const userData = await apiService.getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    initAuth();
+    checkAuth();
   }, []);
 
   // 定期刷新 token
@@ -68,21 +64,34 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   const login = async (credentials) => {
-    const response = await api.post('/auth/login', credentials);
-    const { token, user: userData } = response.data;
-    setToken(token);
-    setUser(userData);
-    return userData;
+    try {
+      const userData = await apiService.login(credentials);
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      const response = await apiService.register(userData);
+      setUser(response);
+      return response;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
     try {
-      await api.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      removeToken();
+      await apiService.logout();
       setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      throw error;
     }
   };
 
@@ -95,24 +104,13 @@ export const AuthProvider = ({ children }) => {
     loading,
     refreshing,
     login,
+    register,
     logout,
     updateUser,
     refreshToken
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-export default AuthContext;
+export default AuthProvider;

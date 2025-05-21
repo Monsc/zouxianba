@@ -1,220 +1,116 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { apiService } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
+import { PostCard } from './PostCard';
+import { CreatePost } from './CreatePost';
 import { useAuth } from '../contexts/AuthContext';
-import Post from './Post';
-import CreatePost from './CreatePost';
-import { fetchApi } from '../services/api';
 
-function Feed() {
+export const Feed = () => {
+  const { username } = useParams();
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showCreatePost, setShowCreatePost] = useState(false);
-  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const observer = useRef();
-  const lastPostRef = useCallback(node => {
-    if (isLoading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-        setPage(prevPage => prevPage + 1);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await apiService.getPosts(username, page);
+        if (page === 1) {
+          setPosts(data.posts);
+        } else {
+          setPosts(prev => [...prev, ...data.posts]);
+        }
+        setHasMore(data.hasMore);
+      } catch (error) {
+        addToast('Failed to load posts', 'error');
+      } finally {
+        setLoading(false);
       }
-    });
-    if (node) observer.current.observe(node);
-  }, [isLoading, hasMore, isLoadingMore]);
+    };
 
-  useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [username, page, addToast]);
 
-  useEffect(() => {
-    if (page > 1) {
-      fetchMorePosts();
-    }
-  }, [page]);
-
-  const fetchPosts = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetchApi('/api/posts?page=1&limit=10');
-      setPosts(response.data);
-      setHasMore(response.data.length === 10);
-      setError(null);
-    } catch (err) {
-      setError('获取帖子失败，请稍后重试');
-      console.error('Failed to fetch posts:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchMorePosts = async () => {
-    try {
-      setIsLoadingMore(true);
-      const response = await fetchApi(`/api/posts?page=${page}&limit=10`);
-      setPosts(prev => [...prev, ...response.data]);
-      setHasMore(response.data.length === 10);
-    } catch (err) {
-      console.error('Failed to fetch more posts:', err);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  };
-
-  const handleCreatePost = async (postData) => {
-    try {
-      const formData = new FormData();
-      formData.append('content', postData.content);
-      postData.media.forEach(item => {
-        formData.append('media', item.file);
-      });
-
-      const response = await fetchApi('/api/posts', {
-        method: 'POST',
-        body: formData,
-      });
-
-      setPosts(prev => [response.data, ...prev]);
-      setShowCreatePost(false);
-    } catch (err) {
-      console.error('Failed to create post:', err);
-      throw err;
-    }
+  const handleLoadMore = () => {
+    setPage(prev => prev + 1);
   };
 
   const handleLike = async (postId) => {
     try {
-      await fetchApi(`/api/posts/${postId}/like`, { method: 'POST' });
-      setPosts(prev => prev.map(post => 
-        post._id === postId 
-          ? { ...post, isLiked: !post.isLiked, likeCount: post.isLiked ? post.likeCount - 1 : post.likeCount + 1 }
+      await apiService.likePost(postId);
+      setPosts(posts.map(post =>
+        post._id === postId
+          ? {
+              ...post,
+              likes: post.liked ? post.likes - 1 : post.likes + 1,
+              liked: !post.liked,
+            }
           : post
       ));
-    } catch (err) {
-      console.error('Failed to like post:', err);
+    } catch (error) {
+      addToast('Failed to like post', 'error');
     }
   };
 
-  const handleRepost = async (postId) => {
+  const handleComment = async (postId, content) => {
     try {
-      await fetchApi(`/api/posts/${postId}/repost`, { method: 'POST' });
-      setPosts(prev => prev.map(post => 
-        post._id === postId 
-          ? { ...post, isReposted: !post.isReposted, repostCount: post.isReposted ? post.repostCount - 1 : post.repostCount + 1 }
+      const comment = await apiService.createComment(postId, content);
+      setPosts(posts.map(post =>
+        post._id === postId
+          ? {
+              ...post,
+              comments: [...post.comments, comment],
+              commentCount: post.commentCount + 1,
+            }
           : post
       ));
-    } catch (err) {
-      console.error('Failed to repost:', err);
+    } catch (error) {
+      addToast('Failed to add comment', 'error');
     }
   };
 
-  const handleBookmark = async (postId) => {
+  const handleDelete = async (postId) => {
     try {
-      await fetchApi(`/api/posts/${postId}/bookmark`, { method: 'POST' });
-      setPosts(prev => prev.map(post => 
-        post._id === postId 
-          ? { ...post, isBookmarked: !post.isBookmarked }
-          : post
-      ));
-    } catch (err) {
-      console.error('Failed to bookmark post:', err);
+      await apiService.deletePost(postId);
+      setPosts(posts.filter(post => post._id !== postId));
+      addToast('Post deleted successfully', 'success');
+    } catch (error) {
+      addToast('Failed to delete post', 'error');
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-twitter-blue border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center p-4">
-        <p className="text-red-500">{error}</p>
-        <button
-          onClick={fetchPosts}
-          className="mt-4 px-4 py-2 bg-twitter-blue text-white rounded-full hover:bg-twitter-blue/90"
-        >
-          重试
-        </button>
-      </div>
-    );
+  if (loading && page === 1) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* 发帖按钮 */}
-      {user && (
-        <div className="sticky top-0 z-10 bg-white/80 dark:bg-twitter-gray-900/80 backdrop-blur-sm border-b border-twitter-gray-200 dark:border-twitter-gray-800">
-          <div className="p-4">
-            <button
-              onClick={() => setShowCreatePost(true)}
-              className="w-full p-4 text-left bg-twitter-gray-100 dark:bg-twitter-gray-800 rounded-full hover:bg-twitter-gray-200 dark:hover:bg-twitter-gray-700 transition-colors"
-            >
-              <span className="text-twitter-gray-500">有什么新鲜事？</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 帖子列表 */}
-      <div className="divide-y divide-twitter-gray-200 dark:divide-twitter-gray-800">
-        {posts.map((post, index) => (
-          <div
-            key={post._id}
-            ref={index === posts.length - 1 ? lastPostRef : null}
-          >
-            <Post
-              post={post}
-              onLike={handleLike}
-              onRepost={handleRepost}
-              onBookmark={handleBookmark}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* 加载更多指示器 */}
-      {isLoadingMore && (
-        <div className="flex justify-center items-center py-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-twitter-blue border-t-transparent"></div>
-        </div>
-      )}
-
-      {/* 创建帖子模态框 */}
-      {showCreatePost && (
-        <CreatePost
-          onSubmit={handleCreatePost}
-          onClose={() => setShowCreatePost(false)}
+    <div className="space-y-6">
+      {user && !username && <CreatePost />}
+      {posts.map(post => (
+        <PostCard
+          key={post._id}
+          post={post}
+          onLike={() => handleLike(post._id)}
+          onComment={handleComment}
+          onDelete={() => handleDelete(post._id)}
         />
-      )}
-
-      {/* 无内容提示 */}
-      {posts.length === 0 && (
-        <div className="text-center p-8">
-          <h3 className="text-xl font-bold text-twitter-gray-900 dark:text-white">
-            还没有帖子
-          </h3>
-          <p className="mt-2 text-twitter-gray-500">
-            关注一些用户或发布你的第一条帖子
-          </p>
-          {user && (
-            <button
-              onClick={() => setShowCreatePost(true)}
-              className="mt-4 px-6 py-2 bg-twitter-blue text-white rounded-full hover:bg-twitter-blue/90"
-            >
-              发布帖子
-            </button>
-          )}
+      ))}
+      {hasMore && (
+        <div className="text-center">
+          <button
+            onClick={handleLoadMore}
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            Load more
+          </button>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default Feed; 

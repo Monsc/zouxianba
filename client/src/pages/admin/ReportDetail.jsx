@@ -103,7 +103,7 @@ export default function ReportDetail() {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-500';
@@ -253,24 +253,20 @@ export default function ReportDetail() {
                   <SelectContent>
                     {priorityOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        <div className="flex items-center">
-                          <div
-                            className={`w-2 h-2 rounded-full ${option.color} mr-2`}
-                          />
-                          {option.label}
-                        </div>
+                        <span className={option.color + ' w-2 h-2 rounded-full inline-block mr-2'} />
+                        {option.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">处理说明</label>
+                <label className="text-sm font-medium">处理备注</label>
                 <Textarea
-                  className="mt-1"
-                  placeholder="请输入处理说明..."
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
+                  placeholder="请输入处理备注..."
+                  rows={4}
                 />
               </div>
             </div>

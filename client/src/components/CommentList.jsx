@@ -8,13 +8,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { EmptyState } from './EmptyState';
 import { useToast } from '@/hooks/useToast';
 
-interface CommentListProps {
-  postId: string;
-  initialComments?: any[];
-  onCommentCountChange?: (count: number) => void;
-}
-
-export const CommentList: React.FC<CommentListProps> = ({
+export const CommentList = ({
   postId,
   initialComments = [],
   onCommentCountChange,
@@ -22,10 +16,7 @@ export const CommentList: React.FC<CommentListProps> = ({
   const { user } = useAuth();
   const { showToast } = useToast();
   const [comments, setComments] = useState(initialComments);
-  const [replyingTo, setReplyingTo] = useState<{
-    commentId: string;
-    username: string;
-  } | null>(null);
+  const [replyingTo, setReplyingTo] = useState(null);
 
   // 使用无限滚动加载更多评论
   const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
@@ -42,18 +33,18 @@ export const CommentList: React.FC<CommentListProps> = ({
     setData: setComments,
   });
 
-  const handleCommentCreated = (newComment: any) => {
+  const handleCommentCreated = (newComment) => {
     setComments((prev) => [newComment, ...prev]);
     onCommentCountChange?.(comments.length + 1);
     setReplyingTo(null);
   };
 
-  const handleCommentDeleted = (commentId: string) => {
+  const handleCommentDeleted = (commentId) => {
     setComments((prev) => prev.filter((comment) => comment.id !== commentId));
     onCommentCountChange?.(comments.length - 1);
   };
 
-  const handleReply = (commentId: string, username: string) => {
+  const handleReply = (commentId, username) => {
     setReplyingTo({ commentId, username });
   };
 

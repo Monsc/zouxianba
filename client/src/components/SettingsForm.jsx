@@ -27,7 +27,7 @@ export const SettingsForm = () => {
     password: '',
     confirmPassword: '',
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState({});
 
   // 加载用户信息
   useEffect(() => {
@@ -44,9 +44,7 @@ export const SettingsForm = () => {
   }, [user]);
 
   // 处理表单输入
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // 清除对应字段的错误
@@ -56,15 +54,15 @@ export const SettingsForm = () => {
   };
 
   // 处理头像上传
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       setIsLoading(true);
-      const formData = new FormData();
-      formData.append('avatar', file);
-      const response = await UserService.uploadAvatar(formData);
+      const formDataObj = new FormData();
+      formDataObj.append('avatar', file);
+      const response = await UserService.uploadAvatar(formDataObj);
       setFormData((prev) => ({ ...prev, avatar: response.avatar }));
       showToast('头像上传成功', 'success');
     } catch (error) {
@@ -77,7 +75,7 @@ export const SettingsForm = () => {
 
   // 验证表单
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors = {};
 
     if (!formData.username.trim()) {
       newErrors.username = '用户名不能为空';
@@ -108,7 +106,7 @@ export const SettingsForm = () => {
   };
 
   // 处理表单提交
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -202,7 +200,7 @@ export const SettingsForm = () => {
             value={formData.bio}
             onChange={handleInputChange}
             error={errors.bio}
-            rows={4}
+            maxLength={200}
           />
         </div>
       </div>
@@ -225,7 +223,7 @@ export const SettingsForm = () => {
           </div>
           <div>
             <Input
-              label="确认密码"
+              label="确认新密码"
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -236,17 +234,9 @@ export const SettingsForm = () => {
         </div>
       </div>
 
-      {/* 提交按钮 */}
       <div className="flex justify-end">
         <Button type="submit" disabled={isSaving}>
-          {isSaving ? (
-            <LoadingSpinner size="sm" />
-          ) : (
-            <>
-              <Icon name="save" className="w-4 h-4 mr-2" />
-              保存设置
-            </>
-          )}
+          {isSaving ? <LoadingSpinner size="sm" /> : '保存设置'}
         </Button>
       </div>
     </form>
