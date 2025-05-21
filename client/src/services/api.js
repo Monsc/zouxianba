@@ -498,4 +498,43 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+
+// 导出所有 API 函数
+export {
+  getCurrentUser,
+  getFeed,
+  getPost,
+  createPost,
+  likePost,
+  getComments,
+  createComment,
+  getUserProfile,
+  getUserPosts,
+  updateProfile,
+  changePassword,
+  searchUsers,
+  searchPosts,
+  getNotifications,
+  getUnreadNotificationCount,
+  getRecommendedUsers,
+  getTrendingTopics,
+  getNewPostCount,
+  reportContent,
+  blockUser,
+  unblockUser,
+  getConversations,
+  getMessages,
+  sendMessage,
+  sendImageMessage,
+  getUnreadMessageCount,
+  getMentions
+};
+
+// 导出 API 实例
+export { api };
+
+// 导出 API 服务类
+export { ApiService };
+
+// 默认导出 API 实例
 export default api;

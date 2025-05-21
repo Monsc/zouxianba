@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Icons from 'lucide-react';
 
-const Icon = ({ name, size = 24, color = 'currentColor', className, ...props }) => {
+export const Icon = ({ name, size = 24, color = 'currentColor', className, ...props }) => {
   const LucideIcon = Icons[name];
 
   if (!LucideIcon) {

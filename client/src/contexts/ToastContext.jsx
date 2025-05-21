@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import toast from 'react-hot-toast';
 
-const ToastContext = createContext();
+export const ToastContext = createContext();
 
 export function ToastProvider({ children }) {
   const showToast = (message, type = 'success') => {
@@ -33,4 +33,6 @@ export function useToast() {
     throw new Error('useToast must be used within a ToastProvider');
   }
   return context;
-} 
+}
+
+export default ToastContext; 
