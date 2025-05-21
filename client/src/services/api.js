@@ -497,10 +497,13 @@ class ApiService {
   }
 }
 
+// 导出 API 服务实例
 export const apiService = new ApiService();
 
-// 导出所有 API 函数
+// 导出所有 API 函数和实例
 export {
+  api,
+  ApiService,
   getCurrentUser,
   getFeed,
   getPost,
@@ -529,12 +532,6 @@ export {
   getUnreadMessageCount,
   getMentions
 };
-
-// 导出 API 实例
-export { api };
-
-// 导出 API 服务类
-export { ApiService };
 
 // 默认导出 API 实例
 export default api;
