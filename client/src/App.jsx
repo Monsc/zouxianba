@@ -6,7 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { useAuth } from './hooks/useAuth';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/layouts/AdminLayout';
-import { Toaster } from './components/ui/toaster';
+import Toaster from './components/ui/toaster';
 import { Button } from './components/Button';
 import { notificationService } from './services/notification';
 
