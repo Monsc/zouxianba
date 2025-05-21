@@ -66,6 +66,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const userData = await apiService.login(credentials);
+      // 自动保存 token
+      if (userData && userData.token) {
+        setToken(userData.token);
+      }
       setUser(userData);
       return userData;
     } catch (error) {
