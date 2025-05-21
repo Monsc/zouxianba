@@ -14,10 +14,12 @@ export const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        setLoading(true);
         const data = await apiService.getPosts(username, page);
         if (page === 1) {
           setPosts(data.posts);
@@ -25,15 +27,20 @@ export const Feed = () => {
           setPosts(prev => [...prev, ...data.posts]);
         }
         setHasMore(data.hasMore);
+        setError(false);
       } catch (error) {
-        addToast('Failed to load posts', 'error');
+        if (!error) {
+          setError(true);
+          addToast('Failed to load posts', 'error');
+        }
       } finally {
         setLoading(false);
       }
     };
-
-    fetchPosts();
-  }, [username, page, addToast]);
+    if (!error) {
+      fetchPosts();
+    }
+  }, [username, page]);
 
   const handleLoadMore = () => {
     setPage(prev => prev + 1);
@@ -85,6 +92,9 @@ export const Feed = () => {
 
   if (loading && page === 1) {
     return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div className="text-red-500 text-center">Failed to load posts</div>;
   }
 
   return (
