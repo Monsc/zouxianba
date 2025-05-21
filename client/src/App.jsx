@@ -20,7 +20,7 @@ import { NotFound } from './pages/NotFound';
 import { Feed } from './components/Feed';
 
 // 管理页面组件
-import { Dashboard } from './pages/admin/Dashboard';
+import Dashboard from './pages/admin/Dashboard';
 import { Users } from './pages/admin/Users';
 import { Posts } from './pages/admin/Posts';
 import { Comments } from './pages/admin/Comments';
