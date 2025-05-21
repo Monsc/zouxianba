@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const dotenv = require('dotenv');
 const path = require('path');
 const authRoutes = require('./routes/auth');
@@ -39,6 +40,8 @@ console.log('Environment check:', {
 
 // Create Express app
 const app = express();
+
+app.use(helmet());
 
 // Enable CORS for specific origins
 app.use(cors({
