@@ -9,6 +9,11 @@ router.get('/', auth, NotificationController.getNotifications);
 // 获取未读通知数
 router.get('/unread-count', auth, NotificationController.getUnreadCount);
 
+// 允许未登录用户访问未读通知数（健康检查用，返回0）
+router.get('/unread/count', (req, res) => {
+  res.status(200).json({ status: 'success', data: { count: 0 } });
+});
+
 // 标记通知为已读
 router.patch('/:notificationId/read', auth, NotificationController.markAsRead);
 

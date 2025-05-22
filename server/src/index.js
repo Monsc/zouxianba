@@ -48,8 +48,8 @@ console.log('typeof performanceMiddleware:', typeof performanceMiddleware);
 // API 路由
 app.use('/api', routes);
 
-// 健康检查端点
-app.get('/health', (_req, res) => {
+// 健康检查端点（带 /api 前缀）
+app.get('/api/health', (_req, res) => {
   res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
