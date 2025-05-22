@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../hooks/useToast';
 import { TwoFactorSetup } from '../components/TwoFactorSetup';
 import { ActiveSessions } from '../components/ActiveSessions';
