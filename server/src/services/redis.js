@@ -1,6 +1,6 @@
 const Redis = require('ioredis');
 const config = require('../config');
-const { AppError } = require('../utils/AppError');
+const AppError = require('../utils/AppError');
 
 // 创建 Redis 客户端
 const redis = new Redis({
