@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const http = require('http');
 const mongoose = require('mongoose');
-const { createClient } = require('redis');
+const Redis = require('ioredis');
 const { authenticateToken } = require('./middleware/auth');
 const config = require('./config');
 const { initializeSocket } = require('./socket');
@@ -26,8 +26,15 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const app = express();
 
 // Redis 客户端
-const redisClient = createClient({
-  url: config.database.redis.url
+const redisClient = new Redis({
+  host: config.redis.host,
+  port: config.redis.port,
+  password: config.redis.password,
+  db: config.redis.db,
+  retryStrategy: (times) => {
+    const delay = Math.min(times * 50, 2000);
+    return delay;
+  }
 });
 
 // 中间件配置
@@ -70,9 +77,14 @@ async function startServer() {
     await mongoose.connect(config.database.mongodb.uri, config.database.mongodb.options);
     console.log('Connected to MongoDB');
 
-    // 连接 Redis
-    await redisClient.connect();
-    console.log('Connected to Redis');
+    // Redis 连接事件监听
+    redisClient.on('connect', () => {
+      console.log('Connected to Redis');
+    });
+
+    redisClient.on('error', (error) => {
+      console.error('Redis connection error:', error);
+    });
 
     // 初始化 Socket.IO
     initializeSocket(server);
