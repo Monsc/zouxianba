@@ -1,65 +1,74 @@
-# ZouXianBa Client
+# ZXB Client
 
-This is the frontend client for the ZouXianBa application, built with React and TypeScript.
-
-## Features
-
-- User authentication (login/signup)
-- Create, read, update, and delete posts
-- Like and comment on posts
-- User profiles
-- Real-time updates
-- Responsive design
+This is the frontend application for the ZXB project, built with Vite + React.
 
 ## Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
+- Node.js >= 16
+- pnpm >= 8
 
-## Setup
+## Getting Started
 
 1. Install dependencies:
 ```bash
-npm install
-# or
-yarn install
+pnpm install
 ```
 
-2. Create a `.env` file in the root directory with the following variables:
-```
-REACT_APP_API_URL=http://localhost:3000
-```
-
-3. Start the development server:
+2. Create environment file:
 ```bash
-npm start
-# or
-yarn start
+cp .env.example .env
 ```
 
-The application will be available at http://localhost:3000.
+3. Start development server:
+```bash
+pnpm dev
+```
+
+4. Build for production:
+```bash
+pnpm build
+```
+
+5. Preview production build:
+```bash
+pnpm preview
+```
 
 ## Available Scripts
 
-- `npm start` - Runs the app in development mode
-- `npm test` - Launches the test runner
-- `npm run build` - Builds the app for production
-- `npm run eject` - Ejects from Create React App
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm preview` - Preview production build
+- `pnpm lint` - Run ESLint
+- `pnpm format` - Format code with Prettier
 
 ## Project Structure
 
 ```
 src/
-  ├── components/     # Reusable UI components
-  ├── contexts/       # React contexts
+  ├── components/     # Reusable components
   ├── pages/         # Page components
+  ├── hooks/         # Custom React hooks
   ├── services/      # API services
-  ├── styles/        # Global styles
-  ├── types/         # TypeScript type definitions
   ├── utils/         # Utility functions
-  ├── App.tsx        # Root component
-  └── index.tsx      # Entry point
+  ├── contexts/      # React contexts
+  ├── styles/        # Global styles
+  ├── config/        # Configuration files
+  ├── lib/           # Third-party library configurations
+  ├── App.jsx        # Root component
+  └── main.jsx       # Entry point
 ```
+
+## Features
+
+- Modern React with Hooks
+- Vite for fast development and building
+- TailwindCSS for styling
+- ESLint + Prettier for code quality
+- TypeScript support
+- Socket.IO for real-time features
+- State management with Zustand
+- UI components from Headless UI and Radix UI
 
 ## Contributing
 

@@ -1,12 +1,23 @@
 const express = require('express');
-const { Message } = require('../models/Message');
-const { User } = require('../models/User');
+const router = express.Router();
+const MessageController = require('../controllers/MessageController');
+const ConversationController = require('../controllers/ConversationController');
 const { auth } = require('../middleware/auth');
-const { catchAsync } = require('../middleware/errorHandler');
 const { upload } = require('../middleware/upload');
 
-const router = express.Router();
+// 会话相关路由
+router.post('/conversations', auth, ConversationController.createConversation);
+router.get('/conversations', auth, ConversationController.getConversations);
+router.get('/conversations/:conversationId', auth, ConversationController.getConversation);
+router.patch('/conversations/:conversationId', auth, ConversationController.updateConversation);
+router.delete('/conversations/:conversationId', auth, ConversationController.leaveConversation);
+router.post('/conversations/:conversationId/participants', auth, ConversationController.addParticipants);
+router.delete('/conversations/:conversationId/participants/:participantId', auth, ConversationController.removeParticipant);
 
-// ...（此处省略，内容为 messages.ts 逻辑，类型全部去除，import 改为 require，export default router 改为 module.exports = router）
+// 消息相关路由
+router.post('/conversations/:conversationId/messages', auth, upload.array('attachments', 5), MessageController.sendMessage);
+router.get('/conversations/:conversationId/messages', auth, MessageController.getMessages);
+router.delete('/messages/:messageId', auth, MessageController.deleteMessage);
+router.patch('/messages/:messageId/recall', auth, MessageController.recallMessage);
 
 module.exports = router; 

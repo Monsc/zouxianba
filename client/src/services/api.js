@@ -3,6 +3,8 @@ import { withCache, preloadData } from './cache';
 import crypto from 'crypto-js';
 import { getToken, isTokenExpired, getTokenTimeLeft, setToken, removeToken } from '../utils/auth';
 import { generateRequestSignature } from '../utils/security';
+import { CancelToken } from 'axios';
+import { useUserStore } from '../store';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 const API_SECRET = import.meta.env.VITE_API_SECRET;
@@ -12,6 +14,9 @@ const generateSignature = (data, timestamp) => {
   const stringToSign = `${data}${timestamp}`;
   return crypto.HmacSHA256(stringToSign, API_SECRET).toString();
 };
+
+// 创建请求队列
+const requestQueue = new Map();
 
 // 配置 axios 实例
 const api = axios.create({
@@ -25,28 +30,22 @@ const api = axios.create({
 
 // 请求拦截器
 api.interceptors.request.use(
-  async (config) => {
-    const token = getToken();
-    
-    // 如果 token 存在且即将过期（剩余时间小于5分钟），尝试刷新
-    if (token && getTokenTimeLeft(token) < 5 * 60 * 1000) {
-      try {
-        const response = await api.post('/auth/refresh-token');
-        const { token: newToken } = response.data;
-        setToken(newToken);
-        config.headers.Authorization = `Bearer ${newToken}`;
-      } catch (error) {
-        console.error('Failed to refresh token:', error);
-      }
-    } else if (token) {
+  (config) => {
+    const token = useUserStore.getState().user?.token;
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // 生成请求签名
-    const signature = await generateRequestSignature(config);
-    if (signature) {
-      config.headers['X-Request-Signature'] = signature;
+    // 为每个请求创建取消令牌
+    const source = CancelToken.source();
+    config.cancelToken = source.token;
+
+    // 将请求添加到队列
+    const requestKey = `${config.method}-${config.url}`;
+    if (requestQueue.has(requestKey)) {
+      requestQueue.get(requestKey).cancel('Request cancelled due to duplicate');
     }
+    requestQueue.set(requestKey, source);
 
     return config;
   },
@@ -57,34 +56,90 @@ api.interceptors.request.use(
 
 // 响应拦截器
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // 请求完成后从队列中移除
+    const requestKey = `${response.config.method}-${response.config.url}`;
+    requestQueue.delete(requestKey);
+    return response;
+  },
   async (error) => {
-    const originalRequest = error.config;
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
 
-    // 处理 401 错误（未授权）
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    // 处理 401 错误
+    if (error.response?.status === 401) {
+      useUserStore.getState().clearUser();
+      window.location.href = '/login';
+      return Promise.reject(error);
+    }
 
-      // 如果是 token 过期，尝试刷新 token
-      if (error.response.data.error === 'Token expired') {
-        try {
-          const response = await api.post('/auth/refresh-token');
-          const { token } = response.data;
-          setToken(token);
-
-          // 重试原始请求
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
-        } catch (refreshError) {
-          removeToken();
-          return Promise.reject(refreshError);
-        }
-      }
+    // 处理 429 错误（请求过多）
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'];
+      await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+      return api(error.config);
     }
 
     return Promise.reject(error);
   }
 );
+
+// 重试机制
+const retryRequest = async (config, retries = 3, delay = 1000) => {
+  try {
+    return await api(config);
+  } catch (error) {
+    if (retries === 0) {
+      throw error;
+    }
+    await new Promise(resolve => setTimeout(resolve, delay));
+    return retryRequest(config, retries - 1, delay * 2);
+  }
+};
+
+// API 方法
+export const apiService = {
+  // GET 请求
+  get: async (url, config = {}) => {
+    return retryRequest({ ...config, method: 'get', url });
+  },
+
+  // POST 请求
+  post: async (url, data = {}, config = {}) => {
+    return retryRequest({ ...config, method: 'post', url, data });
+  },
+
+  // PUT 请求
+  put: async (url, data = {}, config = {}) => {
+    return retryRequest({ ...config, method: 'put', url, data });
+  },
+
+  // PATCH 请求
+  patch: async (url, data = {}, config = {}) => {
+    return retryRequest({ ...config, method: 'patch', url, data });
+  },
+
+  // DELETE 请求
+  delete: async (url, config = {}) => {
+    return retryRequest({ ...config, method: 'delete', url });
+  },
+
+  // 取消所有请求
+  cancelAll: () => {
+    requestQueue.forEach(source => source.cancel('Request cancelled'));
+    requestQueue.clear();
+  },
+
+  // 取消特定请求
+  cancel: (method, url) => {
+    const requestKey = `${method}-${url}`;
+    if (requestQueue.has(requestKey)) {
+      requestQueue.get(requestKey).cancel('Request cancelled');
+      requestQueue.delete(requestKey);
+    }
+  },
+};
 
 // 获取 CSRF token
 const getCsrfToken = () => {

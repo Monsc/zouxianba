@@ -8,13 +8,21 @@
     "dev:backend": "cd server; pnpm dev",
     "dev:frontend": "cd client; pnpm dev",
     "install:all": "pnpm install; cd server; pnpm install; cd ../client; pnpm install",
-    "build": "cd server; pnpm build; cd ../client; pnpm build"
+    "build": "cd server; pnpm build; cd ../client; pnpm build",
+    "test": "cd server; pnpm test; cd ../client; pnpm test",
+    "lint": "cd server; pnpm lint; cd ../client; pnpm lint",
+    "format": "cd server; pnpm format; cd ../client; pnpm format",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.0"
   },
   "dependencies": {
     "@react-email/components": "^0.0.41",
@@ -29,5 +37,14 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "speakeasy": "^2.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }

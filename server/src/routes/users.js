@@ -2,6 +2,8 @@ const express = require('express');
 const { User } = require('../models/User');
 const { auth, optionalAuth } = require('../middleware/auth');
 const { catchAsync, AppError } = require('../middleware/errorHandler');
+const UserController = require('../controllers/UserController');
+const { upload } = require('../middleware/upload');
 
 const router = express.Router();
 
@@ -110,5 +112,32 @@ router.get('/:userId/following', optionalAuth, catchAsync(async (req, res) => {
 
   res.json(user.following);
 }));
+
+// 获取用户资料
+router.get('/:id', auth, UserController.getProfile);
+
+// 更新用户资料
+router.patch('/profile', auth, UserController.updateProfile);
+
+// 上传头像
+router.post('/avatar', auth, upload.single('avatar'), UserController.uploadAvatar);
+
+// 社交媒体账号关联
+router.post('/social/connect', auth, UserController.connectSocialAccount);
+router.delete('/social/:platform', auth, UserController.disconnectSocialAccount);
+
+// 用户屏蔽
+router.post('/block/:userId', auth, UserController.blockUser);
+router.delete('/block/:userId', auth, UserController.unblockUser);
+router.get('/blocked', auth, UserController.getBlockedUsers);
+
+// 隐私设置
+router.patch('/privacy', auth, UserController.updatePrivacySettings);
+
+// 通知设置
+router.patch('/notifications', auth, UserController.updateNotificationSettings);
+
+// 高级用户
+router.post('/premium', auth, UserController.upgradeToPremium);
 
 module.exports = router; 

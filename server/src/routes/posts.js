@@ -7,6 +7,7 @@ const { upload } = require('../middleware/upload');
 const { Notification } = require('../models/Notification');
 const User = require('../models/User');
 const Tag = require('../models/Tag');
+const PostController = require('../controllers/PostController');
 
 const router = express.Router();
 
@@ -69,135 +70,16 @@ router.get('/user/:userId', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Create post
-router.post('/', auth, upload.array('media', 4), catchAsync(async (req, res) => {
-  const { content, visibility, originalPostId } = req.body;
-  let media = [];
-  if (req.files && Array.isArray(req.files)) {
-    media = req.files.map(file => '/uploads/' + file.filename);
-  }
-
-  // Extract @mentions and #hashtags
-  const mentions = content.match(/@(\w+)/g)?.map(m => m.slice(1)) || [];
-  const hashtags = content.match(/#(\w+)/g)?.map(h => h.slice(1)) || [];
-  
-  // Find mentioned users
-  const mentionedUsers = await User.find({ handle: { $in: mentions } });
-  
-  const post = await Post.create({
-    author: req.user.id,
-    content,
-    media,
-    visibility,
-    mentions: mentionedUsers.map(u => u._id),
-    hashtags,
-    originalPost: originalPostId
-  });
-
-  // Update hashtag count
-  for (const hashtag of hashtags) {
-    await Tag.findOneAndUpdate(
-      { name: hashtag, type: 'hashtag' },
-      { 
-        $inc: { count: 1 },
-        $addToSet: { posts: post._id }
-      },
-      { upsert: true }
-    );
-  }
-
-  // If it's a repost, update original post repost count
-  if (originalPostId) {
-    await Post.findByIdAndUpdate(originalPostId, {
-      $inc: { repostCount: 1 },
-      $push: { 
-        reposts: {
-          user: req.user.id,
-          createdAt: new Date()
-        }
-      }
-    });
-  }
-
-  // Send notifications to mentioned users
-  for (const user of mentionedUsers) {
-    // Add notification sending logic here
-  }
-
-  await post.populate('author', 'username handle avatar isVerified');
-  res.status(201).json(post);
-}));
+router.post('/', auth, upload.array('images', 9), PostController.createPost);
 
 // Get post by ID
-router.get('/:postId', optionalAuth, catchAsync(async (req, res) => {
-  const post = await Post.findById(req.params.postId)
-    .populate('author', 'username handle avatar isVerified')
-    .populate({
-      path: 'comments',
-      populate: {
-        path: 'author',
-        select: 'username handle avatar isVerified',
-      },
-    });
-
-  if (!post) {
-    throw new AppError('Post not found', 404);
-  }
-
-  // Check visibility
-  if (post.visibility !== 'public' && (!req.user || post.author._id.toString() !== req.user.id)) {
-    throw new AppError('Post not found', 404);
-  }
-
-  res.json(post);
-}));
+router.get('/:id', auth, PostController.getPost);
 
 // Update post
-router.patch('/:postId', auth, catchAsync(async (req, res) => {
-  const post = await Post.findOne({
-    _id: req.params.postId,
-    author: req.user.id,
-  });
-
-  if (!post) {
-    throw new AppError('Post not found', 404);
-  }
-
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ['content', 'media', 'visibility'];
-  const isValidOperation = updates.every(update => allowedUpdates.includes(update));
-
-  if (!isValidOperation) {
-    throw new AppError('Invalid updates', 400);
-  }
-
-  updates.forEach(update => {
-    if (allowedUpdates.includes(update)) post[update] = req.body[update];
-  });
-
-  post.isEdited = true;
-  await post.save();
-
-  await post.populate('author', 'username handle avatar isVerified');
-  res.json(post);
-}));
+router.patch('/:id', auth, PostController.updatePost);
 
 // Delete post
-router.delete('/:postId', auth, catchAsync(async (req, res) => {
-  const post = await Post.findOne({
-    _id: req.params.postId,
-    author: req.user.id,
-  });
-
-  if (!post) {
-    throw new AppError('Post not found', 404);
-  }
-
-  // Delete all comments
-  await Comment.deleteMany({ post: post._id });
-  await post.deleteOne();
-
-  res.json({ message: 'Post deleted successfully' });
-}));
+router.delete('/:id', auth, PostController.deletePost);
 
 // Like/Unlike post
 router.post('/:postId/like', auth, catchAsync(async (req, res) => {
@@ -286,31 +168,7 @@ router.get('/:postId/comments', optionalAuth, catchAsync(async (req, res) => {
 }));
 
 // Repost post
-router.post('/:id/repost', auth, catchAsync(async (req, res) => {
-  const originalPost = await Post.findById(req.params.id);
-  if (!originalPost) {
-    return res.status(404).json({ message: 'Post not found' });
-  }
-
-  const post = await Post.create({
-    author: req.user.id,
-    content: req.body.content || '',
-    originalPost: originalPost._id
-  });
-
-  // Update original post repost count
-  await Post.findByIdAndUpdate(originalPost._id, {
-    $inc: { repostCount: 1 },
-    $push: {
-      reposts: {
-        user: req.user.id,
-        createdAt: new Date()
-      }
-    }
-  });
-
-  res.status(201).json(post);
-}));
+router.post('/:id/repost', auth, PostController.repost);
 
 // Get post details
 router.get('/:id', optionalAuth, catchAsync(async (req, res) => {
@@ -337,5 +195,17 @@ router.get('/:id/reposts', optionalAuth, catchAsync(async (req, res) => {
 
   res.json(post.reposts);
 }));
+
+// Toggle bookmark
+router.post('/:id/bookmark', auth, PostController.toggleBookmark);
+
+// Report post
+router.post('/:id/report', auth, PostController.reportPost);
+
+// Toggle pin
+router.post('/:id/pin', auth, PostController.togglePin);
+
+// Get edit history
+router.get('/:id/history', auth, PostController.getEditHistory);
 
 module.exports = router; 

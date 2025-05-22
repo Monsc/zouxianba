@@ -17,10 +17,28 @@ module.exports = {
       }
     },
     redis: {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379,
+      url: process.env.REDIS_URL || 'redis://localhost:6379',
       password: process.env.REDIS_PASSWORD
     }
+  },
+
+  // CORS配置
+  cors: {
+    origins: [
+      'https://zouxianba-client.onrender.com',
+      'https://zouxianba.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://localhost:3001'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-csrf-token',
+      'x-request-timestamp',
+      'x-request-signature'
+    ]
   },
 
   // JWT配置
