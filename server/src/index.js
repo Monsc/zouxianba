@@ -16,8 +16,8 @@ const routes = require('./routes');
 
 // 中间件导入
 const { errorHandler, notFound } = require('./middleware/errorHandler');
-const { securityMiddleware } = require('./middleware/security');
-const { performanceMiddleware } = require('./middleware/performance');
+const securityMiddleware = require('./middleware/security');
+const performanceMiddleware = require('./middleware/performance');
 
 // 加载环境变量
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
