@@ -17,6 +17,8 @@ router.get('/', catchAsync(async (req, res) => {
 // 创建评论
 router.post('/', auth, CommentController.createComment);
 
+console.log("Type of createComment:", typeof CommentController.createComment);
+
 // 更新评论
 router.put('/:id', auth, catchAsync(async (req, res) => {
   throw new AppError('评论功能正在开发中', 501);
