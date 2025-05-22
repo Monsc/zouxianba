@@ -1,7 +1,7 @@
-const { CloudflareClient } = require('cloudflare');
+const { Cloudflare } = require('@cloudflare/cloudflare');
 const config = require('../config');
 
-const cloudflare = new CloudflareClient({
+const cloudflare = new Cloudflare({
   token: config.cloudflare.token
 });
 
