@@ -55,6 +55,9 @@ app.use(securityMiddleware);
 // 性能监控
 app.use(performanceMiddleware);
 
+console.log('typeof securityMiddleware:', typeof securityMiddleware);
+console.log('typeof performanceMiddleware:', typeof performanceMiddleware);
+
 // API 路由
 app.use('/api', routes);
 
