@@ -19,6 +19,7 @@ console.log("Type of handler:", typeof CommentController.createComment); // ✅ 
 router.post('/', CommentController.createComment);
 
 // 更新评论
+console.log("Type of updateComment:", typeof CommentController.updateComment);  // 应该输出 function
 router.put('/:id', auth, catchAsync(async (req, res) => {
   throw new AppError('评论功能正在开发中', 501);
 }));
