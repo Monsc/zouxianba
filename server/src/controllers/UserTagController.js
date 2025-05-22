@@ -1,7 +1,7 @@
 const UserTag = require('../models/UserTag');
 const User = require('../models/User');
 const { AppError } = require('../utils/AppError');
-const { catchAsync } = require('../utils/catchAsync');
+const catchAsync = require('../utils/catchAsync');
 
 class UserTagController {
   // 创建标签
