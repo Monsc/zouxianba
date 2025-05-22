@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchApi } from '../services/api';
+import { apiService } from '../services/api';
 import { toast } from 'react-hot-toast';
 
 function ReportModal({ type, targetId, onClose }) {
@@ -36,14 +36,11 @@ function ReportModal({ type, targetId, onClose }) {
 
     try {
       setLoading(true);
-      await fetchApi('/api/reports', {
-        method: 'POST',
-        data: {
-          type,
-          targetId,
-          category,
-          reason: reason.trim(),
-        },
+      await apiService.post('/reports', {
+        type,
+        targetId,
+        category,
+        reason: reason.trim(),
       });
 
       toast.success('举报已提交，我们会尽快处理');
