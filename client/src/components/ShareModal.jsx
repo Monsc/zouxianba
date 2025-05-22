@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchApi } from '../services/api';
+import { apiService } from '../services/api';
+import { useToast } from '../hooks/useToast';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -30,17 +31,35 @@ function ShareModal({ post, onClose }) {
   });
   const [showStats, setShowStats] = useState(false);
   const shareUrl = `${window.location.origin}/post/${post._id}`;
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchShareStats();
+    const fetchStats = async () => {
+      try {
+        const response = await apiService.get(`/posts/${post._id}/share-stats`);
+        setShareStats(response.data);
+      } catch (error) {
+        showToast('获取分享统计失败', 'error');
+      }
+    };
+
+    fetchStats();
   }, [post._id]);
 
-  const fetchShareStats = async () => {
+  const handleShare = async (platform) => {
     try {
-      const response = await fetchApi(`/api/posts/${post._id}/share-stats`);
-      setShareStats(response.data);
-    } catch (err) {
-      console.error('Failed to fetch share stats:', err);
+      setLoading(true);
+      await apiService.post(`/posts/${post._id}/share`, {
+        platform,
+        url: window.location.href,
+      });
+      showToast('分享成功', 'success');
+      onClose();
+    } catch (error) {
+      showToast('分享失败', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,7 +72,7 @@ function ShareModal({ post, onClose }) {
           await navigator.clipboard.writeText(shareUrl);
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
-          trackShare('copy');
+          handleShare('copy');
         } catch (err) {
           console.error('Failed to copy:', err);
         }
@@ -65,7 +84,7 @@ function ShareModal({ post, onClose }) {
       action: () => {
         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`;
         window.open(qrCodeUrl, '_blank');
-        trackShare('wechat');
+        handleShare('wechat');
       },
     },
     {
@@ -75,7 +94,7 @@ function ShareModal({ post, onClose }) {
         const text = `${post.content.substring(0, 100)}... ${shareUrl}`;
         const url = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
-        trackShare('weibo');
+        handleShare('weibo');
       },
     },
     {
@@ -84,7 +103,7 @@ function ShareModal({ post, onClose }) {
       action: () => {
         const url = `https://connect.qq.com/widget/shareqq/index.html?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(post.content)}`;
         window.open(url, '_blank');
-        trackShare('qq');
+        handleShare('qq');
       },
     },
     {
@@ -93,7 +112,7 @@ function ShareModal({ post, onClose }) {
       action: () => {
         const url = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(post.content)}`;
         window.open(url, '_blank');
-        trackShare('qzone');
+        handleShare('qzone');
       },
     },
     {
@@ -102,7 +121,7 @@ function ShareModal({ post, onClose }) {
       action: () => {
         const url = `https://www.douyin.com/share?url=${encodeURIComponent(shareUrl)}`;
         window.open(url, '_blank');
-        trackShare('douyin');
+        handleShare('douyin');
       },
     },
     {
@@ -111,7 +130,7 @@ function ShareModal({ post, onClose }) {
       action: () => {
         const url = `https://www.kuaishou.com/share?url=${encodeURIComponent(shareUrl)}`;
         window.open(url, '_blank');
-        trackShare('kuaishou');
+        handleShare('kuaishou');
       },
     },
     {
@@ -120,7 +139,7 @@ function ShareModal({ post, onClose }) {
       action: () => {
         const url = `https://www.xiaohongshu.com/share?url=${encodeURIComponent(shareUrl)}`;
         window.open(url, '_blank');
-        trackShare('xiaohongshu');
+        handleShare('xiaohongshu');
       },
     },
     {
@@ -129,22 +148,10 @@ function ShareModal({ post, onClose }) {
       action: () => {
         const url = `https://www.douban.com/share/service?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(post.content)}`;
         window.open(url, '_blank');
-        trackShare('douban');
+        handleShare('douban');
       },
     },
   ];
-
-  const trackShare = async (platform) => {
-    try {
-      await fetchApi(`/api/posts/${post._id}/share`, {
-        method: 'POST',
-        data: { platform },
-      });
-      fetchShareStats();
-    } catch (err) {
-      console.error('Failed to track share:', err);
-    }
-  };
 
   const chartData = {
     labels: Object.keys(shareStats.platformStats),

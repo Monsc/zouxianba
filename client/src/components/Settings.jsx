@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchApi } from '../services/api';
+import { apiService } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'react-hot-toast';
+import { useToast } from '../hooks/useToast';
 
 function Settings({ onClose }) {
   const { user, updateUser } = useAuth();
@@ -34,21 +34,23 @@ function Settings({ onClose }) {
     },
   });
 
+  const { showToast } = useToast();
+
   useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        setLoading(true);
+        const response = await apiService.get('/users/settings');
+        setSettings(response.data);
+      } catch (error) {
+        showToast('获取设置失败', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchSettings();
   }, []);
-
-  const fetchSettings = async () => {
-    try {
-      const response = await fetchApi('/api/users/settings');
-      if (response.data) {
-        setSettings(response.data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch settings:', err);
-      toast.error('加载设置失败');
-    }
-  };
 
   const handleChange = (section, key, value) => {
     setSettings(prev => ({
@@ -60,23 +62,14 @@ function Settings({ onClose }) {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSave = async () => {
     try {
       setLoading(true);
-      const response = await fetchApi('/api/users/settings', {
-        method: 'PUT',
-        data: settings,
-      });
-
-      if (response.data) {
-        updateUser({ ...user, settings: response.data });
-        toast.success('设置已保存');
-        onClose();
-      }
-    } catch (err) {
-      console.error('Failed to update settings:', err);
-      toast.error('保存设置失败');
+      const response = await apiService.put('/users/settings', settings);
+      setSettings(response.data);
+      showToast('设置保存成功', 'success');
+    } catch (error) {
+      showToast('设置保存失败', 'error');
     } finally {
       setLoading(false);
     }
@@ -111,7 +104,7 @@ function Settings({ onClose }) {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-4">
+          <form onSubmit={handleSave} className="p-4">
             {/* 主题设置 */}
             <div className="mb-6">
               <h3 className="text-lg font-bold mb-4">外观</h3>

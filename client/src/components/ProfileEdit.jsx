@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchApi } from '../services/api';
+import { apiService } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'react-hot-toast';
+import { useToast } from '../hooks/useToast';
 
 function ProfileEdit({ onClose }) {
   const { user, updateUser } = useAuth();
@@ -19,6 +19,8 @@ function ProfileEdit({ onClose }) {
     gender: user.gender || '',
   });
 
+  const { showToast } = useToast();
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -31,50 +33,23 @@ function ProfileEdit({ onClose }) {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    // 验证文件类型
-    if (!file.type.startsWith('image/')) {
-      toast.error('请选择图片文件');
-      return;
-    }
-
-    // 验证文件大小（最大 5MB）
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('图片大小不能超过 5MB');
-      return;
-    }
-
-    // 创建预览
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
-
-    // 上传头像
     try {
       setLoading(true);
       const formData = new FormData();
       formData.append('avatar', file);
-
-      const response = await fetchApi('/api/users/avatar', {
-        method: 'POST',
-        data: formData,
+      const response = await apiService.post('/users/avatar', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      if (response.data.avatar) {
-        updateUser({ ...user, avatar: response.data.avatar });
-        toast.success('头像更新成功');
-      }
-    } catch (err) {
-      console.error('Failed to upload avatar:', err);
-      toast.error('头像上传失败');
+      updateUser({ ...user, avatar: response.data.avatar });
+      showToast('头像更新成功', 'success');
+    } catch (error) {
+      showToast('头像更新失败', 'error');
     } finally {
       setLoading(false);
     }
@@ -82,24 +57,29 @@ function ProfileEdit({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       setLoading(true);
-      const response = await fetchApi('/api/users/profile', {
-        method: 'PUT',
-        data: formData,
+      const response = await apiService.put('/users/profile', {
+        username: formData.username,
+        bio: formData.bio,
+        location: formData.location,
+        website: formData.website,
       });
-
-      if (response.data) {
-        updateUser({ ...user, ...response.data });
-        toast.success('个人资料更新成功');
-        onClose();
-      }
-    } catch (err) {
-      console.error('Failed to update profile:', err);
-      toast.error('个人资料更新失败');
+      updateUser({ ...user, ...response.data });
+      showToast('个人资料更新成功', 'success');
+      onClose();
+    } catch (error) {
+      showToast('个人资料更新失败', 'error');
     } finally {
       setLoading(false);
     }
+  };
+
+  const validateForm = () => {
+    // Implement form validation logic here
+    return true; // Placeholder return, actual implementation needed
   };
 
   return (
@@ -147,7 +127,7 @@ function ProfileEdit({ onClose }) {
                 <input
                   type="file"
                   ref={fileInputRef}
-                  onChange={handleFileChange}
+                  onChange={handleAvatarChange}
                   accept="image/*"
                   className="hidden"
                 />

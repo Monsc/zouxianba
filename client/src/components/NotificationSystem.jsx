@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { fetchApi } from '../services/api';
+import { useToast } from '../hooks/useToast';
+import { apiService } from '../services/api';
 
 function NotificationSystem() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -28,11 +30,14 @@ function NotificationSystem() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetchApi('/api/notifications');
+      setLoading(true);
+      const response = await apiService.get('/notifications');
       setNotifications(response.data);
       setUnreadCount(response.data.filter(n => !n.read).length);
-    } catch (err) {
-      console.error('Failed to fetch notifications:', err);
+    } catch (error) {
+      showToast('获取通知失败', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,33 +46,33 @@ function NotificationSystem() {
     setUnreadCount(prev => prev + 1);
   };
 
-  const markAsRead = async (notificationId) => {
+  const handleMarkAsRead = async (notificationId) => {
     try {
-      await fetchApi(`/api/notifications/${notificationId}/read`, {
-        method: 'POST',
-      });
+      await apiService.post(`/notifications/${notificationId}/read`);
       setNotifications(prev =>
-        prev.map(n =>
-          n._id === notificationId ? { ...n, read: true } : n
+        prev.map(notification =>
+          notification._id === notificationId
+            ? { ...notification, read: true }
+            : notification
         )
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (err) {
-      console.error('Failed to mark notification as read:', err);
+      showToast('通知已标记为已读', 'success');
+    } catch (error) {
+      showToast('标记通知已读失败', 'error');
     }
   };
 
-  const markAllAsRead = async () => {
+  const handleMarkAllAsRead = async () => {
     try {
-      await fetchApi('/api/notifications/read-all', {
-        method: 'POST',
-      });
+      await apiService.post('/notifications/read-all');
       setNotifications(prev =>
-        prev.map(n => ({ ...n, read: true }))
+        prev.map(notification => ({ ...notification, read: true }))
       );
       setUnreadCount(0);
-    } catch (err) {
-      console.error('Failed to mark all notifications as read:', err);
+      showToast('所有通知已标记为已读', 'success');
+    } catch (error) {
+      showToast('标记所有通知已读失败', 'error');
     }
   };
 
@@ -116,7 +121,7 @@ function NotificationSystem() {
                 <h2 className="text-lg font-bold">通知</h2>
                 {unreadCount > 0 && (
                   <button
-                    onClick={markAllAsRead}
+                    onClick={handleMarkAllAsRead}
                     className="text-twitter-blue text-sm hover:underline"
                   >
                     全部标为已读
@@ -141,7 +146,7 @@ function NotificationSystem() {
                     className={`p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800 hover:bg-twitter-gray-50 dark:hover:bg-twitter-gray-800/50 ${
                       !notification.read ? 'bg-twitter-blue/5' : ''
                     }`}
-                    onClick={() => markAsRead(notification._id)}
+                    onClick={() => handleMarkAsRead(notification._id)}
                   >
                     <div className="flex items-start space-x-3">
                       <span className="text-xl">

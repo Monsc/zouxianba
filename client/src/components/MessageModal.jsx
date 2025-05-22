@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
-import { fetchApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
 import Avatar from './Avatar';
-import { toast } from 'react-hot-toast';
+import { useToast } from '../hooks/useToast';
+import { apiService } from '../services/api';
 
 function MessageModal({ targetUser, onClose }) {
   const { user: currentUser } = useAuth();
@@ -19,6 +19,7 @@ function MessageModal({ targetUser, onClose }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchMessages();
@@ -53,8 +54,11 @@ function MessageModal({ targetUser, onClose }) {
         setLoading(true);
       }
 
-      const response = await fetchApi(
-        `/api/messages/${targetUser._id}?page=${page}&limit=20`
+      const response = await apiService.get(
+        `/messages/${targetUser._id}`,
+        {
+          params: { page, limit: 20 }
+        }
       );
 
       if (loadMore) {
@@ -69,9 +73,8 @@ function MessageModal({ targetUser, onClose }) {
       if (!loadMore) {
         scrollToBottom();
       }
-    } catch (err) {
-      console.error('Failed to fetch messages:', err);
-      toast.error('加载消息失败，请重试');
+    } catch (error) {
+      showToast('获取消息失败', 'error');
     } finally {
       if (loadMore) {
         setLoadingMore(false);
@@ -86,26 +89,23 @@ function MessageModal({ targetUser, onClose }) {
     if (!newMessage.trim()) return;
 
     try {
-      const response = await fetchApi('/api/messages', {
-        method: 'POST',
-        data: {
-          receiver: targetUser._id,
-          content: newMessage.trim(),
-        },
+      setSending(true);
+      const response = await apiService.post('/messages', {
+        recipientId: targetUser._id,
+        content: newMessage.trim(),
       });
+      setMessages(prev => [...prev, response.data]);
+      setNewMessage('');
+      scrollToBottom();
+      showToast('消息发送成功', 'success');
 
-      if (response.data) {
-        setMessages(prev => [...prev, response.data]);
-        setNewMessage('');
-        scrollToBottom();
-
-        if (socket) {
-          socket.emit('send_message', response.data);
-        }
+      if (socket) {
+        socket.emit('send_message', response.data);
       }
-    } catch (err) {
-      console.error('Failed to send message:', err);
-      toast.error('发送失败，请重试');
+    } catch (error) {
+      showToast('消息发送失败', 'error');
+    } finally {
+      setSending(false);
     }
   };
 

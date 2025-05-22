@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
-import { fetchApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../hooks/useToast';
+import { apiService } from '../services/api';
 import { Link } from 'react-router-dom';
 import Avatar from './Avatar';
 import UserList from './UserList';
@@ -28,43 +29,43 @@ function ProfileView({ userId, onClose }) {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
 
+  const { showToast } = useToast();
+
   useEffect(() => {
-    fetchUserData();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [profileResponse, statsResponse] = await Promise.all([
+          apiService.get(`/users/${userId}`),
+          apiService.get(`/users/${userId}/stats`),
+        ]);
+        setUser(profileResponse.data);
+        setStats(statsResponse.data);
+        setIsFollowing(profileResponse.data.followers.includes(currentUser._id));
+      } catch (error) {
+        showToast('获取用户信息失败', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [userId]);
-
-  const fetchUserData = async () => {
-    try {
-      setLoading(true);
-      const [userResponse, statsResponse] = await Promise.all([
-        fetchApi(`/api/users/${userId}`),
-        fetchApi(`/api/users/${userId}/stats`),
-      ]);
-
-      setUser(userResponse.data);
-      setStats(statsResponse.data);
-      setIsFollowing(userResponse.data.followers.includes(currentUser._id));
-    } catch (err) {
-      console.error('Failed to fetch user data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFollow = async () => {
     try {
-      const response = await fetchApi(`/api/users/${userId}/follow`, {
-        method: isFollowing ? 'DELETE' : 'POST',
-      });
-
-      if (response.data) {
-        setIsFollowing(!isFollowing);
-        setStats(prev => ({
-          ...prev,
-          followers: isFollowing ? prev.followers - 1 : prev.followers + 1,
-        }));
-      }
-    } catch (err) {
-      console.error('Failed to follow/unfollow:', err);
+      setLoading(true);
+      const response = await apiService.post(`/users/${userId}/follow`);
+      setUser(prev => ({
+        ...prev,
+        followers: response.data.followers,
+        isFollowing: response.data.isFollowing,
+      }));
+      showToast(response.data.isFollowing ? '关注成功' : '取消关注成功', 'success');
+    } catch (error) {
+      showToast('操作失败', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 

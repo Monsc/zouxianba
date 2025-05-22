@@ -3,7 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useAuth } from '../contexts/AuthContext';
-import { fetchApi } from '../services/api';
+import { useToast } from '../hooks/useToast';
+import { Avatar } from './Avatar';
+import { Button } from './ui/button';
+import { apiService } from '../services/api';
 import LazyImage from './LazyImage';
 
 function CommentSection({ postId }) {
@@ -15,6 +18,7 @@ function CommentSection({ postId }) {
   const [sortBy, setSortBy] = useState('latest'); // 'latest', 'popular', 'oldest'
   const [replyTo, setReplyTo] = useState(null);
   const [newComment, setNewComment] = useState('');
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchComments();
@@ -23,12 +27,8 @@ function CommentSection({ postId }) {
   const fetchComments = async () => {
     try {
       setIsLoading(true);
-      const response = await fetchApi(`/api/posts/${postId}/comments`, {
-        params: {
-          page,
-          limit: 10,
-          sort: sortBy,
-        },
+      const response = await apiService.get(`/posts/${postId}/comments`, {
+        params: { page, limit: 10, sort: sortBy },
       });
       
       if (page === 1) {
@@ -38,8 +38,8 @@ function CommentSection({ postId }) {
       }
       
       setHasMore(response.data.length === 10);
-    } catch (err) {
-      console.error('Failed to fetch comments:', err);
+    } catch (error) {
+      showToast('获取评论失败', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -57,19 +57,20 @@ function CommentSection({ postId }) {
     if (!newComment.trim()) return;
 
     try {
-      const response = await fetchApi(`/api/posts/${postId}/comments`, {
-        method: 'POST',
-        data: {
-          content: newComment,
-          parentId: replyTo?._id,
-        },
+      setIsLoading(true);
+      const response = await apiService.post(`/posts/${postId}/comments`, {
+        content: newComment.trim(),
+        parentId: replyTo?._id,
       });
 
       setComments(prev => [response.data, ...prev]);
       setNewComment('');
       setReplyTo(null);
-    } catch (err) {
-      console.error('Failed to post comment:', err);
+      showToast('评论发布成功', 'success');
+    } catch (error) {
+      showToast('评论发布失败', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
