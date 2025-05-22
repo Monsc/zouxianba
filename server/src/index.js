@@ -8,7 +8,7 @@ const http = require('http');
 const mongoose = require('mongoose');
 const { authenticateToken } = require('./middleware/auth');
 const config = require('./config');
-const { initializeSocket } = require('./socket');
+const { initializeSocket, initializeIO } = require('./socket');
 
 // 路由导入
 const routes = require('./routes');
