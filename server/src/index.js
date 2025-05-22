@@ -68,7 +68,8 @@ async function startServer() {
     console.log('Connected to MongoDB');
 
     // 初始化 Socket.IO
-    initializeSocket(server);
+    const io = initializeIO(server);
+    initializeSocket(io);
 
     // 启动服务器
     server.listen(config.server.port, () => {
