@@ -1,9 +1,8 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { useAuth } from './hooks/useAuth';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/layouts/AdminLayout';
 import Toaster from './components/ui/toaster';
