@@ -26,7 +26,7 @@ const limiter = rateLimit({
   max: config.rateLimit.max,
   standardHeaders: true,
   legacyHeaders: false,
-  store: new RedisStore({
+  store: RedisStore({
     sendCommand: (...args) => redisClient.call(...args),
   })
 });
