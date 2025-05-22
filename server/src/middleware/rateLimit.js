@@ -1,5 +1,4 @@
 const rateLimit = require('express-rate-limit');
-const RedisStore = require('rate-limit-redis');
 const Redis = require('ioredis');
 const config = require('../config');
 
@@ -20,15 +19,48 @@ redisClient.on('error', (err) => {
   console.error('Redis client error:', err);
 });
 
-// 创建限流中间件
-const limiter = rateLimit({
-  windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.max,
-  standardHeaders: true,
-  legacyHeaders: false,
-  store: RedisStore({
-    sendCommand: (...args) => redisClient.call(...args),
-  })
-});
+// 创建自定义 Redis Store
+class CustomRedisStore {
+  constructor(client) {
+    this.client = client;
+  }
 
+  async increment(key) {
+    const multi = this.client.multi();
+    multi.incr(key);
+    multi.pexpire(key, config.rateLimit.windowMs);
+    const results = await multi.exec();
+    return results[0][1];
+  }
+
+  async decrement(key) {
+    await this.client.del(key);
+  }
+
+  async resetKey(key) {
+    await this.client.del(key);
+  }
+}
+
+// 创建限流中间件
+const createLimiter = (useRedis = true) => {
+  const options = {
+    windowMs: config.rateLimit.windowMs,
+    max: config.rateLimit.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: '请求过于频繁，请稍后再试' }
+  };
+
+  if (useRedis) {
+    options.store = new CustomRedisStore(redisClient);
+  }
+
+  return rateLimit(options);
+};
+
+// 创建限流器实例
+const limiter = createLimiter();
+
+// 导出限流器
 module.exports = limiter; 
