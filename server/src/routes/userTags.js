@@ -1,26 +1,37 @@
 const express = require('express');
 const router = express.Router();
-const UserTagController = require('../controllers/UserTagController');
+const {
+  createTag,
+  getTags,
+  getPopularTags,
+  getUserTags,
+  addUserTag,
+  removeUserTag,
+  searchTags,
+  verifyTag,
+  getTagUsers,
+  updateTag,
+} = require('../controllers/UserTagController');
 const { auth, adminAuth } = require('../middleware/auth');
 
 // 标签管理
-router.post('/', auth, UserTagController.createTag);
-router.get('/', auth, UserTagController.getTags);
-router.get('/popular', auth, UserTagController.getPopularTags);
-router.get('/search', auth, UserTagController.searchTags);
+router.post('/', auth, createTag);
+router.get('/', auth, getTags);
+router.get('/popular', auth, getPopularTags);
+router.get('/search', auth, searchTags);
 
 // 用户标签
-router.get('/user/:userId', auth, UserTagController.getUserTags);
-router.post('/:tagId/users', auth, UserTagController.addUserTag);
-router.delete('/:tagId/users', auth, UserTagController.removeUserTag);
+router.get('/user/:userId', auth, getUserTags);
+router.post('/:tagId/users', auth, addUserTag);
+router.delete('/:tagId/users', auth, removeUserTag);
 
 // 标签详情
-router.get('/:tagId/users', auth, UserTagController.getTagUsers);
+router.get('/:tagId/users', auth, getTagUsers);
 
 // 管理员操作
-router.patch('/:tagId/verify', adminAuth, UserTagController.verifyTag);
+router.patch('/:tagId/verify', adminAuth, verifyTag);
 
 // Add the route
-router.patch('/:tagId', auth, UserTagController.updateTag);
+router.patch('/:tagId', auth, updateTag);
 
 module.exports = router; 
