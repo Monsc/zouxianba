@@ -8,7 +8,6 @@ const postRoutes = require('./posts');
 const commentRoutes = require('./comments');
 const messageRoutes = require('./messages');
 const notificationRoutes = require('./notifications');
-const userTagRoutes = require('./userTags');
 const userRelationshipRoutes = require('./userRelationships');
 const searchRoutes = require('./search');
 
@@ -19,7 +18,6 @@ router.use('/posts', postRoutes);
 router.use('/comments', commentRoutes);
 router.use('/messages', messageRoutes);
 router.use('/notifications', notificationRoutes);
-router.use('/tags', userTagRoutes);
 router.use('/relationships', userRelationshipRoutes);
 router.use('/search', searchRoutes);
 
