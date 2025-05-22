@@ -1,7 +1,7 @@
-const { Cloudflare } = require('@cloudflare/cloudflare');
+const cloudflare = require('cloudflare');
 const config = require('../config');
 
-const cloudflare = new Cloudflare({
+const cf = new cloudflare({
   token: config.cloudflare.token
 });
 
@@ -19,7 +19,7 @@ async function uploadToCloudflare(buffer, filename, type) {
     const path = `${type}s/${uniqueFilename}`;
 
     // 上传文件到 Cloudflare
-    const response = await cloudflare.uploadFile({
+    const response = await cf.uploadFile({
       accountId: config.cloudflare.accountId,
       file: buffer,
       filename: uniqueFilename,
@@ -37,7 +37,7 @@ async function uploadToCloudflare(buffer, filename, type) {
 const deleteFromCloudflare = async (url) => {
   try {
     const fileId = url.split('/').pop();
-    await cloudflare.deleteFile({
+    await cf.deleteFile({
       accountId: config.cloudflare.accountId,
       zoneId: config.cloudflare.zoneId,
       fileId
