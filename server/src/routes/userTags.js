@@ -20,4 +20,7 @@ router.get('/:tagId/users', auth, UserTagController.getTagUsers);
 // 管理员操作
 router.patch('/:tagId/verify', adminAuth, UserTagController.verifyTag);
 
+// Add the route
+router.patch('/:tagId', auth, UserTagController.updateTag);
+
 module.exports = router; 

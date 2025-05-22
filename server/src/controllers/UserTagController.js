@@ -185,6 +185,27 @@ class UserTagController {
       }
     });
   });
+
+  updateTag = catchAsync(async (req, res) => {
+    const { tagId } = req.params;
+    const { name, description, category } = req.body;
+
+    const tag = await UserTag.findById(tagId);
+    if (!tag) {
+      throw new AppError('标签不存在', 404);
+    }
+
+    if (name) tag.name = name;
+    if (description) tag.description = description;
+    if (category) tag.category = category;
+
+    await tag.save();
+
+    res.status(200).json({
+      status: 'success',
+      data: { tag }
+    });
+  });
 }
 
 module.exports = new UserTagController(); 
