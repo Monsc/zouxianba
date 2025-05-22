@@ -15,9 +15,8 @@ router.get('/', catchAsync(async (req, res) => {
 }));
 
 // 创建评论
-router.post('/', auth, CommentController.createComment);
-
-console.log("Type of createComment:", typeof CommentController.createComment);
+console.log("Type of handler:", typeof CommentController.createComment); // ✅ debug 语句，部署前可删
+router.post('/', CommentController.createComment);
 
 // 更新评论
 router.put('/:id', auth, catchAsync(async (req, res) => {

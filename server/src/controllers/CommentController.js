@@ -1,7 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 
 const createComment = catchAsync(async (req, res) => {
-  // 在这里编写你的逻辑
+  res.status(201).json({ message: 'Comment created successfully' });
 });
 
 module.exports = {

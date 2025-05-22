@@ -5,8 +5,8 @@
  * @param {Function} fn - 异步路由处理函数
  * @returns {Function} 包装后的中间件函数
  */
-module.exports = function catchAsync(fn) {
+module.exports = function (fn) {
   return function (req, res, next) {
-    Promise.resolve(fn(req, res, next)).catch(next);
+    fn(req, res, next).catch(next);
   };
 }; 
