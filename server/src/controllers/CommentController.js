@@ -6,7 +6,7 @@ const createComment = catchAsync(async (req, res) => {
 
 const updateComment = catchAsync(async (req, res) => {
   const { id } = req.params;
-  res.status(200).json({ message: `Comment ${id} updated successfully` });
+  res.status(200).json({ message: `Comment ${id} updated` });
 });
 
 module.exports = {
