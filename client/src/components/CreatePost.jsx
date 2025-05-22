@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from '../components/ui/button';
 import { Icon } from './Icon';
 import { Avatar } from './Avatar';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../hooks/useToast';
 import { PostService } from '../services/PostService';
 import { cn } from '../lib/utils';
