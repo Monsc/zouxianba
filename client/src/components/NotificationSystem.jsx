@@ -15,7 +15,7 @@ function NotificationSystem() {
     if (user) {
       fetchNotifications();
       // 设置 WebSocket 连接
-      const ws = new WebSocket(process.env.REACT_APP_WS_URL);
+      const ws = new WebSocket(import.meta.env.VITE_WS_URL);
       
       ws.onmessage = (event) => {
         const notification = JSON.parse(event.data);
