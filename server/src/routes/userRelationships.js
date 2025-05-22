@@ -1,11 +1,11 @@
 const express = require('express');
 const UserRelationshipController = require('../controllers/UserRelationshipController');
-const { protect } = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
 // 保护所有路由
-router.use(protect);
+router.use(auth);
 
 // 关系管理
 router.post('/', UserRelationshipController.createRelationship);
