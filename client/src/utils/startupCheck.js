@@ -26,18 +26,19 @@ export const startupCheck = async () => {
       console.error('API health check failed:', error);
     }
 
-    // 3. WebSocket 连接检查
+    // 3. WebSocket 连接检查 (socket.io)
     try {
-      const ws = new WebSocket(envConfig.wsUrl);
+      const { io } = await import('socket.io-client');
+      const socket = io(envConfig.wsUrl, { transports: ['websocket'], timeout: 5000, reconnection: false });
       await new Promise((resolve, reject) => {
-        ws.onopen = resolve;
-        ws.onerror = reject;
+        socket.on('connect', resolve);
+        socket.on('connect_error', reject);
         setTimeout(reject, 5000); // 5秒超时
       });
-      ws.close();
+      socket.close();
       checks.websocket = true;
     } catch (error) {
-      console.error('WebSocket connection check failed:', error);
+      console.error('WebSocket (socket.io) connection check failed:', error);
     }
 
     // 4. 存储可用性检查
