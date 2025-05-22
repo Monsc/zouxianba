@@ -1,5 +1,5 @@
 const requiredEnvVars = [
-  'VITE_API_URL',
+  'VITE_API_BASE',
   'VITE_WS_URL',
   'VITE_APP_NAME',
   'VITE_APP_VERSION',
@@ -21,7 +21,7 @@ export const checkEnvVariables = () => {
 
 export const getEnvConfig = () => {
   return {
-    apiUrl: import.meta.env.VITE_API_URL,
+    apiUrl: import.meta.env.VITE_API_BASE,
     wsUrl: import.meta.env.VITE_WS_URL,
     appName: import.meta.env.VITE_APP_NAME,
     appVersion: import.meta.env.VITE_APP_VERSION,
