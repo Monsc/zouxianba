@@ -1,6 +1,6 @@
 const rateLimit = require('express-rate-limit');
+const config = require('../config');
 // const Redis = require('ioredis');
-// const config = require('../config');
 
 // // 创建 Redis 客户端
 // const redisClient = new Redis({
