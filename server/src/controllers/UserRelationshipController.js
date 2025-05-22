@@ -1,7 +1,7 @@
 const UserRelationship = require('../models/UserRelationship');
 const User = require('../models/User');
 const { AppError } = require('../utils/AppError');
-const { catchAsync } = require('../utils/catchAsync');
+const catchAsync = require('../utils/catchAsync');
 
 class UserRelationshipController {
   // 获取用户关系
