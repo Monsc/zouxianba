@@ -1,7 +1,7 @@
 const Notification = require('../models/Notification');
 const User = require('../models/User');
-const { AppError } = require('../utils/AppError');
-const { catchAsync } = require('../utils/catchAsync');
+const AppError = require('../utils/AppError');
+const catchAsync = require('../utils/catchAsync');
 
 class NotificationController {
   // 获取通知列表
@@ -45,41 +45,29 @@ class NotificationController {
 
   // 标记通知为已读
   markAsRead = catchAsync(async (req, res) => {
-    const { notificationId } = req.params;
-    const userId = req.user._id;
-
-    const notification = await Notification.findOne({
-      _id: notificationId,
-      recipient: userId
-    });
+    const notification = await Notification.findOneAndUpdate(
+      { _id: req.params.id, recipient: req.user._id },
+      { read: true },
+      { new: true }
+    );
 
     if (!notification) {
       throw new AppError('通知不存在', 404);
     }
 
-    notification.read = true;
-    notification.readAt = new Date();
-    await notification.save();
-
     res.status(200).json({
       status: 'success',
-      data: { notification }
+      data: {
+        notification
+      }
     });
   });
 
   // 标记所有通知为已读
   markAllAsRead = catchAsync(async (req, res) => {
-    const userId = req.user._id;
-
     await Notification.updateMany(
-      {
-        recipient: userId,
-        read: false
-      },
-      {
-        read: true,
-        readAt: new Date()
-      }
+      { recipient: req.user._id, read: false },
+      { read: true }
     );
 
     res.status(200).json({
@@ -90,12 +78,9 @@ class NotificationController {
 
   // 删除通知
   deleteNotification = catchAsync(async (req, res) => {
-    const { notificationId } = req.params;
-    const userId = req.user._id;
-
     const notification = await Notification.findOneAndDelete({
-      _id: notificationId,
-      recipient: userId
+      _id: req.params.id,
+      recipient: req.user._id
     });
 
     if (!notification) {
@@ -121,8 +106,8 @@ class NotificationController {
   });
 
   // 创建通知
-  createNotification = catchAsync(async (data) => {
-    const { recipient, type, actor, post, comment, message, metadata } = data;
+  createNotification = catchAsync(async (req, res) => {
+    const { recipient, type, actor, post, comment, message, metadata } = req.body;
 
     // 检查接收者是否存在
     const user = await User.findById(recipient);
@@ -146,7 +131,12 @@ class NotificationController {
       global.io.to(recipient.toString()).emit('new_notification', notification);
     }
 
-    return notification;
+    res.status(201).json({
+      status: 'success',
+      data: {
+        notification
+      }
+    });
   });
 }
 
