@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cloudflare": "^2.19.0",
+    "cloudflare": "^2.0.0",
     "compression": "^1.7.4",
     "connect-redis": "^7.1.0",
     "cors": "^2.8.5",
