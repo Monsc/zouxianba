@@ -1,143 +1,71 @@
 const nodemailer = require('nodemailer');
-const mailgunTransport = require('nodemailer-mailgun-transport');
-const { compile } = require('handlebars');
-const fs = require('fs').promises;
-const path = require('path');
+const config = require('../config');
+const { AppError } = require('../utils/AppError');
 
-class EmailService {
-  constructor() {
-    // 配置 Mailgun 传输器
-    const mailgunConfig = {
-      auth: {
-        api_key: process.env.MAILGUN_API_KEY,
-        domain: process.env.MAILGUN_DOMAIN
-      }
+// 创建邮件传输器
+const transporter = nodemailer.createTransport({
+  host: config.email.host,
+  port: config.email.port,
+  secure: config.email.secure,
+  auth: {
+    user: config.email.user,
+    pass: config.email.password
+  }
+});
+
+/**
+ * 发送验证码邮件
+ * @param {string} to - 收件人邮箱
+ * @param {string} code - 验证码
+ */
+const sendVerificationCode = async (to, code) => {
+  try {
+    const mailOptions = {
+      from: config.email.from,
+      to,
+      subject: '走线吧 - 验证码',
+      html: `
+        <h1>您的验证码</h1>
+        <p>您的验证码是：<strong>${code}</strong></p>
+        <p>验证码有效期为5分钟，请尽快使用。</p>
+        <p>如果这不是您的操作，请忽略此邮件。</p>
+      `
     };
 
-    this.transporter = nodemailer.createTransport(mailgunTransport(mailgunConfig));
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    throw new AppError('邮件发送失败', 500);
   }
+};
 
-  // 加载邮件模板
-  async loadTemplate(templateName) {
-    const templatePath = path.join(__dirname, '../templates/emails', `${templateName}.hbs`);
-    const template = await fs.readFile(templatePath, 'utf-8');
-    return compile(template);
+/**
+ * 发送密码重置邮件
+ * @param {string} to - 收件人邮箱
+ * @param {string} resetToken - 重置令牌
+ */
+const sendPasswordResetEmail = async (to, resetToken) => {
+  try {
+    const resetUrl = `${config.clientUrl}/reset-password?token=${resetToken}`;
+    const mailOptions = {
+      from: config.email.from,
+      to,
+      subject: '走线吧 - 密码重置',
+      html: `
+        <h1>密码重置</h1>
+        <p>您收到此邮件是因为您（或其他人）请求重置密码。</p>
+        <p>请点击下面的链接重置密码：</p>
+        <a href="${resetUrl}">${resetUrl}</a>
+        <p>如果您没有请求重置密码，请忽略此邮件。</p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    throw new AppError('邮件发送失败', 500);
   }
+};
 
-  // 发送邮件
-  async sendMail({ to, subject, template, context }) {
-    try {
-      const compiledTemplate = await this.loadTemplate(template);
-      const html = compiledTemplate(context);
-
-      const mailOptions = {
-        from: `"走线吧" <noreply@${process.env.MAILGUN_DOMAIN}>`,
-        to,
-        subject,
-        html,
-        // Mailgun 特定配置
-        'h:Reply-To': process.env.SUPPORT_EMAIL,
-        'v:email_type': template,
-        'v:user_id': context.userId || '',
-        'v:timestamp': new Date().toISOString()
-      };
-
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log('Email sent:', info.messageId);
-      return info;
-    } catch (error) {
-      console.error('Failed to send email:', error);
-      throw error;
-    }
-  }
-
-  // 发送验证码
-  async sendVerificationCode(email, code) {
-    return this.sendMail({
-      to: email,
-      subject: '验证您的走线吧账号',
-      template: 'verification',
-      context: {
-        code,
-        expiryTime: '10分钟',
-        userId: email // 用于跟踪
-      },
-    });
-  }
-
-  // 发送欢迎邮件
-  async sendWelcomeEmail(email, username) {
-    return this.sendMail({
-      to: email,
-      subject: '欢迎加入走线吧',
-      template: 'welcome',
-      context: {
-        username,
-        userId: email
-      },
-    });
-  }
-
-  // 发送密码重置邮件
-  async sendPasswordReset(email, resetToken) {
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
-    return this.sendMail({
-      to: email,
-      subject: '重置您的走线吧密码',
-      template: 'password-reset',
-      context: {
-        resetUrl,
-        expiryTime: '1小时',
-        userId: email
-      },
-    });
-  }
-
-  // 发送系统通知
-  async sendSystemNotification(email, title, content) {
-    return this.sendMail({
-      to: email,
-      subject: title,
-      template: 'notification',
-      context: {
-        title,
-        content,
-        userId: email
-      },
-    });
-  }
-
-  // 发送安全警告
-  async sendSecurityAlert(email, alertType, details) {
-    return this.sendMail({
-      to: email,
-      subject: '安全警告',
-      template: 'security-alert',
-      context: {
-        alertType,
-        details,
-        timestamp: new Date().toLocaleString(),
-        userId: email
-      },
-    });
-  }
-
-  // 批量发送邮件
-  async sendBulkEmails(emails, subject, template, context) {
-    const promises = emails.map(email => 
-      this.sendMail({
-        to: email,
-        subject,
-        template,
-        context: {
-          ...context,
-          userId: email
-        }
-      })
-    );
-
-    return Promise.all(promises);
-  }
-}
-
-module.exports = new EmailService(); 
+module.exports = {
+  sendVerificationCode,
+  sendPasswordResetEmail
+}; 
