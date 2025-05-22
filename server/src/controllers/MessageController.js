@@ -2,7 +2,7 @@ const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
 const User = require('../models/User');
 const { AppError } = require('../utils/AppError');
-const { catchAsync } = require('../utils/catchAsync');
+const catchAsync = require('../utils/catchAsync');
 const { uploadToCloudflare } = require('../utils/cloudflare');
 
 class MessageController {
