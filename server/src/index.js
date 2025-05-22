@@ -6,7 +6,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 const http = require('http');
 const mongoose = require('mongoose');
-const Redis = require('ioredis');
 const { authenticateToken } = require('./middleware/auth');
 const config = require('./config');
 const { initializeSocket } = require('./socket');
@@ -24,18 +23,6 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // 创建 Express 应用
 const app = express();
-
-// Redis 客户端
-const redisClient = new Redis({
-  host: config.redis.host,
-  port: config.redis.port,
-  password: config.redis.password,
-  db: config.redis.db,
-  retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  }
-});
 
 // 中间件配置
 app.use(helmet());
@@ -80,15 +67,6 @@ async function startServer() {
     await mongoose.connect(config.database.mongodb.uri, config.database.mongodb.options);
     console.log('Connected to MongoDB');
 
-    // Redis 连接事件监听
-    redisClient.on('connect', () => {
-      console.log('Connected to Redis');
-    });
-
-    redisClient.on('error', (error) => {
-      console.error('Redis connection error:', error);
-    });
-
     // 初始化 Socket.IO
     initializeSocket(server);
 
@@ -111,7 +89,6 @@ async function startServer() {
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received. Closing HTTP server...');
   await mongoose.connection.close();
-  await redisClient.quit();
   process.exit(0);
 });
 
