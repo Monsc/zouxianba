@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { api } from '@/services/api';
 import { toast } from 'react-hot-toast';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 

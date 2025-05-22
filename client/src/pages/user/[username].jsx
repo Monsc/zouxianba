@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/services/api';
 import { toast } from 'react-hot-toast';
@@ -12,8 +12,8 @@ import ErrorState from '@/components/common/ErrorState';
 import Pagination from '@/components/common/Pagination';
 
 const UserProfile = () => {
-  const router = useRouter();
-  const { username } = router.query;
+  const navigate = useNavigate();
+  const { username } = navigate.location.pathname.split('/').pop();
   const { user: currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -87,7 +87,7 @@ const UserProfile = () => {
           title="加载失败"
           description={error}
           action={
-            <Button onClick={() => router.reload()}>
+            <Button onClick={() => navigate(-1)}>
               重试
             </Button>
           }
@@ -103,7 +103,7 @@ const UserProfile = () => {
           title="用户不存在"
           description="该用户可能已被删除或不存在"
           action={
-            <Button onClick={() => router.push('/')}>
+            <Button onClick={() => navigate('/')}>
               返回首页
             </Button>
           }

@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
 const ProtectedRoute = ({ children }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { user, loading } = useAuth();
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace(`/auth/login?redirect=${encodeURIComponent(router.asPath)}`);
+      navigate(`/auth/login?redirect=${encodeURIComponent(navigate(window.location.pathname))}`);
     }
-  }, [user, loading, router]);
+  }, [user, loading, navigate]);
 
   if (loading) {
     return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/services/api';
 import { toast } from 'react-hot-toast';
@@ -14,7 +14,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 const HotPage = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +53,7 @@ const HotPage = () => {
   const handleLike = async (postId) => {
     if (!user) {
       toast.error('请先登录');
-      router.push('/login');
+      navigate('/login');
       return;
     }
 
@@ -73,7 +73,7 @@ const HotPage = () => {
   const handleFollow = async (userId) => {
     if (!user) {
       toast.error('请先登录');
-      router.push('/login');
+      navigate('/login');
       return;
     }
 
@@ -144,7 +144,7 @@ const HotPage = () => {
               title="暂无热门帖子"
               description="快来发布第一条动态吧"
               action={
-                <Button onClick={() => router.push('/post/create')}>
+                <Button onClick={() => navigate('/post/create')}>
                   发布动态
                 </Button>
               }
@@ -254,7 +254,7 @@ const HotPage = () => {
                           <span>{post.likes.length}</span>
                         </button>
                         <button
-                          onClick={() => router.push(`/post/${post._id}`)}
+                          onClick={() => navigate(`/post/${post._id}`)}
                           className="flex items-center space-x-1 text-gray-500"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -264,7 +264,7 @@ const HotPage = () => {
                         </button>
                       </div>
                       <button
-                        onClick={() => router.push(`/post/${post._id}`)}
+                        onClick={() => navigate(`/post/${post._id}`)}
                         className="text-gray-500 hover:text-gray-700"
                       >
                         查看详情

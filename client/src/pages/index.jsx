@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/services/api';
 import { toast } from 'react-hot-toast';
@@ -14,7 +14,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 const HomePage = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +99,7 @@ const HomePage = () => {
             title="欢迎来到走线吧"
             description="请登录以查看关注用户的动态"
             action={
-              <Button onClick={() => router.push('/login')}>
+              <Button onClick={() => navigate('/login')}>
                 登录
               </Button>
             }
@@ -136,7 +136,7 @@ const HomePage = () => {
               title="暂无动态"
               description="关注更多用户以查看他们的动态"
               action={
-                <Button onClick={() => router.push('/explore')}>
+                <Button onClick={() => navigate('/explore')}>
                   发现用户
                 </Button>
               }
@@ -257,7 +257,7 @@ const HomePage = () => {
                           <span>{post.likes.length}</span>
                         </button>
                         <button
-                          onClick={() => router.push(`/post/${post._id}`)}
+                          onClick={() => navigate(`/post/${post._id}`)}
                           className="flex items-center space-x-1 text-gray-500"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -267,7 +267,7 @@ const HomePage = () => {
                         </button>
                       </div>
                       <button
-                        onClick={() => router.push(`/post/${post._id}`)}
+                        onClick={() => navigate(`/post/${post._id}`)}
                         className="text-gray-500 hover:text-gray-700"
                       >
                         查看详情

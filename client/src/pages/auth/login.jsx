@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -15,7 +15,7 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       await login(data.email, data.password);
-      router.push('/');
+      navigate('/');
       toast.success('登录成功！');
     } catch (error) {
       toast.error(error.message || '登录失败，请重试');
