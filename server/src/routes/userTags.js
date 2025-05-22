@@ -11,6 +11,7 @@ const {
   verifyTag,
   getTagUsers,
   updateTag,
+  updateTagStatus,
 } = require('../controllers/UserTagController');
 const { auth, adminAuth } = require('../middleware/auth');
 
@@ -33,5 +34,6 @@ router.patch('/:tagId/verify', adminAuth, verifyTag);
 
 // Add the route
 router.patch('/:tagId', auth, updateTag);
+router.patch('/:tagId/status', auth, updateTagStatus);
 
 module.exports = router; 

@@ -206,6 +206,12 @@ class UserTagController {
       data: { tag }
     });
   });
+
+  updateTagStatus = catchAsync(async (req, res) => {
+    const { tagId } = req.params;
+    // Add your logic to update the tag status here
+    res.status(200).json({ message: `Tag ${tagId} status updated.` });
+  });
 }
 
 module.exports = new UserTagController(); 
