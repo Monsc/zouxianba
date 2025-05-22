@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '@/services/api';
+import apiService from '@/services/api';
 import { toast } from 'react-hot-toast';
 
 const AuthContext = createContext(null);
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await api.get('/users/me');
+        const response = await apiService.get('/users/me');
         setUser(response.data);
       }
     } catch (error) {
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await api.post('/users/login', { email, password });
+      const response = await apiService.post('/users/login', { email, password });
       const { accessToken, user } = response.data;
       localStorage.setItem('token', accessToken);
       setUser(user);
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await api.post('/users/register', userData);
+      const response = await apiService.post('/users/register', userData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || '注册失败');
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await api.post('/users/logout');
+      await apiService.post('/users/logout');
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (data) => {
     try {
-      const response = await api.patch('/users/me', data);
+      const response = await apiService.patch('/users/me', data);
       setUser(response.data);
       return response.data;
     } catch (error) {
