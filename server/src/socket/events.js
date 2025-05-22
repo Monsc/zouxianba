@@ -12,18 +12,17 @@ const onlineUsers = new Map();
 
 // 认证中间件
 const authenticateSocket = async (socket, next) => {
+  // 健康检查时允许无 token 或 token === 'health-check' 连接
+  const token = socket.handshake.auth && socket.handshake.auth.token;
+  if (!token || token === 'health-check') {
+    return next();
+  }
   try {
-    const token = socket.handshake.auth.token;
-    if (!token) {
-      return next(new Error('未提供认证令牌'));
-    }
-
     const decoded = jwt.verify(token, config.jwt.secret);
     const user = await User.findById(decoded.id);
     if (!user) {
       return next(new Error('用户不存在'));
     }
-
     socket.user = user;
     next();
   } catch (error) {
