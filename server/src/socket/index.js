@@ -27,5 +27,6 @@ const getIO = () => {
 
 module.exports = {
   initializeIO,
-  getIO
+  getIO,
+  initializeSocket
 }; 
