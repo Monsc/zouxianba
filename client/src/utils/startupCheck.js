@@ -60,6 +60,7 @@ export const startupCheck = async () => {
 
     // 输出检查结果
     console.table(checks);
+    console.log('Startup check details:', checks);
 
     // 返回检查结果
     return {
