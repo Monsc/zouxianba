@@ -63,6 +63,7 @@ export const App = () => {
   const [startupError, setStartupError] = useState(null);
 
   useEffect(() => {
+    console.log('App useEffect running');
     const initializeApp = async () => {
       // 检查环境变量
       const envValid = checkEnvVariables();
