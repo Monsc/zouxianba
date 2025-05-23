@@ -20,6 +20,8 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 import Feed from './components/Feed';
+import Notifications from './components/Notifications';
+import Messages from './components/Messages';
 
 // 懒加载管理页面组件
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
@@ -65,6 +67,8 @@ export const App = () => {
                 <Routes>
                   <Route path="/" element={<Navigate to="/feed" replace />} />
                   <Route path="/feed" element={<Feed />} />
+                  <Route path="/notifications" element={<Notifications />} />
+                  <Route path="/messages" element={<Messages />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/profile/:username" element={<Profile />} />
