@@ -6,7 +6,9 @@ import { toast } from 'react-hot-toast';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  return <AuthContext.Provider value={null}>{children}</AuthContext.Provider>;
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
