@@ -39,6 +39,9 @@ class ErrorBoundary extends React.Component {
               <p className="text-gray-600 mb-6">
                 抱歉，应用程序遇到了一个错误。请刷新页面或稍后再试。
               </p>
+              <pre style={{ color: 'red', fontSize: 12, wordBreak: 'break-all' }}>
+                {this.state.error && this.state.error.toString()}
+              </pre>
               <button
                 onClick={() => window.location.reload()}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
