@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { createPost } from '../services/api';
+import apiService from '../services/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import LoginForm from './LoginForm';
 
@@ -44,7 +44,7 @@ function CreatePostBox() {
     try {
       setIsLoading(true);
       setError(null);
-      await createPost({ content, images });
+      await apiService.createPost({ content, images });
       setContent('');
       setImages([]);
     } catch (err) {
