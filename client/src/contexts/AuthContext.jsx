@@ -10,14 +10,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    try {
-      checkAuth();
-    } catch (e) {
-      console.error('AuthProvider 初始化异常:', e, e?.message, e?.stack);
-      throw e;
-    }
-  }, []);
+  // useEffect(() => {
+  //   try {
+  //     checkAuth();
+  //   } catch (e) {
+  //     console.error('AuthProvider 初始化异常:', e, e?.message, e?.stack);
+  //     throw e;
+  //   }
+  // }, []);
 
   const checkAuth = async () => {
     try {
