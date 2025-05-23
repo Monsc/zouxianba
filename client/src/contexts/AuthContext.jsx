@@ -11,7 +11,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
+    try {
+      checkAuth();
+    } catch (e) {
+      console.error('AuthProvider 初始化异常:', e, e?.message, e?.stack);
+      throw e;
+    }
   }, []);
 
   const checkAuth = async () => {
@@ -86,6 +91,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
+    console.error('useAuth must be used within an AuthProvider');
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

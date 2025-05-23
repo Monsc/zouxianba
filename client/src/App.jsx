@@ -65,35 +65,39 @@ export const App = () => {
   useEffect(() => {
     console.log('App useEffect running');
     const initializeApp = async () => {
-      // 检查环境变量
-      const envValid = checkEnvVariables();
-      setIsEnvValid(envValid);
-
-      if (!envValid) {
-        console.error('Environment check failed. Please check your .env file.');
-        return;
-      }
-
-      // 检查启动状态
-      const cachedStatus = getStartupStatus();
-      if (cachedStatus && cachedStatus.success) {
-        setIsStartupValid(true);
-      } else {
-        const status = await startupCheck();
-        setIsStartupValid(status.success);
-        setStartupError(status.error);
-        saveStartupStatus(status);
-      }
-
-      // 获取未读通知
       try {
-        const data = await notificationService.getUnreadCount();
-        setUnreadCount(data.count || 0);
-      } catch (error) {
-        console.error('Failed to fetch unread notifications:', error);
+        // 检查环境变量
+        const envValid = checkEnvVariables();
+        setIsEnvValid(envValid);
+
+        if (!envValid) {
+          console.error('Environment check failed. Please check your .env file.');
+          return;
+        }
+
+        // 检查启动状态
+        const cachedStatus = getStartupStatus();
+        if (cachedStatus && cachedStatus.success) {
+          setIsStartupValid(true);
+        } else {
+          const status = await startupCheck();
+          setIsStartupValid(status.success);
+          setStartupError(status.error);
+          saveStartupStatus(status);
+        }
+
+        // 获取未读通知
+        try {
+          const data = await notificationService.getUnreadCount();
+          setUnreadCount(data.count || 0);
+        } catch (error) {
+          console.error('Failed to fetch unread notifications:', error);
+        }
+      } catch (e) {
+        console.error('App 初始化异常:', e, e?.message, e?.stack);
+        throw e;
       }
     };
-
     initializeApp();
   }, []);
 
