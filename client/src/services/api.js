@@ -183,17 +183,17 @@ class ApiService {
 
   // 帖子相关
   async getPosts(page = 1, limit = 20) {
-    const response = await this.get('/posts', { params: { page, limit } });
+    const response = await this.get('/api/posts', { params: { page, limit } });
     return response.data;
   }
 
   async getPost(postId) {
-    const response = await this.get(`/posts/${postId}`);
+    const response = await this.get(`/api/posts/${postId}`);
     return response.data;
   }
 
   async createPost(data) {
-    const response = await this.post('/posts', data);
+    const response = await this.post('/api/posts', data);
     return response.data;
   }
 
