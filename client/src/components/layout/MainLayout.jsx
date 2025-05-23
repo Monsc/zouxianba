@@ -2,6 +2,8 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import RightSidebar from '../RightSidebar';
+import MobileNav from '../MobileNav';
 
 const MainLayout = ({ children }) => {
   const router = useRouter();
@@ -18,8 +20,10 @@ const MainLayout = ({ children }) => {
         <div className="flex gap-8">
           <Sidebar />
           <main className="flex-1">{children}</main>
+          <RightSidebar />
         </div>
       </div>
+      <MobileNav />
     </div>
   );
 };

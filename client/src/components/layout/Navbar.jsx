@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/hooks/useAuth';
 import { SearchIcon, BellIcon, UserCircleIcon } from '@heroicons/react/outline';
+import CreatePostButton from '../CreatePostButton';
 
 const Navbar = () => {
   const router = useRouter();
@@ -93,6 +94,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+      <CreatePostButton />
     </nav>
   );
 };

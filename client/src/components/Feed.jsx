@@ -5,6 +5,8 @@ import { useToast } from '../contexts/ToastContext';
 import { PostCard } from './PostCard';
 import { CreatePost } from './CreatePost';
 import { useAuth } from '../contexts/AuthContext';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import LoginForm from './LoginForm';
 
 export const Feed = () => {
   const { username } = useParams();
@@ -15,6 +17,7 @@ export const Feed = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [error, setError] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -99,6 +102,14 @@ export const Feed = () => {
   if (error) {
     return <div className="text-red-500 text-center">Failed to load posts</div>;
   }
+  if (Array.isArray(posts) && posts.length === 0) {
+    return (
+      <div className="text-center mt-10 text-gray-500">
+        暂无内容，快来发布第一条动态吧！
+        <div className="mt-4"><CreatePost /></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -123,6 +134,15 @@ export const Feed = () => {
           </button>
         </div>
       )}
+
+      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>登录</DialogTitle>
+          </DialogHeader>
+          <LoginForm />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

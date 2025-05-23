@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import CreatePostBox from './CreatePostBox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import LoginForm from './LoginForm';
 
 function CreatePostButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user } = useAuth();
 
-  if (!user) return null;
-
   const handleOpen = () => {
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
     setIsModalOpen(true);
     setIsClosing(false);
   };
@@ -56,6 +61,15 @@ function CreatePostButton() {
           </div>
         </div>
       )}
+
+      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>登录</DialogTitle>
+          </DialogHeader>
+          <LoginForm />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

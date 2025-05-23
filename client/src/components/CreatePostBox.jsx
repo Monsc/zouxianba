@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { createPost } from '../services/api';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import LoginForm from './LoginForm';
 
 function CreatePostBox() {
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const textareaRef = useRef(null);
@@ -29,7 +32,7 @@ function CreatePostBox() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      navigate('/login');
+      setIsLoginModalOpen(true);
       return;
     }
 
@@ -74,8 +77,6 @@ function CreatePostBox() {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  if (!user) return null;
-
   return (
     <div className="create-post-box bg-white dark:bg-[#15202b] rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-4 mb-4">
       <form onSubmit={handleSubmit} className="post-form flex flex-col gap-4">
@@ -87,13 +88,13 @@ function CreatePostBox() {
 
         <div className="post-author flex items-center gap-3 mb-2">
           <img
-            src={user.avatar || '/default-avatar.png'}
-            alt={user.username}
+            src={user?.avatar || '/default-avatar.png'}
+            alt={user?.username}
             className="avatar w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 object-cover shadow"
           />
           <div className="author-info">
-            <span className="username font-bold text-md">{user.username}</span>
-            <span className="handle text-gray-400 text-sm ml-2">@{user.handle}</span>
+            <span className="username font-bold text-md">{user?.username || '游客'}</span>
+            <span className="handle text-gray-400 text-sm ml-2">@{user?.handle || 'guest'}</span>
           </div>
         </div>
 
@@ -156,6 +157,15 @@ function CreatePostBox() {
           </button>
         </div>
       </form>
+
+      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>登录</DialogTitle>
+          </DialogHeader>
+          <LoginForm />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

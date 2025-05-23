@@ -7,6 +7,10 @@ import {
   UserGroupIcon,
   BookmarkIcon,
   HashtagIcon,
+  BellIcon,
+  MailIcon,
+  UserIcon,
+  SettingsIcon,
 } from '@heroicons/react/outline';
 
 const Sidebar = () => {
@@ -17,7 +21,11 @@ const Sidebar = () => {
     { name: '首页', href: '/', icon: HomeIcon },
     { name: '热门', href: '/hot', icon: FireIcon },
     { name: '关注', href: '/following', icon: UserGroupIcon },
+    { name: '通知', href: '/notifications', icon: BellIcon },
+    { name: '消息', href: '/messages', icon: MailIcon },
     { name: '收藏', href: '/bookmarks', icon: BookmarkIcon },
+    { name: '个人主页', href: '/profile', icon: UserIcon },
+    { name: '设置', href: '/settings', icon: SettingsIcon },
   ];
 
   const trendingTopics = [

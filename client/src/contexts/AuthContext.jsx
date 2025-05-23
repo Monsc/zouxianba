@@ -14,6 +14,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('token');
       console.log('[AuthProvider] token:', token);
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
       checkAuth();
     } catch (e) {
       console.error('AuthProvider 初始化异常:', e, e?.message, e?.stack);
@@ -42,10 +46,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await apiService.post('/users/login', { email, password });
+      const response = await apiService.post('/auth/login', { email, password });
       const { accessToken, user } = response.data;
       localStorage.setItem('token', accessToken);
       setUser(user);
+      window.location.href = '/feed';
       return user;
     } catch (error) {
       throw new Error(error.response?.data?.message || '登录失败');
