@@ -125,7 +125,7 @@ export const Feed = () => {
 
   return (
     <div className="space-y-6">
-      {/* 发帖按钮 - 访客和已登录用户都显示 */}
+      {/* 发帖按钮 - 仅顶部显示 */}
       <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 p-4">
         <CreatePostButton />
       </div>
@@ -155,8 +155,7 @@ export const Feed = () => {
         </>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">暂无内容，快来发布第一条动态吧！</p>
-          <CreatePostButton />
+          <p className="text-gray-500 mb-4">暂无内容</p>
         </div>
       )}
 
