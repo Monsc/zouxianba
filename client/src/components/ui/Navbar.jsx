@@ -47,26 +47,27 @@ const Navbar = () => {
             🐦
           </motion.div>
         </Link>
-
-        <div className="space-y-1">
-          {navItems.map((item) => (
-            <NavItem
-              key={item.to}
-              {...item}
-              active={location.pathname === item.to}
-            />
-          ))}
-        </div>
-
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
-          className="mt-4 hidden lg:block"
-        >
-          发推
-        </Button>
       </div>
+      <div className="space-y-2">
+        {Array.isArray(navItems) && navItems.map((item) => (
+          <NavItem
+            key={item.to}
+            to={item.to}
+            icon={item.icon}
+            label={item.label}
+            active={location.pathname === item.to}
+          />
+        ))}
+      </div>
+
+      <Button
+        variant="primary"
+        size="lg"
+        fullWidth
+        className="mt-4 hidden lg:block"
+      >
+        发推
+      </Button>
 
       <div className="flex items-center space-x-2 p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
         <Avatar src={user?.avatar} username={user?.username} size="sm" />

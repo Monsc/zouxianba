@@ -140,7 +140,7 @@ function Chat() {
         {messages.length === 0 ? (
           <div className="text-gray-400 text-center py-8">暂无消息</div>
         ) : (
-          messages.map(msg => (
+          Array.isArray(messages) && messages.map((msg, idx) => (
             <div
               key={msg._id}
               className={`flex ${msg.from === user._id ? 'justify-end' : 'justify-start'} mb-2`}

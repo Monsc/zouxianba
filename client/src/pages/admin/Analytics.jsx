@@ -118,34 +118,26 @@ export default function Analytics() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="总用户数"
-          value={stats.users.total}
-          icon={Users}
-          growth={stats.users.growth}
-          trend="up"
-        />
-        <StatCard
-          title="活跃用户"
-          value={stats.users.active}
-          icon={Users}
-          growth={stats.users.growth}
-          trend="up"
-        />
-        <StatCard
-          title="新增用户"
-          value={stats.users.new}
-          icon={Users}
-          growth={stats.users.growth}
-          trend="up"
-        />
-        <StatCard
-          title="内容总数"
-          value={stats.content.posts}
-          icon={FileText}
-          growth={stats.content.growth}
-          trend="up"
-        />
+        {Array.isArray(stats.users) && stats.users.map((user, index) => (
+          <StatCard
+            key={index}
+            title={`总用户数`}
+            value={user.total}
+            icon={Users}
+            growth={user.growth}
+            trend="up"
+          />
+        ))}
+        {Array.isArray(stats.content) && stats.content.map((content, index) => (
+          <StatCard
+            key={index}
+            title={`内容总数`}
+            value={content.posts}
+            icon={FileText}
+            growth={content.growth}
+            trend="up"
+          />
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

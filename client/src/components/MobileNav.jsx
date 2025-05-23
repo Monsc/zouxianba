@@ -20,7 +20,7 @@ function MobileNav() {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-twitter-gray-900 border-t border-twitter-gray-200 dark:border-twitter-gray-800 md:hidden">
       <div className="flex justify-around items-center h-16">
-        {navItems.map((item) => (
+        {Array.isArray(navItems) && navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}

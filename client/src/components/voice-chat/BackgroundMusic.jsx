@@ -117,7 +117,7 @@ const BackgroundMusic = ({ roomId }) => {
               背景音乐
             </h3>
             <div className="space-y-2">
-              {BACKGROUND_MUSIC.map((track) => (
+              {Array.isArray(BACKGROUND_MUSIC) && BACKGROUND_MUSIC.map((track) => (
                 <button
                   key={track.id}
                   onClick={() => playMusic(track)}

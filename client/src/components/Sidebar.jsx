@@ -35,7 +35,7 @@ export const Sidebar = () => {
       </div>
 
       <nav className="space-y-1">
-        {navItems.map((item) => (
+        {Array.isArray(navItems) && navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}

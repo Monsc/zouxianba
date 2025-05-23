@@ -70,7 +70,7 @@ const Reactions = ({ roomId }) => {
       {showReactions && (
         <div className="absolute bottom-full left-0 mb-2 p-2 bg-white rounded-lg shadow-lg border">
           <div className="grid grid-cols-4 gap-2">
-            {REACTIONS.map((reaction) => (
+            {Array.isArray(REACTIONS) && REACTIONS.map((reaction) => (
               <button
                 key={reaction.emoji}
                 onClick={() => sendReaction(reaction.emoji)}
@@ -85,7 +85,7 @@ const Reactions = ({ roomId }) => {
       )}
 
       {/* 反应显示 */}
-      {reactions.length > 0 && (
+      {Array.isArray(reactions) && reactions.length > 0 && (
         <div className="absolute bottom-full left-0 mb-2 p-2 bg-white rounded-lg shadow-lg border">
           <div className="flex flex-wrap gap-2">
             {reactions.map((reaction) => (

@@ -38,7 +38,7 @@ const Dropdown = ({
           tabIndex="-1"
         >
           <div className="py-1" role="none">
-            {items.map((item, index) => (
+            {Array.isArray(items) && items.map((item, index) => (
               <button
                 key={index}
                 onClick={() => {

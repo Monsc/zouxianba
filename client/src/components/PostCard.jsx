@@ -138,7 +138,7 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
             </div>
             {showComments && (
               <div className="mt-4 space-y-4">
-                {post.comments.map(comment => (
+                {Array.isArray(post.comments) && post.comments.map(comment => (
                   <div key={comment._id} className="flex space-x-4">
                     <img
                       src={comment.author.avatar || '/default-avatar.png'}

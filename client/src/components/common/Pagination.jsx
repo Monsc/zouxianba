@@ -29,7 +29,7 @@ const Pagination = ({
   const renderPageNumbers = () => {
     const visiblePages = getVisiblePages();
 
-    return visiblePages.map((page) => (
+    return Array.isArray(visiblePages) && visiblePages.map((page) => (
       <button
         key={page}
         onClick={() => onPageChange(page)}

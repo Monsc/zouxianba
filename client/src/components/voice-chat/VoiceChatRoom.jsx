@@ -398,7 +398,7 @@ const VoiceChatRoom = () => {
         {showParticipants && (
           <div className="p-4 border-b">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {participants.map(participant => (
+              {Array.isArray(participants) && participants.map(participant => (
                 <div
                   key={participant._id}
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50"

@@ -180,7 +180,7 @@ export default function Feedback() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {feedbacks.map((feedback) => (
+              {Array.isArray(feedbacks) && feedbacks.map((feedback) => (
                 <TableRow key={feedback.id}>
                   <TableCell>
                     <div className="flex items-center space-x-2">
@@ -205,7 +205,7 @@ export default function Feedback() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {statusTypes.map((status) => (
+                        {Array.isArray(statusTypes) && statusTypes.map((status) => (
                           <SelectItem key={status.value} value={status.value}>
                             {status.label}
                           </SelectItem>
