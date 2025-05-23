@@ -7,6 +7,7 @@ import { CreatePost } from './CreatePost';
 import { useAuth } from '../contexts/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import LoginForm from './LoginForm';
+import CreatePostButton from './CreatePostButton';
 
 export const Feed = () => {
   const { username } = useParams();
@@ -106,15 +107,17 @@ export const Feed = () => {
     return (
       <div className="text-center mt-10 text-gray-500">
         暂无内容，快来发布第一条动态吧！
-        <div className="mt-4"><CreatePost /></div>
+        <div className="mt-4 flex justify-center"><CreatePostButton /></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end mb-4">
+        <CreatePostButton />
+      </div>
       {console.log('[Feed] 渲染 posts:', posts)}
-      {user && !username && <CreatePost />}
       {Array.isArray(posts) && posts.map(post => (
         <PostCard
           key={post._id}
@@ -134,7 +137,12 @@ export const Feed = () => {
           </button>
         </div>
       )}
-
+      {Array.isArray(posts) && posts.length === 0 && (
+        <div className="text-center mt-10 text-gray-500">
+          暂无内容，快来发布第一条动态吧！
+          <div className="mt-4 flex justify-center"><CreatePostButton /></div>
+        </div>
+      )}
       <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
         <DialogContent>
           <DialogHeader>

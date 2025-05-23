@@ -11,6 +11,8 @@ import { PostService } from '@/services/PostService';
 import { cn } from '@/lib/utils';
 import { ShareDialog } from './ShareDialog';
 import { ShareService } from '@/services/ShareService';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import LoginForm from './LoginForm';
 
 export const Post = ({ post, onDelete }) => {
   const { user } = useAuth();
@@ -20,10 +22,11 @@ export const Post = ({ post, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shares, setShares] = useState(post.shares);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleLike = async () => {
     if (!user) {
-      showToast('请先登录', 'warning');
+      setIsLoginModalOpen(true);
       return;
     }
 
@@ -60,7 +63,7 @@ export const Post = ({ post, onDelete }) => {
 
   const handleShare = async () => {
     if (!user) {
-      showToast('请先登录', 'warning');
+      setIsLoginModalOpen(true);
       return;
     }
     setIsShareDialogOpen(true);
@@ -112,93 +115,103 @@ export const Post = ({ post, onDelete }) => {
   };
 
   return (
-    <article className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <div className="flex items-start space-x-3">
-        <Avatar
-          src={post.author.avatar}
-          alt={post.author.username}
-          size="md"
-          className="flex-shrink-0"
-        />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                {post.author.username}
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {formatDistanceToNow(new Date(post.createdAt), {
-                  addSuffix: true,
-                  locale: zhCN,
-                })}
-              </p>
+    <>
+      <article className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="flex items-start space-x-3">
+          <Avatar
+            src={post.author.avatar}
+            alt={post.author.username}
+            size="md"
+            className="flex-shrink-0"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {post.author.username}
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {formatDistanceToNow(new Date(post.createdAt), {
+                    addSuffix: true,
+                    locale: zhCN,
+                  })}
+                </p>
+              </div>
+              {user?.id === post.author.id && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="text-gray-500 hover:text-red-500"
+                >
+                  <Icon name="trash" className="w-4 h-4" />
+                </Button>
+              )}
             </div>
-            {user?.id === post.author.id && (
+
+            <div className="mt-2 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+              {post.content}
+            </div>
+
+            {post.tags && post.tags.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {renderMedia()}
+
+            <div className="mt-4 flex items-center space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="text-gray-500 hover:text-red-500"
+                onClick={handleLike}
+                className={cn(
+                  'flex items-center space-x-1',
+                  isLiked ? 'text-red-500' : 'text-gray-500'
+                )}
               >
-                <Icon name="trash" className="w-4 h-4" />
+                <Icon
+                  name={isLiked ? 'heart-filled' : 'heart'}
+                  className="w-4 h-4"
+                />
+                <span>{likes}</span>
               </Button>
-            )}
-          </div>
-
-          <div className="mt-2 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
-            {post.content}
-          </div>
-
-          {post.tags && post.tags.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {renderMedia()}
-
-          <div className="mt-4 flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLike}
-              className={cn(
-                'flex items-center space-x-1',
-                isLiked ? 'text-red-500' : 'text-gray-500'
-              )}
-            >
-              <Icon
-                name={isLiked ? 'heart-filled' : 'heart'}
-                className="w-4 h-4"
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShare}
+                className="flex items-center space-x-1 text-gray-500"
+              >
+                <Icon name="share" className="w-4 h-4" />
+                <span>{shares}</span>
+              </Button>
+              <ShareDialog
+                open={isShareDialogOpen}
+                onClose={() => setIsShareDialogOpen(false)}
+                post={post}
+                onShareSuccess={handleShareSuccess}
               />
-              <span>{likes}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleShare}
-              className="flex items-center space-x-1 text-gray-500"
-            >
-              <Icon name="share" className="w-4 h-4" />
-              <span>{shares}</span>
-            </Button>
-            <ShareDialog
-              open={isShareDialogOpen}
-              onClose={() => setIsShareDialogOpen(false)}
-              post={post}
-              onShareSuccess={handleShareSuccess}
-            />
+            </div>
           </div>
         </div>
-      </div>
-    </article>
+      </article>
+      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>登录</DialogTitle>
+          </DialogHeader>
+          <LoginForm />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }; 

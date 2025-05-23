@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       console.log('[AuthProvider] token:', token);
       if (!token) {
+        toast.error('登录已过期，请重新登录');
         window.location.href = '/login';
         return;
       }
