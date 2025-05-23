@@ -1,10 +1,10 @@
 const express = require('express');
-const { Post } = require('../models/Post');
-const { Comment } = require('../models/Comment');
+const Post = require('../models/Post');
+const Comment = require('../models/Comment');
 const { auth, optionalAuth } = require('../middleware/auth');
 const { catchAsync, AppError } = require('../middleware/errorHandler');
 const { upload } = require('../middleware/upload');
-const { Notification } = require('../models/Notification');
+const Notification = require('../models/Notification');
 const User = require('../models/User');
 const Tag = require('../models/Tag');
 const PostController = require('../controllers/PostController');

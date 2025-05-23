@@ -1,5 +1,5 @@
 const express = require('express');
-const { User } = require('../models/User');
+const User = require('../models/User');
 const { auth, optionalAuth } = require('../middleware/auth');
 const { catchAsync, AppError } = require('../middleware/errorHandler');
 const UserController = require('../controllers/UserController');
