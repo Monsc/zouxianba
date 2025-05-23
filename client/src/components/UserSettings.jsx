@@ -40,7 +40,7 @@ export const UserSettings = () => {
   }, []);
 
   // 更新设置
-  const handleUpdateSettings = async (updates) => {
+  const handleUpdateSettings = async updates => {
     if (!settings) return;
 
     try {
@@ -57,7 +57,7 @@ export const UserSettings = () => {
   };
 
   // 更新个人信息
-  const handleUpdateProfile = async (data) => {
+  const handleUpdateProfile = async data => {
     try {
       setIsSaving(true);
       const updated = await UserService.updateProfile(data);
@@ -72,7 +72,7 @@ export const UserSettings = () => {
   };
 
   // 修改密码
-  const handleChangePassword = async (data) => {
+  const handleChangePassword = async data => {
     try {
       setIsSaving(true);
       await UserService.changePassword(data);
@@ -168,29 +168,23 @@ export const UserSettings = () => {
       {activeTab === 'profile' && (
         <div className="p-6 space-y-6">
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              个人信息
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">个人信息</h3>
             <div className="grid grid-cols-1 gap-4">
               <Input
                 label="用户名"
                 value={settings.username}
-                onChange={(e) =>
-                  handleUpdateSettings({ username: e.target.value })
-                }
+                onChange={e => handleUpdateSettings({ username: e.target.value })}
               />
               <Textarea
                 label="个人简介"
                 value={settings.bio || ''}
-                onChange={(e) => handleUpdateSettings({ bio: e.target.value })}
+                onChange={e => handleUpdateSettings({ bio: e.target.value })}
               />
             </div>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              外观设置
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">外观设置</h3>
             {/* 这里可以添加外观设置相关内容 */}
           </div>
         </div>
@@ -199,9 +193,7 @@ export const UserSettings = () => {
       {/* 通知设置 */}
       {activeTab === 'notifications' && (
         <div className="p-6 space-y-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            通知设置
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">通知设置</h3>
           {/* 这里可以添加通知设置相关内容 */}
         </div>
       )}
@@ -209,9 +201,7 @@ export const UserSettings = () => {
       {/* 隐私设置 */}
       {activeTab === 'privacy' && (
         <div className="p-6 space-y-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            隐私设置
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">隐私设置</h3>
           {/* 这里可以添加隐私设置相关内容 */}
         </div>
       )}
@@ -219,9 +209,7 @@ export const UserSettings = () => {
       {/* 账户设置 */}
       {activeTab === 'account' && (
         <div className="p-6 space-y-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            账户设置
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">账户设置</h3>
           <Button onClick={handleDeleteAccount} disabled={isSaving} variant="destructive">
             {isSaving ? <LoadingSpinner size="sm" /> : '删除账户'}
           </Button>
@@ -229,4 +217,4 @@ export const UserSettings = () => {
       )}
     </div>
   );
-}; 
+};

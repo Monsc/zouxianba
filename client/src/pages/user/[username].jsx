@@ -31,7 +31,7 @@ const UserProfile = () => {
       setLoading(true);
       const [userData, postsData] = await Promise.all([
         api.get(`/users/${username}`),
-        api.get(`/users/${username}/posts?page=${currentPage}&limit=10`)
+        api.get(`/users/${username}/posts?page=${currentPage}&limit=10`),
       ]);
 
       setUser(userData.data);
@@ -86,11 +86,7 @@ const UserProfile = () => {
         <ErrorState
           title="加载失败"
           description={error}
-          action={
-            <Button onClick={() => navigate(-1)}>
-              重试
-            </Button>
-          }
+          action={<Button onClick={() => navigate(-1)}>重试</Button>}
         />
       </MainLayout>
     );
@@ -102,11 +98,7 @@ const UserProfile = () => {
         <EmptyState
           title="用户不存在"
           description="该用户可能已被删除或不存在"
-          action={
-            <Button onClick={() => navigate('/')}>
-              返回首页
-            </Button>
-          }
+          action={<Button onClick={() => navigate('/')}>返回首页</Button>}
         />
       </MainLayout>
     );
@@ -142,16 +134,11 @@ const UserProfile = () => {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {user.username}
-                  </h1>
+                  <h1 className="text-2xl font-bold text-gray-900">{user.username}</h1>
                   <p className="text-gray-500">@{user.username}</p>
                 </div>
                 {currentUser && currentUser._id !== user._id && (
-                  <Button
-                    variant={isFollowing ? 'secondary' : 'primary'}
-                    onClick={handleFollow}
-                  >
+                  <Button variant={isFollowing ? 'secondary' : 'primary'} onClick={handleFollow}>
                     {isFollowing ? '取消关注' : '关注'}
                   </Button>
                 )}
@@ -174,9 +161,7 @@ const UserProfile = () => {
               </div>
 
               {/* 用户简介 */}
-              {user.bio && (
-                <p className="mt-4 text-gray-600">{user.bio}</p>
-              )}
+              {user.bio && <p className="mt-4 text-gray-600">{user.bio}</p>}
 
               {/* 用户标签 */}
               {user.tags && user.tags.length > 0 && (
@@ -226,19 +211,34 @@ const UserProfile = () => {
                 <div className="flex items-center space-x-4 text-gray-500">
                   <button className="flex items-center space-x-1">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                      />
                     </svg>
                     <span>{post.likesCount}</span>
                   </button>
                   <button className="flex items-center space-x-1">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
                     </svg>
                     <span>{post.commentsCount}</span>
                   </button>
                   <button className="flex items-center space-x-1">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                      />
                     </svg>
                     <span>{post.sharesCount}</span>
                   </button>
@@ -246,10 +246,7 @@ const UserProfile = () => {
               </div>
             ))
           ) : (
-            <EmptyState
-              title="暂无动态"
-              description="该用户还没有发布任何动态"
-            />
+            <EmptyState title="暂无动态" description="该用户还没有发布任何动态" />
           )}
         </div>
 
@@ -268,4 +265,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile; 
+export default UserProfile;

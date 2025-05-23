@@ -25,12 +25,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
       <div className="flex items-center">
         <span className="mr-2">
           {type === 'success' && (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -40,12 +35,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
             </svg>
           )}
           {type === 'error' && (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -55,12 +45,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
             </svg>
           )}
           {type === 'warning' && (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -70,12 +55,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
             </svg>
           )}
           {type === 'info' && (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -90,12 +70,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
           onClick={onClose}
           className="ml-4 text-white hover:text-gray-200 focus:outline-none"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -110,4 +85,4 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
   );
 };
 
-export default Toast; 
+export default Toast;

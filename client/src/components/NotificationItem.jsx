@@ -7,12 +7,8 @@ import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-export const NotificationItem = ({
-  notification,
-  onDelete,
-  onMarkAsRead,
-}) => {
-  const getNotificationIcon = (type) => {
+export const NotificationItem = ({ notification, onDelete, onMarkAsRead }) => {
+  const getNotificationIcon = type => {
     switch (type) {
       case 'like':
         return 'heart-filled';
@@ -29,7 +25,7 @@ export const NotificationItem = ({
     }
   };
 
-  const getNotificationColor = (type) => {
+  const getNotificationColor = type => {
     switch (type) {
       case 'like':
         return 'text-red-500';
@@ -67,11 +63,7 @@ export const NotificationItem = ({
     >
       <div className="flex-shrink-0">
         {notification.data.avatar ? (
-          <Avatar
-            src={notification.data.avatar}
-            alt={notification.data.username || ''}
-            size="sm"
-          />
+          <Avatar src={notification.data.avatar} alt={notification.data.username || ''} size="sm" />
         ) : (
           <div
             className={cn(
@@ -86,9 +78,7 @@ export const NotificationItem = ({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-900 dark:text-gray-100">
-            {notification.content}
-          </div>
+          <div className="text-sm text-gray-900 dark:text-gray-100">{notification.content}</div>
           <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
@@ -118,4 +108,4 @@ export const NotificationItem = ({
       </div>
     </div>
   );
-}; 
+};

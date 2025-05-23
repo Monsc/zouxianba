@@ -24,4 +24,4 @@ export class ShareService {
       document.body.removeChild(textArea);
     }
   }
-} 
+}

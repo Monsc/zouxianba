@@ -29,7 +29,7 @@ function CreatePostBox() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!user) {
       setIsLoginModalOpen(true);
@@ -55,7 +55,7 @@ function CreatePostBox() {
     }
   };
 
-  const handleMediaChange = (e) => {
+  const handleMediaChange = e => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 4) {
       setError('最多只能上传4个文件');
@@ -73,7 +73,7 @@ function CreatePostBox() {
     setImages([...images, ...validFiles]);
   };
 
-  const removeMedia = (index) => {
+  const removeMedia = index => {
     setImages(images.filter((_, i) => i !== index));
   };
 
@@ -170,4 +170,4 @@ function CreatePostBox() {
   );
 }
 
-export default CreatePostBox; 
+export default CreatePostBox;

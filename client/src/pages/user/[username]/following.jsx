@@ -43,16 +43,14 @@ const FollowingPage = () => {
       } else {
         await api.post(`/users/${userId}/follow`);
       }
-      
+
       // 更新本地状态
       setFollowing(prevFollowing =>
         prevFollowing.map(user =>
-          user._id === userId
-            ? { ...user, isFollowing: !isFollowing }
-            : user
+          user._id === userId ? { ...user, isFollowing: !isFollowing } : user
         )
       );
-      
+
       toast.success(isFollowing ? '已取消关注' : '关注成功');
     } catch (err) {
       toast.error('操作失败，请重试');
@@ -80,11 +78,7 @@ const FollowingPage = () => {
         <ErrorState
           title="加载失败"
           description={error}
-          action={
-            <Button onClick={() => router.reload()}>
-              重试
-            </Button>
-          }
+          action={<Button onClick={() => router.reload()}>重试</Button>}
         />
       </MainLayout>
     );
@@ -96,9 +90,7 @@ const FollowingPage = () => {
         <div className="bg-white rounded-lg shadow-sm">
           {/* 页面标题 */}
           <div className="px-6 py-4 border-b">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {username} 的关注
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">{username} 的关注</h1>
           </div>
 
           {/* 关注列表 */}
@@ -113,13 +105,11 @@ const FollowingPage = () => {
                       alt={user.username}
                       className="w-12 h-12 rounded-full object-cover"
                     />
-                    
+
                     {/* 用户信息 */}
                     <div>
                       <div className="flex items-center space-x-2">
-                        <h3 className="font-medium text-gray-900">
-                          {user.username}
-                        </h3>
+                        <h3 className="font-medium text-gray-900">{user.username}</h3>
                         {user.isVerified && (
                           <span className="text-blue-500">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -132,9 +122,7 @@ const FollowingPage = () => {
                           </span>
                         )}
                       </div>
-                      {user.bio && (
-                        <p className="text-sm text-gray-500 mt-1">{user.bio}</p>
-                      )}
+                      {user.bio && <p className="text-sm text-gray-500 mt-1">{user.bio}</p>}
                     </div>
                   </div>
 
@@ -151,10 +139,7 @@ const FollowingPage = () => {
               ))
             ) : (
               <div className="p-6">
-                <EmptyState
-                  title="暂无关注"
-                  description="该用户还没有关注任何人"
-                />
+                <EmptyState title="暂无关注" description="该用户还没有关注任何人" />
               </div>
             )}
           </div>
@@ -175,4 +160,4 @@ const FollowingPage = () => {
   );
 };
 
-export default FollowingPage; 
+export default FollowingPage;

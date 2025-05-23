@@ -38,7 +38,7 @@ const UserRelationship = ({ userId, className = '' }) => {
     <div className={`space-y-4 ${className}`}>
       {/* 标签页 */}
       <div className="flex space-x-4 border-b border-gray-200 dark:border-gray-700">
-        {tabs.map((tab) => (
+        {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -73,27 +73,16 @@ const UserRelationship = ({ userId, className = '' }) => {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-4"
           >
-            {(activeTab === 'followers' ? commonFollowers : commonFollowing).map(
-              (user) => (
-                <UserProfileCard
-                  key={user.id}
-                  user={user}
-                  showStats={false}
-                  showBio={false}
-                />
-              )
-            )}
+            {(activeTab === 'followers' ? commonFollowers : commonFollowing).map(user => (
+              <UserProfileCard key={user.id} user={user} showStats={false} showBio={false} />
+            ))}
 
             {activeTab === 'followers' && commonFollowers.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                暂无共同粉丝
-              </div>
+              <div className="text-center py-8 text-gray-500">暂无共同粉丝</div>
             )}
 
             {activeTab === 'following' && commonFollowing.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                暂无共同关注
-              </div>
+              <div className="text-center py-8 text-gray-500">暂无共同关注</div>
             )}
           </motion.div>
         )}
@@ -102,4 +91,4 @@ const UserRelationship = ({ userId, className = '' }) => {
   );
 };
 
-export default UserRelationship; 
+export default UserRelationship;

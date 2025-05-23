@@ -34,8 +34,8 @@ const NewMessagePage = () => {
         const response = await api.get('/users/search', {
           params: {
             query: debouncedSearch,
-            limit: 5
-          }
+            limit: 5,
+          },
         });
         setSearchResults(response.data.users);
       } catch (err) {
@@ -49,7 +49,7 @@ const NewMessagePage = () => {
   }, [debouncedSearch]);
 
   // 发送私信
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!recipient.trim() || !content.trim()) {
       toast.error('请选择收件人并输入消息内容');
@@ -60,7 +60,7 @@ const NewMessagePage = () => {
       setSending(true);
       const response = await api.post('/messages', {
         recipient: recipient,
-        content: content
+        content: content,
       });
       toast.success('发送成功');
       router.push(`/messages/${response.data.conversationId}`);
@@ -77,15 +77,9 @@ const NewMessagePage = () => {
       <MainLayout>
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              请先登录
-            </h2>
-            <p className="text-gray-600 mb-4">
-              登录后可以发送私信
-            </p>
-            <Button onClick={() => router.push('/login')}>
-              去登录
-            </Button>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">请先登录</h2>
+            <p className="text-gray-600 mb-4">登录后可以发送私信</p>
+            <Button onClick={() => router.push('/login')}>去登录</Button>
           </div>
         </div>
       </MainLayout>
@@ -98,23 +92,19 @@ const NewMessagePage = () => {
         <div className="bg-white rounded-lg shadow-sm">
           {/* 标题 */}
           <div className="p-6 border-b">
-            <h1 className="text-2xl font-bold text-gray-900">
-              发起私信
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">发起私信</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
               {/* 收件人选择 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  收件人
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">收件人</label>
                 <div className="relative">
                   <FormInput
                     type="text"
                     value={recipient}
-                    onChange={(e) => setRecipient(e.target.value)}
+                    onChange={e => setRecipient(e.target.value)}
                     placeholder="输入用户名搜索"
                     className="w-full"
                   />
@@ -141,9 +131,7 @@ const NewMessagePage = () => {
                                 alt={user.username}
                                 className="h-6 w-6 rounded-full"
                               />
-                              <span className="ml-3 block truncate">
-                                {user.username}
-                              </span>
+                              <span className="ml-3 block truncate">{user.username}</span>
                             </div>
                           </li>
                         ))}
@@ -155,12 +143,10 @@ const NewMessagePage = () => {
 
               {/* 消息内容 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  消息内容
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">消息内容</label>
                 <textarea
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={e => setContent(e.target.value)}
                   placeholder="输入你想说的话..."
                   rows={6}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
@@ -168,25 +154,14 @@ const NewMessagePage = () => {
               </div>
 
               {/* 错误提示 */}
-              {error && (
-                <div className="text-sm text-red-600">
-                  {error}
-                </div>
-              )}
+              {error && <div className="text-sm text-red-600">{error}</div>}
 
               {/* 操作按钮 */}
               <div className="flex justify-end space-x-4">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => router.back()}
-                >
+                <Button type="button" variant="secondary" onClick={() => router.back()}>
                   取消
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={sending || !recipient.trim() || !content.trim()}
-                >
+                <Button type="submit" disabled={sending || !recipient.trim() || !content.trim()}>
                   {sending ? '发送中...' : '发送'}
                 </Button>
               </div>
@@ -198,4 +173,4 @@ const NewMessagePage = () => {
   );
 };
 
-export default NewMessagePage; 
+export default NewMessagePage;

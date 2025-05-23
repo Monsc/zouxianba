@@ -126,10 +126,18 @@ function RightSidebar() {
       {/* 底部链接 */}
       <div className="mt-8 text-sm text-gray-500">
         <div className="flex flex-wrap gap-2">
-          <a href="/about" className="hover:text-gray-700">关于我们</a>
-          <a href="/privacy" className="hover:text-gray-700">隐私政策</a>
-          <a href="/terms" className="hover:text-gray-700">使用条款</a>
-          <a href="/help" className="hover:text-gray-700">帮助中心</a>
+          <a href="/about" className="hover:text-gray-700">
+            关于我们
+          </a>
+          <a href="/privacy" className="hover:text-gray-700">
+            隐私政策
+          </a>
+          <a href="/terms" className="hover:text-gray-700">
+            使用条款
+          </a>
+          <a href="/help" className="hover:text-gray-700">
+            帮助中心
+          </a>
         </div>
         <p className="mt-2">© 2024 走线吧</p>
       </div>

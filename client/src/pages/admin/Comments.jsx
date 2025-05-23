@@ -56,22 +56,24 @@ export default function Comments() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [comments, setComments] = useState(mockComments);
 
-  const handleSearch = (query) => {
+  const handleSearch = query => {
     setSearchQuery(query);
     // 实现搜索逻辑
   };
 
   const handleStatusChange = (commentId, newStatus) => {
-    setComments(comments.map(comment => 
-      comment.id === commentId ? { ...comment, status: newStatus } : comment
-    ));
+    setComments(
+      comments.map(comment =>
+        comment.id === commentId ? { ...comment, status: newStatus } : comment
+      )
+    );
   };
 
-  const handleDelete = (commentId) => {
+  const handleDelete = commentId => {
     setComments(comments.filter(comment => comment.id !== commentId));
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = status => {
     switch (status) {
       case 'pending':
         return <Badge variant="secondary">待审核</Badge>;
@@ -98,7 +100,7 @@ export default function Comments() {
               placeholder="搜索评论..."
               className="pl-10"
               value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -127,68 +129,71 @@ export default function Comments() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array.isArray(comments) && comments.map((comment) => (
-              <TableRow key={comment.id}>
-                <TableCell>
-                  <div className="space-y-1">
-                    {comment.isReply && (
-                      <p className="text-sm text-gray-500">
-                        回复: {comment.parentComment}
-                      </p>
+            {Array.isArray(comments) &&
+              comments.map(comment => (
+                <TableRow key={comment.id}>
+                  <TableCell>
+                    <div className="space-y-1">
+                      {comment.isReply && (
+                        <p className="text-sm text-gray-500">回复: {comment.parentComment}</p>
+                      )}
+                      <p className="font-medium">{comment.content}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>{comment.author}</TableCell>
+                  <TableCell>{comment.postTitle}</TableCell>
+                  <TableCell>{getStatusBadge(comment.status)}</TableCell>
+                  <TableCell>
+                    {comment.reportCount > 0 ? (
+                      <Badge variant="destructive">{comment.reportCount}</Badge>
+                    ) : (
+                      '-'
                     )}
-                    <p className="font-medium">{comment.content}</p>
-                  </div>
-                </TableCell>
-                <TableCell>{comment.author}</TableCell>
-                <TableCell>{comment.postTitle}</TableCell>
-                <TableCell>{getStatusBadge(comment.status)}</TableCell>
-                <TableCell>
-                  {comment.reportCount > 0 ? (
-                    <Badge variant="destructive">{comment.reportCount}</Badge>
-                  ) : (
-                    '-'
-                  )}
-                </TableCell>
-                <TableCell>{comment.createdAt}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Eye className="w-4 h-4 mr-2" />
-                        查看详情
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleStatusChange(comment.id, 'approved')}>
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        通过审核
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleStatusChange(comment.id, 'rejected')}>
-                        <XCircle className="w-4 h-4 mr-2" />
-                        拒绝评论
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Flag className="w-4 h-4 mr-2" />
-                        查看举报
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => handleDelete(comment.id)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        删除评论
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>{comment.createdAt}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Eye className="w-4 h-4 mr-2" />
+                          查看详情
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleStatusChange(comment.id, 'approved')}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          通过审核
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleStatusChange(comment.id, 'rejected')}
+                        >
+                          <XCircle className="w-4 h-4 mr-2" />
+                          拒绝评论
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Flag className="w-4 h-4 mr-2" />
+                          查看举报
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => handleDelete(comment.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          删除评论
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </Card>
     </div>
   );
-} 
+}

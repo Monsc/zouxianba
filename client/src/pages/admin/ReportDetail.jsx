@@ -103,7 +103,7 @@ export default function ReportDetail() {
     });
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-500';
@@ -162,9 +162,7 @@ export default function ReportDetail() {
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                 <span className="text-gray-600">举报时间：</span>
-                <span className="ml-2">
-                  {new Date(reportData.createdAt).toLocaleString()}
-                </span>
+                <span className="ml-2">{new Date(reportData.createdAt).toLocaleString()}</span>
               </div>
             </div>
           </Card>
@@ -189,9 +187,7 @@ export default function ReportDetail() {
               </div>
               <div>
                 <p className="text-gray-600 mb-2">内容：</p>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  {reportData.target.content}
-                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">{reportData.target.content}</div>
               </div>
             </div>
           </Card>
@@ -199,7 +195,7 @@ export default function ReportDetail() {
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">处理记录</h3>
             <div className="space-y-4">
-              {reportData.history.map((record) => (
+              {reportData.history.map(record => (
                 <div key={record.id} className="flex items-start space-x-4">
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                     {record.operator.name[0]}
@@ -233,7 +229,7 @@ export default function ReportDetail() {
                     <SelectValue placeholder="选择状态" />
                   </SelectTrigger>
                   <SelectContent>
-                    {statusOptions.map((option) => (
+                    {statusOptions.map(option => (
                       <SelectItem key={option.value} value={option.value}>
                         <div className="flex items-center">
                           <option.icon className="w-4 h-4 mr-2" />
@@ -251,9 +247,11 @@ export default function ReportDetail() {
                     <SelectValue placeholder="选择优先级" />
                   </SelectTrigger>
                   <SelectContent>
-                    {priorityOptions.map((option) => (
+                    {priorityOptions.map(option => (
                       <SelectItem key={option.value} value={option.value}>
-                        <span className={option.color + ' w-2 h-2 rounded-full inline-block mr-2'} />
+                        <span
+                          className={option.color + ' w-2 h-2 rounded-full inline-block mr-2'}
+                        />
                         {option.label}
                       </SelectItem>
                     ))}
@@ -264,7 +262,7 @@ export default function ReportDetail() {
                 <label className="text-sm font-medium">处理备注</label>
                 <Textarea
                   value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  onChange={e => setComment(e.target.value)}
                   placeholder="请输入处理备注..."
                   rows={4}
                 />
@@ -275,4 +273,4 @@ export default function ReportDetail() {
       </div>
     </div>
   );
-} 
+}

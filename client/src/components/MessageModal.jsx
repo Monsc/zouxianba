@@ -34,7 +34,7 @@ function MessageModal({ targetUser, onClose }) {
 
   const setupSocketListeners = () => {
     if (socket) {
-      socket.on('new_message', (message) => {
+      socket.on('new_message', message => {
         if (
           (message.sender === currentUser._id && message.receiver === targetUser._id) ||
           (message.sender === targetUser._id && message.receiver === currentUser._id)
@@ -54,12 +54,9 @@ function MessageModal({ targetUser, onClose }) {
         setLoading(true);
       }
 
-      const response = await apiService.get(
-        `/messages/${targetUser._id}`,
-        {
-          params: { page, limit: 20 }
-        }
-      );
+      const response = await apiService.get(`/messages/${targetUser._id}`, {
+        params: { page, limit: 20 },
+      });
 
       if (loadMore) {
         setMessages(prev => [...response.data.messages, ...prev]);
@@ -84,7 +81,7 @@ function MessageModal({ targetUser, onClose }) {
     }
   };
 
-  const handleSend = async (e) => {
+  const handleSend = async e => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
@@ -144,7 +141,7 @@ function MessageModal({ targetUser, onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-white dark:bg-twitter-gray-900 rounded-2xl w-full max-w-md mx-4 overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* 头部 */}
           <div className="p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800">
@@ -156,10 +153,7 @@ function MessageModal({ targetUser, onClose }) {
                   <p className="text-sm text-twitter-gray-500">@{targetUser.handle}</p>
                 </div>
               </div>
-              <button
-                onClick={onClose}
-                className="text-twitter-blue hover:underline"
-              >
+              <button onClick={onClose} className="text-twitter-blue hover:underline">
                 关闭
               </button>
             </div>
@@ -177,7 +171,7 @@ function MessageModal({ targetUser, onClose }) {
               </div>
             )}
 
-            {messages.map((message) => (
+            {messages.map(message => (
               <div
                 key={message._id}
                 className={`flex ${
@@ -202,12 +196,15 @@ function MessageModal({ targetUser, onClose }) {
           </div>
 
           {/* 输入框 */}
-          <form onSubmit={handleSend} className="p-4 border-t border-twitter-gray-200 dark:border-twitter-gray-800">
+          <form
+            onSubmit={handleSend}
+            className="p-4 border-t border-twitter-gray-200 dark:border-twitter-gray-800"
+          >
             <div className="flex items-center space-x-2">
               <input
                 type="text"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={e => setNewMessage(e.target.value)}
                 placeholder="输入消息..."
                 className="flex-1 px-4 py-2 bg-twitter-gray-100 dark:bg-twitter-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-twitter-blue"
               />
@@ -217,7 +214,12 @@ function MessageModal({ targetUser, onClose }) {
                 className="p-2 text-twitter-blue hover:bg-twitter-blue/10 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
                 </svg>
               </button>
             </div>
@@ -228,4 +230,4 @@ function MessageModal({ targetUser, onClose }) {
   );
 }
 
-export default MessageModal; 
+export default MessageModal;

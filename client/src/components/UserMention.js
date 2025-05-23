@@ -4,17 +4,14 @@ import { useNavigate } from 'react-router-dom';
 const UserMention = ({ username, handle, avatar }) => {
   const navigate = useNavigate();
 
-  const handleClick = (e) => {
+  const handleClick = e => {
     e.preventDefault();
     e.stopPropagation();
     navigate(`/profile/${handle}`);
   };
 
   return (
-    <span 
-      className="user-mention"
-      onClick={handleClick}
-    >
+    <span className="user-mention" onClick={handleClick}>
       @{handle}
     </span>
   );
@@ -49,11 +46,11 @@ export const UserMentionInput = ({ onSelect }) => {
     return () => clearTimeout(timeoutId);
   }, [query]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const input = e.target;
     const value = input.value;
     const cursorPos = input.selectionStart;
-    
+
     // 检查光标位置是否在@符号后
     const lastAtIndex = value.lastIndexOf('@', cursorPos);
     if (lastAtIndex !== -1 && lastAtIndex < cursorPos) {
@@ -64,7 +61,7 @@ export const UserMentionInput = ({ onSelect }) => {
     }
   };
 
-  const handleUserSelect = (user) => {
+  const handleUserSelect = user => {
     if (onSelect) {
       onSelect(user);
     }
@@ -80,7 +77,7 @@ export const UserMentionInput = ({ onSelect }) => {
         onChange={handleInputChange}
         placeholder="输入@提及用户..."
       />
-      
+
       {showSuggestions && users.length > 0 && (
         <div className="user-mention-suggestions">
           {users.map(user => (
@@ -89,11 +86,7 @@ export const UserMentionInput = ({ onSelect }) => {
               className="user-mention-suggestion-item"
               onClick={() => handleUserSelect(user)}
             >
-              <img
-                src={user.avatar}
-                alt={user.username}
-                className="user-mention-avatar"
-              />
+              <img src={user.avatar} alt={user.username} className="user-mention-avatar" />
               <div className="user-mention-info">
                 <div className="user-mention-name">{user.username}</div>
                 <div className="user-mention-handle">@{user.handle}</div>
@@ -106,4 +99,4 @@ export const UserMentionInput = ({ onSelect }) => {
   );
 };
 
-export default UserMention; 
+export default UserMention;

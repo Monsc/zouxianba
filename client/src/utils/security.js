@@ -1,14 +1,14 @@
 import CryptoJS from 'crypto-js';
 
 // 生成请求签名
-export const generateRequestSignature = async (config) => {
+export const generateRequestSignature = async config => {
   const timestamp = Date.now().toString();
   const data = {
     method: config.method.toUpperCase(),
     path: config.url,
     query: config.params || {},
     body: config.data || {},
-    timestamp
+    timestamp,
   };
 
   // 按字母顺序排序对象键
@@ -35,7 +35,7 @@ export const generateRequestSignature = async (config) => {
 };
 
 // 验证密码强度
-export const validatePassword = (password) => {
+export const validatePassword = password => {
   const errors = [];
 
   // 最小长度
@@ -65,7 +65,7 @@ export const validatePassword = (password) => {
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 };
 
@@ -96,7 +96,7 @@ export const generateCSRFToken = () => {
 };
 
 // 验证 CSRF Token
-export const validateCSRFToken = (token) => {
+export const validateCSRFToken = token => {
   const storedToken = localStorage.getItem('csrfToken');
   return token === storedToken;
 };
@@ -111,7 +111,7 @@ export const generateBackupCodes = (count = 8) => {
 };
 
 // 格式化安全日志
-export const formatSecurityLog = (log) => {
+export const formatSecurityLog = log => {
   const actionMap = {
     login: '登录',
     logout: '登出',
@@ -120,12 +120,12 @@ export const formatSecurityLog = (log) => {
     disable_2fa: '禁用双因素认证',
     update_profile: '更新个人资料',
     login_2fa: '双因素认证登录',
-    logout_session: '注销会话'
+    logout_session: '注销会话',
   };
 
   return {
     ...log,
     action: actionMap[log.action] || log.action,
-    timestamp: new Date(log.timestamp).toLocaleString()
+    timestamp: new Date(log.timestamp).toLocaleString(),
   };
-}; 
+};

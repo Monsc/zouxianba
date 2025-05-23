@@ -27,14 +27,28 @@ export const Feed = () => {
         setError(null);
         console.log('[Feed] user:', user, 'username:', username, 'page:', page);
         const data = await apiService.getPosts(page);
-        console.log('[Feed] apiService.getPosts 响应:', data, 'typeof:', typeof data, 'isArray:', Array.isArray(data));
+        console.log(
+          '[Feed] apiService.getPosts 响应:',
+          data,
+          'typeof:',
+          typeof data,
+          'isArray:',
+          Array.isArray(data)
+        );
         let postsArr = [];
         if (Array.isArray(data)) {
           postsArr = data;
         } else if (data && Array.isArray(data.posts)) {
           postsArr = data.posts;
         }
-        console.log('[Feed] postsArr:', postsArr, 'typeof:', typeof postsArr, 'isArray:', Array.isArray(postsArr));
+        console.log(
+          '[Feed] postsArr:',
+          postsArr,
+          'typeof:',
+          typeof postsArr,
+          'isArray:',
+          Array.isArray(postsArr)
+        );
         if (page === 1) {
           setPosts(postsArr);
           console.log('[Feed] setPosts(postsArr) 赋值:', postsArr);
@@ -62,22 +76,24 @@ export const Feed = () => {
     setPage(prev => prev + 1);
   };
 
-  const handleLike = async (postId) => {
+  const handleLike = async postId => {
     if (!user) {
       setIsLoginModalOpen(true);
       return;
     }
     try {
       await apiService.likePost(postId);
-      setPosts(posts.map(post =>
-        post._id === postId
-          ? {
-              ...post,
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-              liked: !post.liked,
-            }
-          : post
-      ));
+      setPosts(
+        posts.map(post =>
+          post._id === postId
+            ? {
+                ...post,
+                likes: post.liked ? post.likes - 1 : post.likes + 1,
+                liked: !post.liked,
+              }
+            : post
+        )
+      );
     } catch (error) {
       addToast('点赞失败，请稍后重试', 'error');
     }
@@ -90,21 +106,23 @@ export const Feed = () => {
     }
     try {
       const comment = await apiService.createComment(postId, content);
-      setPosts(posts.map(post =>
-        post._id === postId
-          ? {
-              ...post,
-              comments: [...post.comments, comment],
-              commentCount: post.commentCount + 1,
-            }
-          : post
-      ));
+      setPosts(
+        posts.map(post =>
+          post._id === postId
+            ? {
+                ...post,
+                comments: [...post.comments, comment],
+                commentCount: post.commentCount + 1,
+              }
+            : post
+        )
+      );
     } catch (error) {
       addToast('评论失败，请稍后重试', 'error');
     }
   };
 
-  const handleDelete = async (postId) => {
+  const handleDelete = async postId => {
     try {
       await apiService.deletePost(postId);
       setPosts(posts.filter(post => post._id !== postId));
@@ -126,10 +144,7 @@ export const Feed = () => {
     return (
       <div className="text-center py-8">
         <p className="text-red-500 mb-4">{error}</p>
-        <button
-          onClick={() => setPage(1)}
-          className="text-blue-500 hover:text-blue-600"
-        >
+        <button onClick={() => setPage(1)} className="text-blue-500 hover:text-blue-600">
           重试
         </button>
       </div>
@@ -185,4 +200,4 @@ export const Feed = () => {
   );
 };
 
-export default Feed; 
+export default Feed;

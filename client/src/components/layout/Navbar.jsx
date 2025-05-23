@@ -11,7 +11,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
@@ -38,7 +38,7 @@ const Navbar = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 placeholder="搜索用户、帖子..."
                 className="w-full px-4 py-2 pl-10 text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
@@ -58,11 +58,7 @@ const Navbar = () => {
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
               >
                 {user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.username}
-                    className="h-8 w-8 rounded-full"
-                  />
+                  <img src={user.avatar} alt={user.username} className="h-8 w-8 rounded-full" />
                 ) : (
                   <UserCircleIcon className="h-8 w-8" />
                 )}
@@ -99,4 +95,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

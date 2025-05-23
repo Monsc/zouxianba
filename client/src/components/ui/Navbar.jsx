@@ -49,23 +49,19 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="space-y-2">
-        {Array.isArray(navItems) && navItems.map((item) => (
-          <NavItem
-            key={item.to}
-            to={item.to}
-            icon={item.icon}
-            label={item.label}
-            active={location.pathname === item.to}
-          />
-        ))}
+        {Array.isArray(navItems) &&
+          navItems.map(item => (
+            <NavItem
+              key={item.to}
+              to={item.to}
+              icon={item.icon}
+              label={item.label}
+              active={location.pathname === item.to}
+            />
+          ))}
       </div>
 
-      <Button
-        variant="primary"
-        size="lg"
-        fullWidth
-        className="mt-4 hidden lg:block"
-      >
+      <Button variant="primary" size="lg" fullWidth className="mt-4 hidden lg:block">
         发推
       </Button>
 
@@ -86,4 +82,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

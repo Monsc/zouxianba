@@ -56,18 +56,20 @@ export default function Posts() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [posts, setPosts] = useState(mockPosts);
 
-  const handleSearch = (query) => {
+  const handleSearch = query => {
     setSearchQuery(query);
     // 实现搜索逻辑
   };
 
   const handleStatusChange = (postId, newStatus) => {
-    setPosts(Array.isArray(posts) ? posts.map(post => 
-      post.id === postId ? { ...post, status: newStatus } : post
-    ) : posts);
+    setPosts(
+      Array.isArray(posts)
+        ? posts.map(post => (post.id === postId ? { ...post, status: newStatus } : post))
+        : posts
+    );
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = status => {
     switch (status) {
       case 'pending':
         return <Badge variant="secondary">待审核</Badge>;
@@ -94,7 +96,7 @@ export default function Posts() {
               placeholder="搜索内容..."
               className="pl-10"
               value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -134,7 +136,7 @@ export default function Posts() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {posts.map((post) => (
+            {posts.map(post => (
               <TableRow key={post.id}>
                 <TableCell className="font-medium">{post.title}</TableCell>
                 <TableCell>{post.author}</TableCell>
@@ -182,4 +184,4 @@ export default function Posts() {
       </Card>
     </div>
   );
-} 
+}

@@ -15,4 +15,4 @@ export const LikeService = {
     const response = await api.get(`/posts/${postId}/like`);
     return response.data;
   },
-}; 
+};

@@ -34,47 +34,47 @@ export const NotificationProvider = ({ children }) => {
   }, [user, token]);
 
   // 处理点赞通知
-  const handlePostLiked = (data) => {
+  const handlePostLiked = data => {
     const newNotification = {
       type: 'like',
       sender: data.userId,
       post: data.postId,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
     setNotifications(prev => [newNotification, ...prev]);
     setUnreadCount(prev => prev + 1);
   };
 
   // 处理评论通知
-  const handlePostCommented = (data) => {
+  const handlePostCommented = data => {
     const newNotification = {
       type: 'comment',
       sender: data.userId,
       post: data.postId,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
     setNotifications(prev => [newNotification, ...prev]);
     setUnreadCount(prev => prev + 1);
   };
 
   // 处理关注通知
-  const handleUserFollowed = (data) => {
+  const handleUserFollowed = data => {
     const newNotification = {
       type: 'follow',
       sender: data.followerId,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
     setNotifications(prev => [newNotification, ...prev]);
     setUnreadCount(prev => prev + 1);
   };
 
   // 处理新消息通知
-  const handleNewMessage = (data) => {
+  const handleNewMessage = data => {
     const newNotification = {
       type: 'message',
       sender: data.senderId,
       message: data.message,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
     setNotifications(prev => [newNotification, ...prev]);
     setUnreadCount(prev => prev + 1);
@@ -86,30 +86,26 @@ export const NotificationProvider = ({ children }) => {
       await fetch(`${process.env.REACT_APP_API_URL}/api/notifications/read`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       setUnreadCount(0);
-      setNotifications(prev =>
-        prev.map(notification => ({ ...notification, read: true }))
-      );
+      setNotifications(prev => prev.map(notification => ({ ...notification, read: true })));
     } catch (error) {
       console.error('Error marking notifications as read:', error);
     }
   };
 
   // 删除通知
-  const deleteNotification = async (id) => {
+  const deleteNotification = async id => {
     try {
       await fetch(`${process.env.REACT_APP_API_URL}/api/notifications/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      setNotifications(prev =>
-        prev.filter(notification => notification._id !== id)
-      );
+      setNotifications(prev => prev.filter(notification => notification._id !== id));
     } catch (error) {
       console.error('Error deleting notification:', error);
     }
@@ -119,12 +115,8 @@ export const NotificationProvider = ({ children }) => {
     notifications,
     unreadCount,
     markAllAsRead,
-    deleteNotification
+    deleteNotification,
   };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
-}; 
+  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
+};

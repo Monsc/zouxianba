@@ -19,7 +19,7 @@ export const CreatePost = ({ onPostCreated }) => {
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
 
-  const handleContentChange = (e) => {
+  const handleContentChange = e => {
     setContent(e.target.value);
     // 提取标签
     const tagMatches = e.target.value.match(/#[\w\u4e00-\u9fa5]+/g);
@@ -28,7 +28,7 @@ export const CreatePost = ({ onPostCreated }) => {
     }
   };
 
-  const handleImageSelect = (e) => {
+  const handleImageSelect = e => {
     const files = Array.from(e.target.files || []);
     if (files.length + images.length > 9) {
       showToast('最多只能上传 9 张图片', 'warning');
@@ -59,7 +59,7 @@ export const CreatePost = ({ onPostCreated }) => {
     });
   };
 
-  const handleVideoSelect = (e) => {
+  const handleVideoSelect = e => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -78,7 +78,7 @@ export const CreatePost = ({ onPostCreated }) => {
     setPreviewUrls([]);
   };
 
-  const removeImage = (index) => {
+  const removeImage = index => {
     setImages(prev => prev.filter((_, i) => i !== index));
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
@@ -90,7 +90,7 @@ export const CreatePost = ({ onPostCreated }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!content.trim() && images.length === 0 && !video) {
       showToast('请输入内容或上传媒体文件', 'warning');
@@ -129,12 +129,7 @@ export const CreatePost = ({ onPostCreated }) => {
   return (
     <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <div className="flex space-x-3">
-        <Avatar
-          src={user?.avatar}
-          alt={user?.username || ''}
-          size="md"
-          className="flex-shrink-0"
-        />
+        <Avatar src={user?.avatar} alt={user?.username || ''} size="md" className="flex-shrink-0" />
         <div className="flex-1">
           <textarea
             value={content}
@@ -166,11 +161,7 @@ export const CreatePost = ({ onPostCreated }) => {
 
           {video && (
             <div className="mt-4 relative">
-              <video
-                src={URL.createObjectURL(video)}
-                className="w-full rounded-lg"
-                controls
-              />
+              <video src={URL.createObjectURL(video)} className="w-full rounded-lg" controls />
               <button
                 type="button"
                 onClick={removeVideo}

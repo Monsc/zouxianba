@@ -28,14 +28,10 @@ const HashtagPage = () => {
 
   return (
     <div className="main-content">
-      <h2 style={{ color: 'var(--primary-color)', marginBottom: 24 }}>
-        # {tag}
-      </h2>
+      <h2 style={{ color: 'var(--primary-color)', marginBottom: 24 }}># {tag}</h2>
       {loading && <div className="loading-spinner" />}
       {error && <div className="error-message">{error}</div>}
-      {!loading && !error && posts.length === 0 && (
-        <div className="no-notifications">暂无内容</div>
-      )}
+      {!loading && !error && posts.length === 0 && <div className="no-notifications">暂无内容</div>}
       {posts.map(post => (
         <PostCard key={post._id} post={post} />
       ))}
@@ -43,4 +39,4 @@ const HashtagPage = () => {
   );
 };
 
-export default HashtagPage; 
+export default HashtagPage;

@@ -11,14 +11,14 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
   const [commentContent, setCommentContent] = useState('');
   const [showReport, setShowReport] = useState(false);
 
-  const handleSubmitComment = (e) => {
+  const handleSubmitComment = e => {
     e.preventDefault();
     if (!commentContent.trim()) return;
     onComment(post._id, commentContent);
     setCommentContent('');
   };
 
-  const handleAuthorClick = (e) => {
+  const handleAuthorClick = e => {
     e.stopPropagation();
     navigate(`/profile/${post.author._id}`);
   };
@@ -56,9 +56,7 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
                 >
                   {post.author.username}
                 </Link>
-                <span className="text-gray-500 dark:text-gray-400 ml-2">
-                  @{post.author.handle}
-                </span>
+                <span className="text-gray-500 dark:text-gray-400 ml-2">@{post.author.handle}</span>
               </div>
               <div className="text-gray-500 dark:text-gray-400 text-sm">
                 {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
@@ -100,12 +98,7 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
                 onClick={() => setShowComments(!showComments)}
                 className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-blue-500"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -120,12 +113,7 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
                   onClick={() => onDelete(post._id)}
                   className="text-gray-500 dark:text-gray-400 hover:text-red-500"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -138,40 +126,39 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
             </div>
             {showComments && (
               <div className="mt-4 space-y-4">
-                {Array.isArray(post.comments) && post.comments.map(comment => (
-                  <div key={comment._id} className="flex space-x-4">
-                    <img
-                      src={comment.author.avatar || '/default-avatar.png'}
-                      alt={comment.author.username}
-                      className="w-8 h-8 rounded-full"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center">
-                        <Link
-                          to={`/profile/${comment.author.username}`}
-                          className="font-bold text-gray-900 dark:text-white hover:underline"
-                        >
-                          {comment.author.username}
-                        </Link>
-                        <span className="text-gray-500 dark:text-gray-400 ml-2 text-sm">
-                          {formatDistanceToNow(new Date(comment.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </span>
+                {Array.isArray(post.comments) &&
+                  post.comments.map(comment => (
+                    <div key={comment._id} className="flex space-x-4">
+                      <img
+                        src={comment.author.avatar || '/default-avatar.png'}
+                        alt={comment.author.username}
+                        className="w-8 h-8 rounded-full"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center">
+                          <Link
+                            to={`/profile/${comment.author.username}`}
+                            className="font-bold text-gray-900 dark:text-white hover:underline"
+                          >
+                            {comment.author.username}
+                          </Link>
+                          <span className="text-gray-500 dark:text-gray-400 ml-2 text-sm">
+                            {formatDistanceToNow(new Date(comment.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-gray-900 dark:text-white">{comment.content}</p>
                       </div>
-                      <p className="mt-1 text-gray-900 dark:text-white">
-                        {comment.content}
-                      </p>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 {user && (
                   <form onSubmit={handleSubmitComment} className="mt-4">
                     <div className="flex space-x-4">
                       <input
                         type="text"
                         value={commentContent}
-                        onChange={(e) => setCommentContent(e.target.value)}
+                        onChange={e => setCommentContent(e.target.value)}
                         placeholder="Write a comment..."
                         className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />

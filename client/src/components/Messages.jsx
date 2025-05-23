@@ -20,13 +20,11 @@ const MessageItem = ({ message, isOwn }) => (
     >
       {message.content}
       <div
-        className={`text-xs mt-1 ${
-          isOwn ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
-        }`}
+        className={`text-xs mt-1 ${isOwn ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}
       >
         {formatDistanceToNow(new Date(message.createdAt), {
           addSuffix: true,
-          locale: zhCN
+          locale: zhCN,
         })}
       </div>
     </div>
@@ -108,7 +106,7 @@ export const Messages = () => {
     }
   };
 
-  const fetchMessages = async (conversationId) => {
+  const fetchMessages = async conversationId => {
     try {
       const response = await apiService.get(`/conversations/${conversationId}/messages`);
       setMessages(response.data);
@@ -119,13 +117,13 @@ export const Messages = () => {
     }
   };
 
-  const handleSendMessage = async (e) => {
+  const handleSendMessage = async e => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
     try {
       const response = await apiService.post(`/conversations/${activeConversation._id}/messages`, {
-        content: newMessage
+        content: newMessage,
       });
       setMessages([...messages, response.data]);
       setNewMessage('');
@@ -152,10 +150,7 @@ export const Messages = () => {
     return (
       <div className="text-center py-8">
         <p className="text-red-500 mb-4">{error}</p>
-        <button
-          onClick={fetchConversations}
-          className="text-blue-500 hover:text-blue-600"
-        >
+        <button onClick={fetchConversations} className="text-blue-500 hover:text-blue-600">
           重试
         </button>
       </div>
@@ -201,7 +196,10 @@ export const Messages = () => {
             </div>
 
             {/* 输入框 */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-gray-800">
+            <form
+              onSubmit={handleSendMessage}
+              className="p-4 border-t border-gray-200 dark:border-gray-800"
+            >
               <div className="flex items-center space-x-2">
                 <Button
                   type="button"
@@ -213,7 +211,7 @@ export const Messages = () => {
                 </Button>
                 <Input
                   value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
+                  onChange={e => setNewMessage(e.target.value)}
                   placeholder="输入消息..."
                   className="flex-1"
                 />
@@ -233,4 +231,4 @@ export const Messages = () => {
   );
 };
 
-export default Messages; 
+export default Messages;

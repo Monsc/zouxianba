@@ -18,22 +18,22 @@ const NotificationSettingsPage = () => {
       like: true,
       comment: true,
       mention: true,
-      system: true
+      system: true,
     },
     push: {
       follow: true,
       like: true,
       comment: true,
       mention: true,
-      system: true
+      system: true,
     },
     inApp: {
       follow: true,
       like: true,
       comment: true,
       mention: true,
-      system: true
-    }
+      system: true,
+    },
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -79,8 +79,8 @@ const NotificationSettingsPage = () => {
       ...prev,
       [channel]: {
         ...prev[channel],
-        [type]: !prev[channel][type]
-      }
+        [type]: !prev[channel][type],
+      },
     }));
   };
 
@@ -89,15 +89,9 @@ const NotificationSettingsPage = () => {
       <MainLayout>
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              请先登录
-            </h2>
-            <p className="text-gray-600 mb-4">
-              登录后可以自定义你的通知偏好
-            </p>
-            <Button onClick={() => router.push('/login')}>
-              去登录
-            </Button>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">请先登录</h2>
+            <p className="text-gray-600 mb-4">登录后可以自定义你的通知偏好</p>
+            <Button onClick={() => router.push('/login')}>去登录</Button>
           </div>
         </div>
       </MainLayout>
@@ -110,12 +104,8 @@ const NotificationSettingsPage = () => {
         <div className="bg-white rounded-lg shadow-sm">
           {/* 标题 */}
           <div className="p-6 border-b">
-            <h1 className="text-2xl font-bold text-gray-900">
-              通知设置
-            </h1>
-            <p className="mt-2 text-gray-600">
-              自定义你希望接收的通知类型和方式
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">通知设置</h1>
+            <p className="mt-2 text-gray-600">自定义你希望接收的通知类型和方式</p>
           </div>
 
           <LoadingOverlay isLoading={loading}>
@@ -124,29 +114,19 @@ const NotificationSettingsPage = () => {
                 <ErrorState
                   title="获取设置失败"
                   description={error}
-                  action={
-                    <Button onClick={fetchSettings}>
-                      重试
-                    </Button>
-                  }
+                  action={<Button onClick={fetchSettings}>重试</Button>}
                 />
               </div>
             ) : (
               <div className="divide-y">
                 {/* 邮件通知 */}
                 <div className="p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">
-                    邮件通知
-                  </h2>
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">邮件通知</h2>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          新关注者
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有新用户关注你时发送邮件通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">新关注者</h3>
+                        <p className="text-sm text-gray-500">当有新用户关注你时发送邮件通知</p>
                       </div>
                       <Switch
                         checked={settings.email.follow}
@@ -155,12 +135,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          点赞通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人点赞你的帖子时发送邮件通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">点赞通知</h3>
+                        <p className="text-sm text-gray-500">当有人点赞你的帖子时发送邮件通知</p>
                       </div>
                       <Switch
                         checked={settings.email.like}
@@ -169,12 +145,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          评论通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人评论你的帖子时发送邮件通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">评论通知</h3>
+                        <p className="text-sm text-gray-500">当有人评论你的帖子时发送邮件通知</p>
                       </div>
                       <Switch
                         checked={settings.email.comment}
@@ -183,12 +155,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          提及通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人在评论中提及你时发送邮件通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">提及通知</h3>
+                        <p className="text-sm text-gray-500">当有人在评论中提及你时发送邮件通知</p>
                       </div>
                       <Switch
                         checked={settings.email.mention}
@@ -197,12 +165,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          系统通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          接收系统更新、活动等邮件通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">系统通知</h3>
+                        <p className="text-sm text-gray-500">接收系统更新、活动等邮件通知</p>
                       </div>
                       <Switch
                         checked={settings.email.system}
@@ -214,18 +178,12 @@ const NotificationSettingsPage = () => {
 
                 {/* 推送通知 */}
                 <div className="p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">
-                    推送通知
-                  </h2>
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">推送通知</h2>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          新关注者
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有新用户关注你时发送推送通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">新关注者</h3>
+                        <p className="text-sm text-gray-500">当有新用户关注你时发送推送通知</p>
                       </div>
                       <Switch
                         checked={settings.push.follow}
@@ -234,12 +192,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          点赞通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人点赞你的帖子时发送推送通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">点赞通知</h3>
+                        <p className="text-sm text-gray-500">当有人点赞你的帖子时发送推送通知</p>
                       </div>
                       <Switch
                         checked={settings.push.like}
@@ -248,12 +202,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          评论通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人评论你的帖子时发送推送通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">评论通知</h3>
+                        <p className="text-sm text-gray-500">当有人评论你的帖子时发送推送通知</p>
                       </div>
                       <Switch
                         checked={settings.push.comment}
@@ -262,12 +212,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          提及通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人在评论中提及你时发送推送通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">提及通知</h3>
+                        <p className="text-sm text-gray-500">当有人在评论中提及你时发送推送通知</p>
                       </div>
                       <Switch
                         checked={settings.push.mention}
@@ -276,12 +222,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          系统通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          接收系统更新、活动等推送通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">系统通知</h3>
+                        <p className="text-sm text-gray-500">接收系统更新、活动等推送通知</p>
                       </div>
                       <Switch
                         checked={settings.push.system}
@@ -293,18 +235,12 @@ const NotificationSettingsPage = () => {
 
                 {/* 应用内通知 */}
                 <div className="p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">
-                    应用内通知
-                  </h2>
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">应用内通知</h2>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          新关注者
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有新用户关注你时显示应用内通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">新关注者</h3>
+                        <p className="text-sm text-gray-500">当有新用户关注你时显示应用内通知</p>
                       </div>
                       <Switch
                         checked={settings.inApp.follow}
@@ -313,12 +249,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          点赞通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人点赞你的帖子时显示应用内通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">点赞通知</h3>
+                        <p className="text-sm text-gray-500">当有人点赞你的帖子时显示应用内通知</p>
                       </div>
                       <Switch
                         checked={settings.inApp.like}
@@ -327,12 +259,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          评论通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          当有人评论你的帖子时显示应用内通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">评论通知</h3>
+                        <p className="text-sm text-gray-500">当有人评论你的帖子时显示应用内通知</p>
                       </div>
                       <Switch
                         checked={settings.inApp.comment}
@@ -341,9 +269,7 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          提及通知
-                        </h3>
+                        <h3 className="text-sm font-medium text-gray-900">提及通知</h3>
                         <p className="text-sm text-gray-500">
                           当有人在评论中提及你时显示应用内通知
                         </p>
@@ -355,12 +281,8 @@ const NotificationSettingsPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
-                          系统通知
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          显示系统更新、活动等应用内通知
-                        </p>
+                        <h3 className="text-sm font-medium text-gray-900">系统通知</h3>
+                        <p className="text-sm text-gray-500">显示系统更新、活动等应用内通知</p>
                       </div>
                       <Switch
                         checked={settings.inApp.system}
@@ -372,11 +294,7 @@ const NotificationSettingsPage = () => {
 
                 {/* 保存按钮 */}
                 <div className="p-6 bg-gray-50">
-                  <Button
-                    onClick={updateSettings}
-                    disabled={saving}
-                    className="w-full sm:w-auto"
-                  >
+                  <Button onClick={updateSettings} disabled={saving} className="w-full sm:w-auto">
                     {saving ? '保存中...' : '保存设置'}
                   </Button>
                 </div>
@@ -389,4 +307,4 @@ const NotificationSettingsPage = () => {
   );
 };
 
-export default NotificationSettingsPage; 
+export default NotificationSettingsPage;

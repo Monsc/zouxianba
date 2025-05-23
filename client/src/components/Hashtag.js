@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const Hashtag = ({ tag }) => {
   const navigate = useNavigate();
 
-  const handleClick = (e) => {
+  const handleClick = e => {
     e.preventDefault();
     e.stopPropagation();
     navigate(`/hashtag/${tag}`);
@@ -17,4 +17,4 @@ const Hashtag = ({ tag }) => {
   );
 };
 
-export default Hashtag; 
+export default Hashtag;

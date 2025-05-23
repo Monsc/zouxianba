@@ -1,13 +1,6 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import {
-  Users,
-  FileText,
-  MessageSquare,
-  TrendingUp,
-  AlertCircle,
-  Clock,
-} from 'lucide-react';
+import { Users, FileText, MessageSquare, TrendingUp, AlertCircle, Clock } from 'lucide-react';
 
 const stats = [
   {
@@ -74,7 +67,7 @@ export default function Dashboard() {
 
       {/* 统计卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
+        {stats.map(stat => (
           <Card key={stat.title} className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -165,4 +158,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-} 
+}

@@ -16,8 +16,8 @@ export const LazyImage = ({
 
   useEffect(() => {
     observerRef.current = new window.IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             setIsInView(true);
             observerRef.current?.unobserve(entry.target);
@@ -51,10 +51,7 @@ export const LazyImage = ({
         ref={imgRef}
         src={isInView ? src : placeholder}
         alt={alt}
-        className={cn(
-          'transition-opacity duration-300',
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        )}
+        className={cn('transition-opacity duration-300', isLoaded ? 'opacity-100' : 'opacity-0')}
         onLoad={handleLoad}
         {...props}
       />
@@ -67,4 +64,4 @@ export const LazyImage = ({
   );
 };
 
-export default LazyImage; 
+export default LazyImage;

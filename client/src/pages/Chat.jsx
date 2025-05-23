@@ -37,13 +37,13 @@ function Chat() {
   useEffect(() => {
     if (!socket) return;
     // 新消息推送
-    socket.on('new_message', (msg) => {
+    socket.on('new_message', msg => {
       if (msg.from === userId || msg.to === userId) {
         setMessages(prev => [...prev, msg]);
       }
     });
     // 已读回执
-    socket.on('messages_read', (data) => {
+    socket.on('messages_read', data => {
       setReadMap(prev => ({ ...prev, [data.from]: true }));
     });
     return () => {
@@ -87,7 +87,7 @@ function Chat() {
     }
   };
 
-  const handleSend = async (e) => {
+  const handleSend = async e => {
     e.preventDefault();
     if (!user?._id || !userId) return;
 
@@ -113,12 +113,12 @@ function Chat() {
     }
   };
 
-  const handleEmojiSelect = (emoji) => {
+  const handleEmojiSelect = emoji => {
     setInput(input + emoji.native);
     setShowEmoji(false);
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const file = e.target.files?.[0];
     if (file) {
       setImage(file);
@@ -140,7 +140,8 @@ function Chat() {
         {messages.length === 0 ? (
           <div className="text-gray-400 text-center py-8">暂无消息</div>
         ) : (
-          Array.isArray(messages) && messages.map((msg, idx) => (
+          Array.isArray(messages) &&
+          messages.map((msg, idx) => (
             <div
               key={msg._id}
               className={`flex ${msg.from === user._id ? 'justify-end' : 'justify-start'} mb-2`}

@@ -7,7 +7,7 @@ export const AdminLayout = ({ children }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  const isActive = (path) => {
+  const isActive = path => {
     return location.pathname === path;
   };
 
@@ -31,7 +31,10 @@ export const AdminLayout = ({ children }) => {
               Admin Panel
             </Link>
             <div className="flex items-center space-x-4">
-              <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+              <Link
+                to="/"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              >
                 Back to Site
               </Link>
               <div className="flex items-center space-x-2">
@@ -47,7 +50,7 @@ export const AdminLayout = ({ children }) => {
         <div className="flex gap-8">
           <aside className="w-64 space-y-4">
             <nav className="space-y-1">
-              {navItems.map((item) => (
+              {navItems.map(item => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -64,13 +67,11 @@ export const AdminLayout = ({ children }) => {
             </nav>
           </aside>
 
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
         </div>
       </div>
     </div>
   );
 };
 
-export default AdminLayout; 
+export default AdminLayout;

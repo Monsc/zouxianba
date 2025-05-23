@@ -73,15 +73,12 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
     try {
       setLoading(true);
       await apiService.post('/auth/2fa/verify-backup', {
-        code: backupCode
+        code: backupCode,
       });
       showToast('备用码验证成功', 'success');
       onOpenChange(false);
     } catch (error) {
-      showToast(
-        error.response?.data?.message || '备用码验证失败',
-        'error'
-      );
+      showToast(error.response?.data?.message || '备用码验证失败', 'error');
     } finally {
       setLoading(false);
     }
@@ -96,9 +93,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
             双因素认证设置
           </DialogTitle>
           <DialogDescription>
-            {user.twoFactorEnabled
-              ? '管理您的双因素认证设置'
-              : '为您的账户添加额外的安全保护层'}
+            {user.twoFactorEnabled ? '管理您的双因素认证设置' : '为您的账户添加额外的安全保护层'}
           </DialogDescription>
         </DialogHeader>
 
@@ -106,9 +101,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
           <div className="space-y-4">
             <Alert>
               <Shield className="w-4 h-4 mr-2" />
-              <AlertDescription>
-                双因素认证已启用，您的账号受到额外保护
-              </AlertDescription>
+              <AlertDescription>双因素认证已启用，您的账号受到额外保护</AlertDescription>
             </Alert>
 
             <div className="space-y-2">
@@ -117,7 +110,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
                 type="text"
                 placeholder="输入验证码"
                 value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
+                onChange={e => setVerificationCode(e.target.value)}
               />
             </div>
 
@@ -137,11 +130,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
                 <div className="space-y-2">
                   <Label>扫描二维码</Label>
                   <div className="flex justify-center p-4 bg-white rounded-lg">
-                    <img
-                      src={setupData.qrCode}
-                      alt="2FA QR Code"
-                      className="w-48 h-48"
-                    />
+                    <img src={setupData.qrCode} alt="2FA QR Code" className="w-48 h-48" />
                   </div>
                 </div>
 
@@ -149,10 +138,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
                   <Label>备用码</Label>
                   <div className="grid grid-cols-2 gap-2 p-4 bg-muted rounded-lg">
                     {setupData.backupCodes.map((code, index) => (
-                      <code
-                        key={index}
-                        className="p-2 bg-background rounded text-sm font-mono"
-                      >
+                      <code key={index} className="p-2 bg-background rounded text-sm font-mono">
                         {code}
                       </code>
                     ))}
@@ -168,7 +154,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
                     type="text"
                     placeholder="输入验证码"
                     value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
+                    onChange={e => setVerificationCode(e.target.value)}
                   />
                 </div>
 
@@ -185,15 +171,12 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
                 <Alert>
                   <Key className="w-4 h-4 mr-2" />
                   <AlertDescription>
-                    您需要安装一个验证器应用（如 Google Authenticator 或 Microsoft Authenticator）来使用双因素认证
+                    您需要安装一个验证器应用（如 Google Authenticator 或 Microsoft
+                    Authenticator）来使用双因素认证
                   </AlertDescription>
                 </Alert>
 
-                <Button
-                  onClick={fetchSetupData}
-                  disabled={loading}
-                  className="w-full"
-                >
+                <Button onClick={fetchSetupData} disabled={loading} className="w-full">
                   {loading ? '加载中...' : '开始设置'}
                 </Button>
               </div>
@@ -203,4 +186,4 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
       </DialogContent>
     </Dialog>
   );
-}; 
+};

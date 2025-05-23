@@ -89,16 +89,13 @@ function Settings({ onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-white dark:bg-twitter-gray-900 rounded-2xl w-full max-w-2xl mx-4 overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* 头部 */}
           <div className="p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">设置</h2>
-              <button
-                onClick={onClose}
-                className="text-twitter-blue hover:underline"
-              >
+              <button onClick={onClose} className="text-twitter-blue hover:underline">
                 关闭
               </button>
             </div>
@@ -115,7 +112,7 @@ function Settings({ onClose }) {
                   </label>
                   <select
                     value={settings.theme}
-                    onChange={(e) => handleChange('theme', 'theme', e.target.value)}
+                    onChange={e => handleChange('theme', 'theme', e.target.value)}
                     className="w-full px-3 py-2 border border-twitter-gray-300 dark:border-twitter-gray-700 rounded-lg focus:ring-2 focus:ring-twitter-blue focus:border-transparent dark:bg-twitter-gray-800"
                   >
                     <option value="system">跟随系统</option>
@@ -145,7 +142,7 @@ function Settings({ onClose }) {
                       <input
                         type="checkbox"
                         checked={value}
-                        onChange={(e) => handleChange('notifications', key, e.target.checked)}
+                        onChange={e => handleChange('notifications', key, e.target.checked)}
                         className="sr-only peer"
                       />
                       <div className="w-11 h-6 bg-twitter-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-twitter-blue/20 rounded-full peer dark:bg-twitter-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-twitter-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-twitter-gray-600 peer-checked:bg-twitter-blue"></div>
@@ -170,7 +167,7 @@ function Settings({ onClose }) {
                     {key === 'allowMessages' ? (
                       <select
                         value={value}
-                        onChange={(e) => handleChange('privacy', key, e.target.value)}
+                        onChange={e => handleChange('privacy', key, e.target.value)}
                         className="px-3 py-1 border border-twitter-gray-300 dark:border-twitter-gray-700 rounded-lg focus:ring-2 focus:ring-twitter-blue focus:border-transparent dark:bg-twitter-gray-800"
                       >
                         <option value="everyone">所有人</option>
@@ -182,7 +179,7 @@ function Settings({ onClose }) {
                         <input
                           type="checkbox"
                           checked={value}
-                          onChange={(e) => handleChange('privacy', key, e.target.checked)}
+                          onChange={e => handleChange('privacy', key, e.target.checked)}
                           className="sr-only peer"
                         />
                         <div className="w-11 h-6 bg-twitter-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-twitter-blue/20 rounded-full peer dark:bg-twitter-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-twitter-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-twitter-gray-600 peer-checked:bg-twitter-blue"></div>
@@ -209,7 +206,7 @@ function Settings({ onClose }) {
                       <input
                         type="checkbox"
                         checked={value}
-                        onChange={(e) => handleChange('content', key, e.target.checked)}
+                        onChange={e => handleChange('content', key, e.target.checked)}
                         className="sr-only peer"
                       />
                       <div className="w-11 h-6 bg-twitter-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-twitter-blue/20 rounded-full peer dark:bg-twitter-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-twitter-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-twitter-gray-600 peer-checked:bg-twitter-blue"></div>
@@ -234,4 +231,4 @@ function Settings({ onClose }) {
   );
 }
 
-export default Settings; 
+export default Settings;

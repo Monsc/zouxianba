@@ -21,7 +21,7 @@ const LoginForm = ({ onSuccess }) => {
   const [tempToken, setTempToken] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -29,7 +29,7 @@ const LoginForm = ({ onSuccess }) => {
     try {
       const response = await apiService.post('/auth/login', {
         email,
-        password
+        password,
       });
 
       // 检查是否需要双因素认证
@@ -42,7 +42,7 @@ const LoginForm = ({ onSuccess }) => {
       // 正常登录流程
       await login(response.data.token, response.data.user);
       showToast('登录成功', 'success');
-      
+
       // 调用成功回调
       if (onSuccess) {
         onSuccess();
@@ -84,7 +84,7 @@ const LoginForm = ({ onSuccess }) => {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             placeholder="请输入邮箱"
             required
             disabled={loading}
@@ -97,18 +97,14 @@ const LoginForm = ({ onSuccess }) => {
             id="password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             placeholder="请输入密码"
             required
             disabled={loading}
           />
         </div>
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={loading}
-        >
+        <Button type="submit" className="w-full" disabled={loading}>
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -130,4 +126,4 @@ const LoginForm = ({ onSuccess }) => {
   );
 };
 
-export default LoginForm; 
+export default LoginForm;

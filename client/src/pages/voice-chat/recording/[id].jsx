@@ -60,14 +60,14 @@ const RecordingPage = () => {
   };
 
   // 设置进度
-  const handleSeek = (e) => {
+  const handleSeek = e => {
     const time = e.target.value;
     audioRef.current.currentTime = time;
     setCurrentTime(time);
   };
 
   // 格式化时间
-  const formatTime = (time) => {
+  const formatTime = time => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -90,11 +90,7 @@ const RecordingPage = () => {
               <ErrorState
                 title="获取录音信息失败"
                 description={error}
-                action={
-                  <Button onClick={fetchRecording}>
-                    重试
-                  </Button>
-                }
+                action={<Button onClick={fetchRecording}>重试</Button>}
               />
             )}
           </LoadingOverlay>
@@ -115,16 +111,14 @@ const RecordingPage = () => {
                   {recording.title || '未命名录音'}
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  录制于 {formatDistanceToNow(new Date(recording.createdAt), {
+                  录制于{' '}
+                  {formatDistanceToNow(new Date(recording.createdAt), {
                     addSuffix: true,
-                    locale: zhCN
+                    locale: zhCN,
                   })}
                 </p>
               </div>
-              <Button
-                variant="secondary"
-                onClick={() => setShowShareModal(true)}
-              >
+              <Button variant="secondary" onClick={() => setShowShareModal(true)}>
                 分享
               </Button>
             </div>
@@ -135,9 +129,7 @@ const RecordingPage = () => {
             <div className="space-y-4">
               {/* 进度条 */}
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-500">
-                  {formatTime(currentTime)}
-                </span>
+                <span className="text-sm text-gray-500">{formatTime(currentTime)}</span>
                 <input
                   type="range"
                   min="0"
@@ -146,9 +138,7 @@ const RecordingPage = () => {
                   onChange={handleSeek}
                   className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
-                <span className="text-sm text-gray-500">
-                  {formatTime(duration)}
-                </span>
+                <span className="text-sm text-gray-500">{formatTime(duration)}</span>
               </div>
 
               {/* 控制按钮 */}
@@ -159,12 +149,27 @@ const RecordingPage = () => {
                 >
                   {isPlaying ? (
                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   ) : (
                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   )}
                 </button>
@@ -187,14 +192,10 @@ const RecordingPage = () => {
         {showShareModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                分享录音
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">分享录音</h3>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-500 mb-2">
-                    复制以下链接分享：
-                  </p>
+                  <p className="text-sm text-gray-500 mb-2">复制以下链接分享：</p>
                   <div className="flex space-x-2">
                     <input
                       type="text"
@@ -202,18 +203,11 @@ const RecordingPage = () => {
                       readOnly
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
                     />
-                    <Button
-                      onClick={shareRecording}
-                    >
-                      复制
-                    </Button>
+                    <Button onClick={shareRecording}>复制</Button>
                   </div>
                 </div>
                 <div className="flex justify-end">
-                  <Button
-                    variant="secondary"
-                    onClick={() => setShowShareModal(false)}
-                  >
+                  <Button variant="secondary" onClick={() => setShowShareModal(false)}>
                     关闭
                   </Button>
                 </div>
@@ -226,4 +220,4 @@ const RecordingPage = () => {
   );
 };
 
-export default RecordingPage; 
+export default RecordingPage;

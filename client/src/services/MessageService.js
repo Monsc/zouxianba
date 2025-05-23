@@ -35,4 +35,4 @@ export class MessageService {
   static async deleteConversation(userId) {
     await api.delete(`/messages/conversations/${userId}`);
   }
-} 
+}

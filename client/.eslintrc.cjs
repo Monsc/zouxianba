@@ -5,6 +5,13 @@ module.exports = {
     'prettier'
   ],
   plugins: ['react', 'react-hooks', 'prettier'],
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true
+    }
+  },
   rules: {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',

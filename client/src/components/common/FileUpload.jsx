@@ -14,17 +14,17 @@ const FileUpload = ({
   const fileInputRef = useRef(null);
   const { error } = useToast();
 
-  const handleDragOver = (e) => {
+  const handleDragOver = e => {
     e.preventDefault();
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e) => {
+  const handleDragLeave = e => {
     e.preventDefault();
     setIsDragging(false);
   };
 
-  const validateFile = (file) => {
+  const validateFile = file => {
     if (!file.type.match(accept.replace('*', '.*'))) {
       error('不支持的文件类型');
       return false;
@@ -38,7 +38,7 @@ const FileUpload = ({
     return true;
   };
 
-  const handleDrop = async (e) => {
+  const handleDrop = async e => {
     e.preventDefault();
     setIsDragging(false);
 
@@ -61,7 +61,7 @@ const FileUpload = ({
     }
   };
 
-  const handleFileSelect = async (e) => {
+  const handleFileSelect = async e => {
     const files = Array.from(e.target.files);
     if (!multiple && files.length > 1) {
       error('只能上传一个文件');
@@ -120,9 +120,7 @@ const FileUpload = ({
               />
             </svg>
             <div className="text-sm text-gray-600">
-              <span className="font-medium text-primary hover:text-primary-dark">
-                点击上传
-              </span>{' '}
+              <span className="font-medium text-primary hover:text-primary-dark">点击上传</span>{' '}
               或拖拽文件到此处
             </div>
             <p className="text-xs text-gray-500">
@@ -135,4 +133,4 @@ const FileUpload = ({
   );
 };
 
-export default FileUpload; 
+export default FileUpload;

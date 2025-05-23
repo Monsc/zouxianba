@@ -4,7 +4,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Bell, Home, MessageSquare, Search, Settings, User, LogOut, TrendingUp, Users } from 'lucide-react';
+import {
+  Bell,
+  Home,
+  MessageSquare,
+  Search,
+  Settings,
+  User,
+  LogOut,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
 import CreatePostButton from './CreatePostButton';
 
 export const Layout = ({ children }) => {
@@ -12,7 +22,7 @@ export const Layout = ({ children }) => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = path => location.pathname === path;
 
   const navItems = [
     { path: '/feed', icon: Home, label: '首页' },
@@ -42,7 +52,7 @@ export const Layout = ({ children }) => {
         <div className="flex items-center space-x-2">
           <CreatePostButton />
           {user ? (
-            <Link to={`/profile/${user.username}`}> 
+            <Link to={`/profile/${user.username}`}>
               <Avatar className="w-8 h-8">
                 <AvatarImage src={user.avatar} />
                 <AvatarFallback>{user.username?.[0]}</AvatarFallback>
@@ -50,7 +60,9 @@ export const Layout = ({ children }) => {
             </Link>
           ) : (
             <Link to="/login">
-              <Button size="sm" variant="outline">登录/注册</Button>
+              <Button size="sm" variant="outline">
+                登录/注册
+              </Button>
             </Link>
           )}
         </div>
@@ -73,14 +85,12 @@ export const Layout = ({ children }) => {
             )}
             {/* 导航 */}
             <nav className="flex flex-col space-y-2">
-              {navItems.map((item) => (
+              {navItems.map(item => (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
-                    isActive(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-muted'
+                    isActive(item.path) ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
                   }`}
                 >
                   <item.icon className="w-5 h-5" />
@@ -88,11 +98,7 @@ export const Layout = ({ children }) => {
                 </Link>
               ))}
               {user && (
-                <Button
-                  variant="ghost"
-                  className="justify-start"
-                  onClick={logout}
-                >
+                <Button variant="ghost" className="justify-start" onClick={logout}>
                   <LogOut className="w-5 h-5 mr-3" />
                   退出登录
                 </Button>
@@ -136,14 +142,12 @@ export const Layout = ({ children }) => {
 
       {/* 移动端底部导航 */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex md:hidden justify-around items-center h-14 shadow-lg">
-        {navItems.slice(0, 4).map((item) => (
+        {navItems.slice(0, 4).map(item => (
           <Link
             key={item.path}
             to={item.path}
             className={`flex flex-col items-center justify-center px-2 py-1 ${
-              isActive(item.path)
-                ? 'text-blue-500'
-                : 'text-muted-foreground hover:text-blue-400'
+              isActive(item.path) ? 'text-blue-500' : 'text-muted-foreground hover:text-blue-400'
             }`}
           >
             <item.icon className="w-6 h-6" />

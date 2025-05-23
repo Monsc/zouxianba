@@ -8,13 +8,13 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = e => {
       if (e.key === 'Escape') {
         onClose();
       } else if (e.key === 'ArrowLeft') {
-        setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+        setCurrentIndex(prev => (prev > 0 ? prev - 1 : images.length - 1));
       } else if (e.key === 'ArrowRight') {
-        setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+        setCurrentIndex(prev => (prev < images.length - 1 ? prev + 1 : 0));
       }
     };
 
@@ -22,7 +22,7 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [images.length, onClose]);
 
-  const handleTouchStart = (e) => {
+  const handleTouchStart = e => {
     if (e.touches.length === 2) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
@@ -31,7 +31,7 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
         touch2.clientY - touch1.clientY
       );
 
-      const handleTouchMove = (e) => {
+      const handleTouchMove = e => {
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
         const currentDistance = Math.hypot(
@@ -81,7 +81,7 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
               y: position.y,
             }}
             onTouchStart={handleTouchStart}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
             drag={scale > 1}
             dragConstraints={{
               left: -100,
@@ -101,16 +101,12 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
                   className={`w-16 h-16 rounded-lg overflow-hidden ${
                     index === currentIndex ? 'ring-2 ring-twitter-blue' : ''
                   }`}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     setCurrentIndex(index);
                   }}
                 >
-                  <img
-                    src={image.url}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={image.url} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -121,18 +117,18 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
             <>
               <button
                 className="absolute left-4 text-white p-2 rounded-full hover:bg-white/10"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
-                  setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+                  setCurrentIndex(prev => (prev > 0 ? prev - 1 : images.length - 1));
                 }}
               >
                 ←
               </button>
               <button
                 className="absolute right-4 text-white p-2 rounded-full hover:bg-white/10"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
-                  setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+                  setCurrentIndex(prev => (prev < images.length - 1 ? prev + 1 : 0));
                 }}
               >
                 →
@@ -144,7 +140,7 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
           <div className="absolute bottom-20 left-0 right-0 flex justify-center space-x-4">
             <button
               className="text-white p-2 rounded-full hover:bg-white/10"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 setScale(Math.max(1, scale - 0.5));
               }}
@@ -153,7 +149,7 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
             </button>
             <button
               className="text-white p-2 rounded-full hover:bg-white/10"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 setScale(Math.min(3, scale + 0.5));
               }}
@@ -167,4 +163,4 @@ function ImagePreview({ images, initialIndex = 0, onClose }) {
   );
 }
 
-export default ImagePreview; 
+export default ImagePreview;

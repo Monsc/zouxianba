@@ -30,8 +30,12 @@ export const PostDetail = ({ postId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 使用无限滚动加载更多评论
-  const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
-    fetchData: async (page) => {
+  const {
+    loadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useInfiniteScroll({
+    fetchData: async page => {
       try {
         const response = await PostService.getComments(postId, page);
         return response.comments;
@@ -79,16 +83,12 @@ export const PostDetail = ({ postId }) => {
       if (isLiked) {
         await LikeService.unlike(postId);
         setIsLiked(false);
-        setPost((prev) =>
-          prev ? { ...prev, likeCount: prev.likeCount - 1 } : null
-        );
+        setPost(prev => (prev ? { ...prev, likeCount: prev.likeCount - 1 } : null));
         showToast('已取消点赞', 'success');
       } else {
         await LikeService.like(postId);
         setIsLiked(true);
-        setPost((prev) =>
-          prev ? { ...prev, likeCount: prev.likeCount + 1 } : null
-        );
+        setPost(prev => (prev ? { ...prev, likeCount: prev.likeCount + 1 } : null));
         showToast('已点赞', 'success');
       }
     } catch (error) {
@@ -112,11 +112,9 @@ export const PostDetail = ({ postId }) => {
     try {
       setIsSubmitting(true);
       const newComment = await PostService.createComment(postId, commentContent);
-      setComments((prev) => [newComment, ...prev]);
+      setComments(prev => [newComment, ...prev]);
       setCommentContent('');
-      setPost((prev) =>
-        prev ? { ...prev, commentCount: prev.commentCount + 1 } : null
-      );
+      setPost(prev => (prev ? { ...prev, commentCount: prev.commentCount + 1 } : null));
       showToast('评论已发布', 'success');
     } catch (error) {
       console.error('Comment failed:', error);
@@ -135,13 +133,7 @@ export const PostDetail = ({ postId }) => {
   }
 
   if (!post) {
-    return (
-      <Toaster
-        title="帖子不存在"
-        description="该帖子可能已被删除或不存在"
-        icon="post"
-      />
-    );
+    return <Toaster title="帖子不存在" description="该帖子可能已被删除或不存在" icon="post" />;
   }
 
   return (
@@ -186,9 +178,7 @@ export const PostDetail = ({ postId }) => {
                 )}
               </div>
 
-              <div className="mt-4 prose dark:prose-invert max-w-none">
-                {post.content}
-              </div>
+              <div className="mt-4 prose dark:prose-invert max-w-none">{post.content}</div>
 
               {post.images && post.images.length > 0 && (
                 <div className="mt-4 grid grid-cols-2 gap-4">
@@ -213,10 +203,7 @@ export const PostDetail = ({ postId }) => {
                       : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                   )}
                 >
-                  <Icon
-                    name={isLiked ? 'heart-filled' : 'heart'}
-                    className="w-5 h-5"
-                  />
+                  <Icon name={isLiked ? 'heart-filled' : 'heart'} className="w-5 h-5" />
                   <span>{post.likeCount}</span>
                 </button>
                 <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
@@ -232,28 +219,19 @@ export const PostDetail = ({ postId }) => {
       {/* 评论区域 */}
       <div className="bg-white dark:bg-gray-900 rounded-lg shadow">
         <div className="p-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            评论
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">评论</h3>
 
           {/* 评论输入框 */}
           <div className="mt-4">
             <Textarea
               value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
+              onChange={e => setCommentContent(e.target.value)}
               placeholder="写下你的评论..."
               rows={3}
             />
             <div className="mt-2 flex justify-end">
-              <Button
-                onClick={handleComment}
-                disabled={isSubmitting || !commentContent.trim()}
-              >
-                {isSubmitting ? (
-                  <LoadingSpinner size="sm" />
-                ) : (
-                  '发表评论'
-                )}
+              <Button onClick={handleComment} disabled={isSubmitting || !commentContent.trim()}>
+                {isSubmitting ? <LoadingSpinner size="sm" /> : '发表评论'}
               </Button>
             </div>
           </div>
@@ -261,13 +239,10 @@ export const PostDetail = ({ postId }) => {
           {/* 评论列表 */}
           <div className="mt-6 space-y-6">
             {comments.length === 0 ? (
-              <Toaster
-                title="暂无评论"
-                description="来发表第一条评论吧"
-                icon="comment"
-              />
+              <Toaster title="暂无评论" description="来发表第一条评论吧" icon="comment" />
             ) : (
-              Array.isArray(comments) && comments.map((comment) => (
+              Array.isArray(comments) &&
+              comments.map(comment => (
                 <div key={comment.id} className="flex space-x-4">
                   <Avatar
                     src={comment.author.avatar}
@@ -319,11 +294,7 @@ export const PostDetail = ({ postId }) => {
                   disabled={loadingMore}
                   className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 >
-                  {loadingMore ? (
-                    <LoadingSpinner size="sm" />
-                  ) : (
-                    '加载更多'
-                  )}
+                  {loadingMore ? <LoadingSpinner size="sm" /> : '加载更多'}
                 </button>
               </div>
             )}
@@ -332,4 +303,4 @@ export const PostDetail = ({ postId }) => {
       </div>
     </div>
   );
-}; 
+};

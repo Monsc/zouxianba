@@ -28,8 +28,12 @@ export const UserProfile = ({ userId }) => {
   const [activeTab, setActiveTab] = useState('posts');
 
   // 使用无限滚动加载更多帖子
-  const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
-    fetchData: async (page) => {
+  const {
+    loadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useInfiniteScroll({
+    fetchData: async page => {
       try {
         const response = await PostService.getUserPosts(userId, page);
         return response.posts;
@@ -98,13 +102,7 @@ export const UserProfile = ({ userId }) => {
   }
 
   if (!user) {
-    return (
-      <Toaster
-        title="用户不存在"
-        description="该用户可能已被删除或不存在"
-        icon="user"
-      />
-    );
+    return <Toaster title="用户不存在" description="该用户可能已被删除或不存在" icon="user" />;
   }
 
   return (
@@ -113,13 +111,7 @@ export const UserProfile = ({ userId }) => {
       <div className="bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden">
         {/* 封面图 */}
         <div className="h-48 bg-gray-200 dark:bg-gray-800 relative">
-          {user.cover && (
-            <img
-              src={user.cover}
-              alt="封面"
-              className="w-full h-full object-cover"
-            />
-          )}
+          {user.cover && <img src={user.cover} alt="封面" className="w-full h-full object-cover" />}
         </div>
 
         {/* 个人信息 */}
@@ -148,11 +140,7 @@ export const UserProfile = ({ userId }) => {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {user.username}
               </h1>
-              {user.bio && (
-                <p className="mt-1 text-gray-500 dark:text-gray-400">
-                  {user.bio}
-                </p>
-              )}
+              {user.bio && <p className="mt-1 text-gray-500 dark:text-gray-400">{user.bio}</p>}
             </div>
 
             <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
@@ -202,4 +190,4 @@ export const UserProfile = ({ userId }) => {
       </div>
     </div>
   );
-}; 
+};

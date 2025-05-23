@@ -21,7 +21,7 @@ export function useInfiniteScroll({
       setLoading(true);
       setError(null);
       const newData = await fetchData(page + 1);
-      
+
       if (newData.length === 0) {
         setHasMore(false);
         return;
@@ -38,7 +38,7 @@ export function useInfiniteScroll({
 
   useEffect(() => {
     const currentObserver = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const [entry] = entries;
         if (entry.isIntersecting && !loading && hasMore) {
           loadMore();
@@ -70,4 +70,4 @@ export function useInfiniteScroll({
     loading,
     error,
   };
-} 
+}

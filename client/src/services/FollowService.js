@@ -27,4 +27,4 @@ export class FollowService {
     const response = await api.get(`/users/${userId}/follow-status`);
     return response.data.isFollowing;
   }
-} 
+}

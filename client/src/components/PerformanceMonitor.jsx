@@ -6,7 +6,7 @@ import { performanceConfig } from '@/config/performance';
 export const PerformanceMonitor = () => {
   useEffect(() => {
     // 监控 First Contentful Paint (FCP)
-    const fcpObserver = new PerformanceObserver((list) => {
+    const fcpObserver = new PerformanceObserver(list => {
       const entries = list.getEntries();
       if (entries.length > 0) {
         const fcp = entries[0].startTime;
@@ -16,7 +16,7 @@ export const PerformanceMonitor = () => {
     fcpObserver.observe({ entryTypes: ['paint'] });
 
     // 监控 Largest Contentful Paint (LCP)
-    const lcpObserver = new PerformanceObserver((list) => {
+    const lcpObserver = new PerformanceObserver(list => {
       const entries = list.getEntries();
       if (entries.length > 0) {
         const lcp = entries[entries.length - 1].startTime;
@@ -26,7 +26,7 @@ export const PerformanceMonitor = () => {
     lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
 
     // 监控 First Input Delay (FID)
-    const fidObserver = new PerformanceObserver((list) => {
+    const fidObserver = new PerformanceObserver(list => {
       const entries = list.getEntries();
       if (entries.length > 0) {
         const fid = entries[0].processingStart - entries[0].startTime;
@@ -36,7 +36,7 @@ export const PerformanceMonitor = () => {
     fidObserver.observe({ entryTypes: ['first-input'] });
 
     // 监控 Cumulative Layout Shift (CLS)
-    const clsObserver = new PerformanceObserver((list) => {
+    const clsObserver = new PerformanceObserver(list => {
       let cls = 0;
       for (const entry of list.getEntries()) {
         if (!entry.hadRecentInput) {
@@ -71,25 +71,25 @@ export const PerformanceMonitor = () => {
   };
 
   // 处理 JavaScript 错误
-  const handleError = (event) => {
+  const handleError = event => {
     if (shouldIgnoreError(event.message)) return;
     console.error('JavaScript error:', event);
     // 这里可以添加错误上报逻辑
   };
 
   // 处理未处理的 Promise 拒绝
-  const handleUnhandledRejection = (event) => {
+  const handleUnhandledRejection = event => {
     if (shouldIgnoreError(event.reason?.message)) return;
     console.error('Unhandled promise rejection:', event);
     // 这里可以添加错误上报逻辑
   };
 
   // 检查是否应该忽略错误
-  const shouldIgnoreError = (message) => {
+  const shouldIgnoreError = message => {
     return performanceConfig.monitoring.error.ignoreErrors.some(
-      (pattern) => message && message.includes(pattern)
+      pattern => message && message.includes(pattern)
     );
   };
 
   return null; // 这是一个无UI组件
-}; 
+};

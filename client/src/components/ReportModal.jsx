@@ -27,7 +27,7 @@ function ReportModal({ type, targetId, onClose }) {
     ],
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!category || !reason.trim()) {
       toast.error('请选择举报类型并填写原因');
@@ -67,16 +67,13 @@ function ReportModal({ type, targetId, onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-white dark:bg-twitter-gray-900 rounded-2xl w-full max-w-md mx-4 overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* 头部 */}
           <div className="p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">举报{type === 'user' ? '用户' : '内容'}</h2>
-              <button
-                onClick={onClose}
-                className="text-twitter-blue hover:underline"
-              >
+              <button onClick={onClose} className="text-twitter-blue hover:underline">
                 取消
               </button>
             </div>
@@ -90,12 +87,12 @@ function ReportModal({ type, targetId, onClose }) {
               </label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={e => setCategory(e.target.value)}
                 className="w-full px-3 py-2 border border-twitter-gray-300 dark:border-twitter-gray-700 rounded-lg focus:ring-2 focus:ring-twitter-blue focus:border-transparent dark:bg-twitter-gray-800"
                 required
               >
                 <option value="">请选择举报类型</option>
-                {categories[type].map((cat) => (
+                {categories[type].map(cat => (
                   <option key={cat.value} value={cat.value}>
                     {cat.label}
                   </option>
@@ -110,7 +107,7 @@ function ReportModal({ type, targetId, onClose }) {
               </label>
               <textarea
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
                 rows="4"
                 placeholder="请详细描述举报原因..."
                 className="w-full px-3 py-2 border border-twitter-gray-300 dark:border-twitter-gray-700 rounded-lg focus:ring-2 focus:ring-twitter-blue focus:border-transparent dark:bg-twitter-gray-800"

@@ -30,13 +30,13 @@ function CommentSection({ postId }) {
       const response = await apiService.get(`/posts/${postId}/comments`, {
         params: { page, limit: 10, sort: sortBy },
       });
-      
+
       if (page === 1) {
         setComments(response.data);
       } else {
         setComments(prev => [...prev, ...response.data]);
       }
-      
+
       setHasMore(response.data.length === 10);
     } catch (error) {
       showToast('获取评论失败', 'error');
@@ -52,7 +52,7 @@ function CommentSection({ postId }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
@@ -113,9 +113,7 @@ function CommentSection({ postId }) {
 
         {/* 嵌套回复 */}
         {level < maxLevel && replies.length > 0 && (
-          <div className="mt-2">
-            {replies.map(reply => renderComment(reply, level + 1))}
-          </div>
+          <div className="mt-2">{replies.map(reply => renderComment(reply, level + 1))}</div>
         )}
       </div>
     );
@@ -128,7 +126,7 @@ function CommentSection({ postId }) {
         <h3 className="text-lg font-bold">评论</h3>
         <select
           value={sortBy}
-          onChange={(e) => {
+          onChange={e => {
             setSortBy(e.target.value);
             setPage(1);
           }}
@@ -143,15 +141,11 @@ function CommentSection({ postId }) {
       {/* 评论输入框 */}
       <form onSubmit={handleSubmit} className="mb-4">
         <div className="flex space-x-3">
-          <LazyImage
-            src={user?.avatar}
-            alt={user?.username}
-            className="w-10 h-10 rounded-full"
-          />
+          <LazyImage src={user?.avatar} alt={user?.username} className="w-10 h-10 rounded-full" />
           <div className="flex-1">
             <textarea
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              onChange={e => setNewComment(e.target.value)}
               placeholder={replyTo ? `回复 @${replyTo.author.username}` : '添加评论...'}
               className="w-full p-3 bg-transparent border border-twitter-gray-200 dark:border-twitter-gray-800 rounded-xl focus:ring-2 focus:ring-twitter-blue focus:border-transparent resize-none"
               rows="2"
@@ -204,4 +198,4 @@ function CommentSection({ postId }) {
   );
 }
 
-export default CommentSection; 
+export default CommentSection;

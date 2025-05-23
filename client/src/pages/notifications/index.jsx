@@ -30,8 +30,8 @@ const NotificationsPage = () => {
       const response = await api.get('/notifications', {
         params: {
           page: currentPage,
-          limit: 20
-        }
+          limit: 20,
+        },
       });
       setNotifications(response.data.notifications);
       setTotalPages(response.data.totalPages);
@@ -51,14 +51,14 @@ const NotificationsPage = () => {
   }, [user, currentPage]);
 
   // 标记通知为已读
-  const markAsRead = async (notificationId) => {
+  const markAsRead = async notificationId => {
     try {
       await api.put(`/notifications/${notificationId}/read`);
-      setNotifications(notifications.map(notification =>
-        notification._id === notificationId
-          ? { ...notification, read: true }
-          : notification
-      ));
+      setNotifications(
+        notifications.map(notification =>
+          notification._id === notificationId ? { ...notification, read: true } : notification
+        )
+      );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       toast.error('操作失败，请重试');
@@ -69,10 +69,12 @@ const NotificationsPage = () => {
   const markAllAsRead = async () => {
     try {
       await api.put('/notifications/read-all');
-      setNotifications(notifications.map(notification => ({
-        ...notification,
-        read: true
-      })));
+      setNotifications(
+        notifications.map(notification => ({
+          ...notification,
+          read: true,
+        }))
+      );
       setUnreadCount(0);
       toast.success('已全部标记为已读');
     } catch (err) {
@@ -81,7 +83,7 @@ const NotificationsPage = () => {
   };
 
   // 处理通知点击
-  const handleNotificationClick = (notification) => {
+  const handleNotificationClick = notification => {
     if (!notification.read) {
       markAsRead(notification._id);
     }
@@ -104,7 +106,7 @@ const NotificationsPage = () => {
   };
 
   // 渲染通知内容
-  const renderNotificationContent = (notification) => {
+  const renderNotificationContent = notification => {
     switch (notification.type) {
       case 'follow':
         return (
@@ -176,11 +178,7 @@ const NotificationsPage = () => {
           <EmptyState
             title="请先登录"
             description="登录后查看你的通知"
-            action={
-              <Button onClick={() => router.push('/login')}>
-                去登录
-              </Button>
-            }
+            action={<Button onClick={() => router.push('/login')}>去登录</Button>}
           />
         </div>
       </MainLayout>
@@ -203,11 +201,7 @@ const NotificationsPage = () => {
                 )}
               </h1>
               {unreadCount > 0 && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={markAllAsRead}
-                >
+                <Button variant="secondary" size="sm" onClick={markAllAsRead}>
                   全部标记为已读
                 </Button>
               )}
@@ -220,11 +214,7 @@ const NotificationsPage = () => {
             <ErrorState
               title="获取通知失败"
               description={error}
-              action={
-                <Button onClick={fetchNotifications}>
-                  重试
-                </Button>
-              }
+              action={<Button onClick={fetchNotifications}>重试</Button>}
             />
           ) : notifications.length === 0 ? (
             <EmptyState
@@ -243,13 +233,11 @@ const NotificationsPage = () => {
                 >
                   <div className="p-4">
                     <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        {renderNotificationContent(notification)}
-                      </div>
+                      <div className="flex-1">{renderNotificationContent(notification)}</div>
                       <div className="ml-4 text-sm text-gray-500">
                         {formatDistanceToNow(new Date(notification.createdAt), {
                           addSuffix: true,
-                          locale: zhCN
+                          locale: zhCN,
                         })}
                       </div>
                     </div>
@@ -275,4 +263,4 @@ const NotificationsPage = () => {
   );
 };
 
-export default NotificationsPage; 
+export default NotificationsPage;

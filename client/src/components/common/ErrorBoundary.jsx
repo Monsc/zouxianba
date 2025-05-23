@@ -22,7 +22,11 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      console.log('ErrorBoundary render error:', this.state.error, JSON.stringify(this.state.error));
+      console.log(
+        'ErrorBoundary render error:',
+        this.state.error,
+        JSON.stringify(this.state.error)
+      );
       if (this.state.error && this.state.error.stack) {
         console.log('Error stack:', this.state.error.stack);
       }
@@ -33,9 +37,7 @@ class ErrorBoundary extends React.Component {
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                出错了！
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">出错了！</h2>
               <p className="text-gray-600 mb-6">
                 抱歉，应用程序遇到了一个错误。请刷新页面或稍后再试。
               </p>
@@ -60,4 +62,4 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-export default ErrorBoundary; 
+export default ErrorBoundary;

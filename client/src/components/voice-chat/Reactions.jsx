@@ -11,7 +11,7 @@ const REACTIONS = [
   { emoji: '👏', label: '鼓掌' },
   { emoji: '🤔', label: '思考' },
   { emoji: '😮', label: '惊讶' },
-  { emoji: '🙌', label: '欢呼' }
+  { emoji: '🙌', label: '欢呼' },
 ];
 
 const Reactions = ({ roomId }) => {
@@ -22,14 +22,17 @@ const Reactions = ({ roomId }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('reaction', (data) => {
+      socket.on('reaction', data => {
         if (data.roomId === roomId) {
-          setReactions(prev => [...prev, {
-            id: Date.now(),
-            emoji: data.emoji,
-            user: data.user,
-            timestamp: new Date()
-          }]);
+          setReactions(prev => [
+            ...prev,
+            {
+              id: Date.now(),
+              emoji: data.emoji,
+              user: data.user,
+              timestamp: new Date(),
+            },
+          ]);
         }
       });
 
@@ -39,7 +42,7 @@ const Reactions = ({ roomId }) => {
     }
   }, [socket, roomId]);
 
-  const sendReaction = (emoji) => {
+  const sendReaction = emoji => {
     if (socket) {
       socket.emit('reaction', {
         roomId,
@@ -47,8 +50,8 @@ const Reactions = ({ roomId }) => {
         user: {
           _id: user._id,
           username: user.username,
-          avatar: user.avatar
-        }
+          avatar: user.avatar,
+        },
       });
       setShowReactions(false);
     }
@@ -61,8 +64,18 @@ const Reactions = ({ roomId }) => {
         onClick={() => setShowReactions(!showReactions)}
         className="p-2 rounded-full hover:bg-gray-100 transition-colors"
       >
-        <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          className="w-6 h-6 text-gray-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
       </button>
 
@@ -70,16 +83,17 @@ const Reactions = ({ roomId }) => {
       {showReactions && (
         <div className="absolute bottom-full left-0 mb-2 p-2 bg-white rounded-lg shadow-lg border">
           <div className="grid grid-cols-4 gap-2">
-            {Array.isArray(REACTIONS) && REACTIONS.map((reaction) => (
-              <button
-                key={reaction.emoji}
-                onClick={() => sendReaction(reaction.emoji)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                title={reaction.label}
-              >
-                <span className="text-2xl">{reaction.emoji}</span>
-              </button>
-            ))}
+            {Array.isArray(REACTIONS) &&
+              REACTIONS.map(reaction => (
+                <button
+                  key={reaction.emoji}
+                  onClick={() => sendReaction(reaction.emoji)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title={reaction.label}
+                >
+                  <span className="text-2xl">{reaction.emoji}</span>
+                </button>
+              ))}
           </div>
         </div>
       )}
@@ -88,15 +102,13 @@ const Reactions = ({ roomId }) => {
       {Array.isArray(reactions) && reactions.length > 0 && (
         <div className="absolute bottom-full left-0 mb-2 p-2 bg-white rounded-lg shadow-lg border">
           <div className="flex flex-wrap gap-2">
-            {reactions.map((reaction) => (
+            {reactions.map(reaction => (
               <div
                 key={reaction.id}
                 className="flex items-center space-x-1 bg-gray-50 px-2 py-1 rounded-full"
               >
                 <span className="text-lg">{reaction.emoji}</span>
-                <span className="text-xs text-gray-500">
-                  {reaction.user.username}
-                </span>
+                <span className="text-xs text-gray-500">{reaction.user.username}</span>
               </div>
             ))}
           </div>
@@ -106,4 +118,4 @@ const Reactions = ({ roomId }) => {
   );
 };
 
-export default Reactions; 
+export default Reactions;

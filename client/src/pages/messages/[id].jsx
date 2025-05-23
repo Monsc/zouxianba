@@ -49,8 +49,8 @@ const ConversationPage = () => {
       const response = await api.get(`/messages/conversations/${id}/messages`, {
         params: {
           page: pageNum,
-          limit: 20
-        }
+          limit: 20,
+        },
       });
       if (pageNum === 1) {
         setMessages(response.data.messages);
@@ -76,7 +76,7 @@ const ConversationPage = () => {
   // 监听新消息
   useEffect(() => {
     if (socket && id) {
-      socket.on('new_message', (message) => {
+      socket.on('new_message', message => {
         if (message.conversationId === id) {
           setMessages(prev => [...prev, message]);
           scrollToBottom();
@@ -95,14 +95,14 @@ const ConversationPage = () => {
   }, [socket, id]);
 
   // 发送消息
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!content.trim()) return;
 
     try {
       setSending(true);
       await api.post(`/messages/conversations/${id}/messages`, {
-        content: content.trim()
+        content: content.trim(),
       });
       setContent('');
       scrollToBottom();
@@ -122,14 +122,14 @@ const ConversationPage = () => {
   };
 
   // 撤回消息
-  const handleRecall = async (messageId) => {
+  const handleRecall = async messageId => {
     try {
       await api.delete(`/messages/${messageId}`);
-      setMessages(messages.map(message =>
-        message._id === messageId
-          ? { ...message, recalled: true }
-          : message
-      ));
+      setMessages(
+        messages.map(message =>
+          message._id === messageId ? { ...message, recalled: true } : message
+        )
+      );
       toast.success('消息已撤回');
     } catch (err) {
       toast.error('撤回失败，请重试');
@@ -141,15 +141,9 @@ const ConversationPage = () => {
       <MainLayout>
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              请先登录
-            </h2>
-            <p className="text-gray-600 mb-4">
-              登录后可以查看和发送私信
-            </p>
-            <Button onClick={() => router.push('/login')}>
-              去登录
-            </Button>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">请先登录</h2>
+            <p className="text-gray-600 mb-4">登录后可以查看和发送私信</p>
+            <Button onClick={() => router.push('/login')}>去登录</Button>
           </div>
         </div>
       </MainLayout>
@@ -181,12 +175,8 @@ const ConversationPage = () => {
                 className="w-10 h-10 rounded-full"
               />
               <div>
-                <h2 className="text-lg font-medium text-gray-900">
-                  {otherUser.username}
-                </h2>
-                <p className="text-sm text-gray-500">
-                  {otherUser.online ? '在线' : '离线'}
-                </p>
+                <h2 className="text-lg font-medium text-gray-900">{otherUser.username}</h2>
+                <p className="text-sm text-gray-500">{otherUser.online ? '在线' : '离线'}</p>
               </div>
             </div>
           </div>
@@ -198,22 +188,13 @@ const ConversationPage = () => {
                 <ErrorState
                   title="获取消息失败"
                   description={error}
-                  action={
-                    <Button onClick={() => fetchMessages(1)}>
-                      重试
-                    </Button>
-                  }
+                  action={<Button onClick={() => fetchMessages(1)}>重试</Button>}
                 />
               ) : (
                 <div className="space-y-4">
                   {hasMore && (
                     <div className="text-center">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={loadMore}
-                        disabled={loading}
-                      >
+                      <Button variant="secondary" size="sm" onClick={loadMore} disabled={loading}>
                         {loading ? '加载中...' : '加载更多'}
                       </Button>
                     </div>
@@ -233,9 +214,7 @@ const ConversationPage = () => {
                         }`}
                       >
                         {message.recalled ? (
-                          <p className="text-sm italic text-gray-500">
-                            此消息已撤回
-                          </p>
+                          <p className="text-sm italic text-gray-500">此消息已撤回</p>
                         ) : (
                           <>
                             <p className="text-sm">{message.content}</p>
@@ -243,7 +222,7 @@ const ConversationPage = () => {
                               <span className="text-xs opacity-75">
                                 {formatDistanceToNow(new Date(message.createdAt), {
                                   addSuffix: true,
-                                  locale: zhCN
+                                  locale: zhCN,
                                 })}
                               </span>
                               {message.sender._id === user._id && !message.recalled && (
@@ -272,14 +251,11 @@ const ConversationPage = () => {
               <input
                 type="text"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={e => setContent(e.target.value)}
                 placeholder="输入消息..."
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
-              <Button
-                type="submit"
-                disabled={sending || !content.trim()}
-              >
+              <Button type="submit" disabled={sending || !content.trim()}>
                 {sending ? '发送中...' : '发送'}
               </Button>
             </form>
@@ -290,4 +266,4 @@ const ConversationPage = () => {
   );
 };
 
-export default ConversationPage; 
+export default ConversationPage;

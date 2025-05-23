@@ -24,9 +24,7 @@ function Header() {
                 placeholder="搜索走线吧"
                 className="w-full px-4 py-2 bg-twitter-gray-100 dark:bg-twitter-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-twitter-blue"
               />
-              <span className="absolute right-3 top-2.5 text-twitter-gray-500">
-                🔍
-              </span>
+              <span className="absolute right-3 top-2.5 text-twitter-gray-500">🔍</span>
             </div>
           </div>
 

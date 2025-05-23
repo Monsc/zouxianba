@@ -1,16 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const Dropdown = ({
-  trigger,
-  items,
-  align = 'right',
-  className = '',
-}) => {
+const Dropdown = ({ trigger, items, align = 'right', className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -38,29 +33,28 @@ const Dropdown = ({
           tabIndex="-1"
         >
           <div className="py-1" role="none">
-            {Array.isArray(items) && items.map((item, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  item.onClick?.();
-                  setIsOpen(false);
-                }}
-                className={`${
-                  item.danger
-                    ? 'text-red-700 hover:bg-red-50'
-                    : 'text-gray-700 hover:bg-gray-50'
-                } group flex items-center w-full px-4 py-2 text-sm`}
-                role="menuitem"
-                tabIndex="-1"
-              >
-                {item.icon && (
-                  <span className="mr-3 h-5 w-5" aria-hidden="true">
-                    {item.icon}
-                  </span>
-                )}
-                {item.label}
-              </button>
-            ))}
+            {Array.isArray(items) &&
+              items.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    item.onClick?.();
+                    setIsOpen(false);
+                  }}
+                  className={`${
+                    item.danger ? 'text-red-700 hover:bg-red-50' : 'text-gray-700 hover:bg-gray-50'
+                  } group flex items-center w-full px-4 py-2 text-sm`}
+                  role="menuitem"
+                  tabIndex="-1"
+                >
+                  {item.icon && (
+                    <span className="mr-3 h-5 w-5" aria-hidden="true">
+                      {item.icon}
+                    </span>
+                  )}
+                  {item.label}
+                </button>
+              ))}
           </div>
         </div>
       )}
@@ -68,4 +62,4 @@ const Dropdown = ({
   );
 };
 
-export default Dropdown; 
+export default Dropdown;

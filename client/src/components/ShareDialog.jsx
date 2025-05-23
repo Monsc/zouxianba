@@ -33,20 +33,13 @@ const SHARE_PLATFORMS = [
   },
 ];
 
-export const ShareDialog = ({
-  isOpen,
-  onClose,
-  postId,
-  title,
-  description,
-  image,
-}) => {
+export const ShareDialog = ({ isOpen, onClose, postId, title, description, image }) => {
   const { showToast } = useToast();
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [qrCode, setQrCode] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleShare = async (platform) => {
+  const handleShare = async platform => {
     try {
       setIsLoading(true);
       setSelectedPlatform(platform);
@@ -78,11 +71,7 @@ export const ShareDialog = ({
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      className="fixed inset-0 z-50 overflow-y-auto"
-    >
+    <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center">
         <Dialog.Overlay className="fixed inset-0 bg-black/30" />
 
@@ -93,25 +82,17 @@ export const ShareDialog = ({
 
           {qrCode ? (
             <div className="mt-4 text-center">
-              <img
-                src={qrCode}
-                alt="微信分享二维码"
-                className="mx-auto h-48 w-48"
-              />
+              <img src={qrCode} alt="微信分享二维码" className="mx-auto h-48 w-48" />
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 请使用微信扫描二维码分享
               </p>
-              <Button
-                variant="ghost"
-                onClick={() => setQrCode(null)}
-                className="mt-4"
-              >
+              <Button variant="ghost" onClick={() => setQrCode(null)} className="mt-4">
                 返回
               </Button>
             </div>
           ) : (
             <div className="mt-4 grid grid-cols-2 gap-4">
-              {SHARE_PLATFORMS.map((platform) => (
+              {SHARE_PLATFORMS.map(platform => (
                 <button
                   key={platform.id}
                   onClick={() => handleShare(platform.id)}
@@ -122,10 +103,7 @@ export const ShareDialog = ({
                     isLoading && 'opacity-50 cursor-not-allowed'
                   )}
                 >
-                  <Icon
-                    name={platform.icon}
-                    className={cn('w-8 h-8', platform.color)}
-                  />
+                  <Icon name={platform.icon} className={cn('w-8 h-8', platform.color)} />
                   <span className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                     {platform.name}
                   </span>
@@ -143,4 +121,4 @@ export const ShareDialog = ({
       </div>
     </Dialog>
   );
-}; 
+};

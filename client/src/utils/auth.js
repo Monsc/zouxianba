@@ -7,7 +7,7 @@ export const getToken = () => {
 };
 
 // 设置 token
-export const setToken = (token) => {
+export const setToken = token => {
   localStorage.setItem(TOKEN_KEY, token);
 };
 
@@ -17,7 +17,7 @@ export const removeToken = () => {
 };
 
 // 检查 token 是否过期
-export const isTokenExpired = (token) => {
+export const isTokenExpired = token => {
   if (!token) return true;
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -28,7 +28,7 @@ export const isTokenExpired = (token) => {
 };
 
 // 获取 token 过期时间
-export const getTokenExpiration = (token) => {
+export const getTokenExpiration = token => {
   if (!token) return null;
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -39,8 +39,8 @@ export const getTokenExpiration = (token) => {
 };
 
 // 计算 token 剩余有效期（毫秒）
-export const getTokenTimeLeft = (token) => {
+export const getTokenTimeLeft = token => {
   const expiration = getTokenExpiration(token);
   if (!expiration) return 0;
   return Math.max(0, expiration - Date.now());
-}; 
+};

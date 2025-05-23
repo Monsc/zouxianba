@@ -40,7 +40,7 @@ const Sidebar = () => {
       {/* Navigation */}
       <nav>
         <ul className="space-y-2">
-          {navItems.map((item) => {
+          {navItems.map(item => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
@@ -48,9 +48,7 @@ const Sidebar = () => {
                 <Link
                   href={item.href}
                   className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-primary text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                    isActive ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
@@ -66,7 +64,7 @@ const Sidebar = () => {
       <div className="bg-white rounded-lg shadow-sm p-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">热门话题</h3>
         <ul className="space-y-3">
-          {trendingTopics.map((topic) => (
+          {trendingTopics.map(topic => (
             <li key={topic.name}>
               <Link
                 href={`/topic/${topic.name}`}
@@ -102,4 +100,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

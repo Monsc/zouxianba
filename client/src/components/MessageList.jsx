@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
@@ -19,8 +19,12 @@ export const MessageList = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // 使用无限滚动加载更多会话
-  const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
-    fetchData: async (page) => {
+  const {
+    loadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useInfiniteScroll({
+    fetchData: async page => {
       try {
         const response = await MessageService.getConversations(page);
         return response.conversations;
@@ -52,7 +56,7 @@ export const MessageList = () => {
   }, []);
 
   // 处理会话点击
-  const handleConversationClick = (conversationId) => {
+  const handleConversationClick = conversationId => {
     router.push(`/messages/${conversationId}`);
   };
 
@@ -65,18 +69,12 @@ export const MessageList = () => {
   }
 
   if (conversations.length === 0) {
-    return (
-      <Toaster
-        title="暂无消息"
-        description="开始与其他用户聊天吧"
-        icon="message"
-      />
-    );
+    return <Toaster title="暂无消息" description="开始与其他用户聊天吧" icon="message" />;
   }
 
   return (
     <div className="space-y-4">
-      {conversations.map((conversation) => (
+      {conversations.map(conversation => (
         <div
           key={conversation.id}
           className={cn(
@@ -92,7 +90,7 @@ export const MessageList = () => {
                 alt={conversation.participant.username}
                 size="md"
                 className="cursor-pointer"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   router.push(`/user/${conversation.participant.id}`);
                 }}
@@ -102,7 +100,7 @@ export const MessageList = () => {
                   <div>
                     <h3
                       className="text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:underline"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         router.push(`/user/${conversation.participant.id}`);
                       }}
@@ -138,14 +136,10 @@ export const MessageList = () => {
             disabled={loadingMore}
             className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
-            {loadingMore ? (
-              <LoadingSpinner size="sm" />
-            ) : (
-              '加载更多'
-            )}
+            {loadingMore ? <LoadingSpinner size="sm" /> : '加载更多'}
           </button>
         </div>
       )}
     </div>
   );
-}; 
+};

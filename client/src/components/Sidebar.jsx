@@ -7,7 +7,7 @@ export const Sidebar = () => {
   const { user } = useAuth();
   const location = useLocation();
 
-  const isActive = (path) => {
+  const isActive = path => {
     return location.pathname === path;
   };
 
@@ -35,20 +35,21 @@ export const Sidebar = () => {
       </div>
 
       <nav className="space-y-1">
-        {Array.isArray(navItems) && navItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
-              isActive(item.path)
-                ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
-          >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
-          </Link>
-        ))}
+        {Array.isArray(navItems) &&
+          navItems.map(item => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                isActive(item.path)
+                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          ))}
       </nav>
 
       <div className="p-4">

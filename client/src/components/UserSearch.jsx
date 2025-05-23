@@ -13,7 +13,7 @@ const UserSearch = ({ className = '' }) => {
   const searchRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowResults(false);
       }
@@ -50,7 +50,7 @@ const UserSearch = ({ className = '' }) => {
         <input
           type="text"
           value={query}
-          onChange={(e) => {
+          onChange={e => {
             setQuery(e.target.value);
             setShowResults(true);
           }}
@@ -76,23 +76,17 @@ const UserSearch = ({ className = '' }) => {
           >
             {results.length > 0 ? (
               <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {results.map((user) => (
+                {results.map(user => (
                   <div
                     key={user.id}
                     className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    <UserProfileCard
-                      user={user}
-                      showStats={false}
-                      showBio={false}
-                    />
+                    <UserProfileCard user={user} showStats={false} showBio={false} />
                   </div>
                 ))}
               </div>
             ) : query.trim() && !loading ? (
-              <div className="p-4 text-center text-gray-500">
-                未找到相关用户
-              </div>
+              <div className="p-4 text-center text-gray-500">未找到相关用户</div>
             ) : null}
           </motion.div>
         )}
@@ -101,4 +95,4 @@ const UserSearch = ({ className = '' }) => {
   );
 };
 
-export default UserSearch; 
+export default UserSearch;

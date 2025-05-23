@@ -18,8 +18,12 @@ export const Feed = () => {
   const [error, setError] = useState(null);
 
   // 使用无限滚动加载更多帖子
-  const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
-    fetchData: async (page) => {
+  const {
+    loadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useInfiniteScroll({
+    fetchData: async page => {
       try {
         const response = await PostService.getFeed(page);
         return response.posts;
@@ -52,14 +56,14 @@ export const Feed = () => {
   }, []);
 
   // 处理新帖子发布
-  const handlePostCreated = (newPost) => {
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
+  const handlePostCreated = newPost => {
+    setPosts(prevPosts => [newPost, ...prevPosts]);
     showToast('发布成功', 'success');
   };
 
   // 处理帖子删除
-  const handlePostDeleted = (postId) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+  const handlePostDeleted = postId => {
+    setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
     showToast('删除成功', 'success');
   };
 
@@ -93,7 +97,7 @@ export const Feed = () => {
             <CreatePost onPostCreated={handlePostCreated} />
           ) : (
             <button
-              onClick={() => window.location.href = '/login'}
+              onClick={() => (window.location.href = '/login')}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               登录以发布内容
@@ -107,16 +111,14 @@ export const Feed = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {user && <CreatePost onPostCreated={handlePostCreated} />}
-      
+
       <div className="space-y-6 mt-6">
-        {Array.isArray(posts) && posts.map((post) => (
-          <ErrorBoundary key={post.id}>
-            <Post
-              post={post}
-              onDelete={handlePostDeleted}
-            />
-          </ErrorBoundary>
-        ))}
+        {Array.isArray(posts) &&
+          posts.map(post => (
+            <ErrorBoundary key={post.id}>
+              <Post post={post} onDelete={handlePostDeleted} />
+            </ErrorBoundary>
+          ))}
       </div>
 
       {hasMore && (
@@ -132,4 +134,4 @@ export const Feed = () => {
       )}
     </div>
   );
-}; 
+};

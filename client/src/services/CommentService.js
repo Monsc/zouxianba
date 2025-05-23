@@ -24,4 +24,4 @@ export class CommentService {
   static async unlikeComment(commentId) {
     await api.delete(`/comments/${commentId}/like`);
   }
-} 
+}

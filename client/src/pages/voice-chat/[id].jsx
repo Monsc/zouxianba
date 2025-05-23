@@ -10,4 +10,4 @@ const VoiceChatRoomPage = () => {
   );
 };
 
-export default VoiceChatRoomPage; 
+export default VoiceChatRoomPage;

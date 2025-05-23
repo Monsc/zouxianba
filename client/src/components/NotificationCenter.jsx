@@ -6,7 +6,7 @@ import Avatar from './ui/Avatar';
 import Card from './ui/Card';
 
 const NotificationItem = ({ notification, onRead }) => {
-  const getIcon = (type) => {
+  const getIcon = type => {
     switch (type) {
       case 'like':
         return '❤️';
@@ -70,14 +70,10 @@ const NotificationCenter = () => {
     }
   };
 
-  const markAsRead = async (id) => {
+  const markAsRead = async id => {
     try {
       await apiService.markNotificationAsRead(id);
-      setNotifications(prev =>
-        prev.map(n =>
-          n.id === id ? { ...n, read: true } : n
-        )
-      );
+      setNotifications(prev => prev.map(n => (n.id === id ? { ...n, read: true } : n)));
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
@@ -88,8 +84,8 @@ const NotificationCenter = () => {
     fetchNotifications();
     // 设置 WebSocket 连接
     const ws = new WebSocket(process.env.REACT_APP_WS_URL);
-    
-    ws.onmessage = (event) => {
+
+    ws.onmessage = event => {
       const notification = JSON.parse(event.data);
       setNotifications(prev => [notification, ...prev]);
       setUnreadCount(prev => prev + 1);
@@ -127,9 +123,7 @@ const NotificationCenter = () => {
               />
             ))
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              暂无通知
-            </div>
+            <div className="text-center py-8 text-gray-500">暂无通知</div>
           )}
         </AnimatePresence>
       </Card.Body>
@@ -137,4 +131,4 @@ const NotificationCenter = () => {
   );
 };
 
-export default NotificationCenter; 
+export default NotificationCenter;

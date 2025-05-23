@@ -32,15 +32,14 @@ export default function Document() {
 }
 
 // 启用 styled-components 的服务端渲染
-Document.getInitialProps = async (ctx) => {
+Document.getInitialProps = async ctx => {
   const sheet = new ServerStyleSheet();
   const originalRenderPage = ctx.renderPage;
 
   try {
     ctx.renderPage = () =>
       originalRenderPage({
-        enhanceApp: (App) => (props) =>
-          sheet.collectStyles(<App {...props} />),
+        enhanceApp: App => props => sheet.collectStyles(<App {...props} />),
       });
 
     const initialProps = await Document.getInitialProps(ctx);
@@ -56,4 +55,4 @@ Document.getInitialProps = async (ctx) => {
   } finally {
     sheet.seal();
   }
-}; 
+};

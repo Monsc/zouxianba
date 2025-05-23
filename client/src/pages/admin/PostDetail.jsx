@@ -143,7 +143,7 @@ export default function PostDetail() {
             </div>
             <div className="prose max-w-none mb-4">{postData.content}</div>
             <div className="flex flex-wrap gap-2 mb-4">
-              {postData.tags.map((tag) => (
+              {postData.tags.map(tag => (
                 <Badge key={tag} variant="secondary">
                   {tag}
                 </Badge>
@@ -168,28 +168,29 @@ export default function PostDetail() {
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">评论列表</h3>
             <div className="space-y-4">
-              {Array.isArray(comments) && comments.map((comment) => (
-                <div key={comment.id} className="flex space-x-4">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    {comment.author.name[0]}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{comment.author.name}</p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(comment.createdAt).toLocaleString()}
-                        </p>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <ThumbsUp className="w-4 h-4 mr-1" />
-                        {comment.likes}
-                      </Button>
+              {Array.isArray(comments) &&
+                comments.map(comment => (
+                  <div key={comment.id} className="flex space-x-4">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                      {comment.author.name[0]}
                     </div>
-                    <p className="mt-2">{comment.content}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{comment.author.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {new Date(comment.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <ThumbsUp className="w-4 h-4 mr-1" />
+                          {comment.likes}
+                        </Button>
+                      </div>
+                      <p className="mt-2">{comment.content}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </Card>
         </div>
@@ -206,16 +207,12 @@ export default function PostDetail() {
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                 <span className="text-gray-600">发布时间：</span>
-                <span className="ml-2">
-                  {new Date(postData.createdAt).toLocaleString()}
-                </span>
+                <span className="ml-2">{new Date(postData.createdAt).toLocaleString()}</span>
               </div>
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                 <span className="text-gray-600">更新时间：</span>
-                <span className="ml-2">
-                  {new Date(postData.updatedAt).toLocaleString()}
-                </span>
+                <span className="ml-2">{new Date(postData.updatedAt).toLocaleString()}</span>
               </div>
               <div className="flex items-center">
                 <Tag className="w-4 h-4 mr-2 text-gray-500" />
@@ -238,7 +235,7 @@ export default function PostDetail() {
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">相关推荐</h3>
             <div className="space-y-4">
-              {relatedPosts.map((post) => (
+              {relatedPosts.map(post => (
                 <div key={post.id} className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{post.title}</p>
@@ -258,4 +255,4 @@ export default function PostDetail() {
       </div>
     </div>
   );
-} 
+}

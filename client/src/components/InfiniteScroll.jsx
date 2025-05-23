@@ -21,10 +21,10 @@ const InfiniteScroll = ({
       threshold,
     };
 
-    observer.current = new IntersectionObserver((entries) => {
+    observer.current = new IntersectionObserver(entries => {
       const [entry] = entries;
       if (entry.isIntersecting && hasMore && !loading) {
-        setPage((prev) => prev + 1);
+        setPage(prev => prev + 1);
         fetchMore(page + 1);
       }
     }, options);
@@ -57,10 +57,7 @@ const InfiniteScroll = ({
       </AnimatePresence>
 
       {hasMore && (
-        <div
-          ref={loadingRef}
-          className="flex justify-center py-4"
-        >
+        <div ref={loadingRef} className="flex justify-center py-4">
           {loading ? (
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 border-2 border-twitter-blue border-t-transparent rounded-full animate-spin" />
@@ -75,4 +72,4 @@ const InfiniteScroll = ({
   );
 };
 
-export default InfiniteScroll; 
+export default InfiniteScroll;

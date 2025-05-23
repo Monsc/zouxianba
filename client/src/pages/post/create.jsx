@@ -15,10 +15,14 @@ const CreatePostPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   // 处理图片上传
-  const handleImageUpload = async (files) => {
+  const handleImageUpload = async files => {
     try {
       const formData = new FormData();
       files.forEach(file => {
@@ -34,17 +38,17 @@ const CreatePostPage = () => {
   };
 
   // 处理图片删除
-  const handleImageDelete = (index) => {
+  const handleImageDelete = index => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   // 处理帖子提交
-  const onSubmit = async (data) => {
+  const onSubmit = async data => {
     try {
       setLoading(true);
       await api.post('/posts', {
         ...data,
-        images
+        images,
       });
       toast.success('发布成功');
       router.push('/');
@@ -69,16 +73,14 @@ const CreatePostPage = () => {
             <LoadingOverlay isLoading={loading}>
               {/* 内容输入 */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  内容
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">内容</label>
                 <textarea
                   {...register('content', {
                     required: '请输入内容',
                     maxLength: {
                       value: 1000,
-                      message: '内容不能超过1000个字符'
-                    }
+                      message: '内容不能超过1000个字符',
+                    },
                   })}
                   rows={6}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -107,8 +109,18 @@ const CreatePostPage = () => {
                         onClick={() => handleImageDelete(index)}
                         className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -122,8 +134,18 @@ const CreatePostPage = () => {
                       className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-primary"
                     >
                       <div className="text-center">
-                        <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        <svg
+                          className="mx-auto h-8 w-8 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          />
                         </svg>
                         <p className="mt-1 text-sm text-gray-500">点击上传图片</p>
                       </div>
@@ -134,9 +156,7 @@ const CreatePostPage = () => {
 
               {/* 可见性设置 */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  可见性
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">可见性</label>
                 <select
                   {...register('visibility', { required: true })}
                   className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md"
@@ -162,9 +182,7 @@ const CreatePostPage = () => {
 
               {/* 位置信息 */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  位置
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">位置</label>
                 <input
                   type="text"
                   {...register('location')}
@@ -175,17 +193,10 @@ const CreatePostPage = () => {
 
               {/* 提交按钮 */}
               <div className="flex justify-end space-x-4">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => router.back()}
-                >
+                <Button type="button" variant="secondary" onClick={() => router.back()}>
                   取消
                 </Button>
-                <Button
-                  type="submit"
-                  loading={loading}
-                >
+                <Button type="submit" loading={loading}>
                   发布
                 </Button>
               </div>
@@ -197,4 +208,4 @@ const CreatePostPage = () => {
   );
 };
 
-export default CreatePostPage; 
+export default CreatePostPage;

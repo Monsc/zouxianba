@@ -3,13 +3,11 @@ const requiredEnvVars = [
   'VITE_WS_URL',
   'VITE_APP_NAME',
   'VITE_APP_VERSION',
-  'VITE_APP_ENV'
+  'VITE_APP_ENV',
 ];
 
 export const checkEnvVariables = () => {
-  const missingVars = requiredEnvVars.filter(
-    (envVar) => !import.meta.env[envVar]
-  );
+  const missingVars = requiredEnvVars.filter(envVar => !import.meta.env[envVar]);
 
   if (missingVars.length > 0) {
     console.error('Missing required environment variables:', missingVars);
@@ -27,6 +25,6 @@ export const getEnvConfig = () => {
     appVersion: import.meta.env.VITE_APP_VERSION,
     appEnv: import.meta.env.VITE_APP_ENV,
     isDev: import.meta.env.DEV,
-    isProd: import.meta.env.PROD
+    isProd: import.meta.env.PROD,
   };
-}; 
+};

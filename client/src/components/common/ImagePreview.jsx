@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 
-const ImagePreview = ({
-  src,
-  alt,
-  width,
-  height,
-  className = '',
-  preview = true,
-}) => {
+const ImagePreview = ({ src, alt, width, height, className = '', preview = true }) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleClick = () => {
@@ -35,11 +28,7 @@ const ImagePreview = ({
           showClose={true}
         >
           <div className="relative w-full h-full">
-            <img
-              src={src}
-              alt={alt}
-              className="w-full h-full object-contain"
-            />
+            <img src={src} alt={alt} className="w-full h-full object-contain" />
           </div>
         </Modal>
       )}
@@ -47,4 +36,4 @@ const ImagePreview = ({
   );
 };
 
-export default ImagePreview; 
+export default ImagePreview;

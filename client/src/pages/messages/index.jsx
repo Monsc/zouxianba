@@ -44,7 +44,7 @@ const MessagesPage = () => {
   // 监听新消息
   useEffect(() => {
     if (socket) {
-      socket.on('new_message', (message) => {
+      socket.on('new_message', message => {
         // 更新会话列表，将收到新消息的会话移到顶部
         setConversations(prev => {
           const index = prev.findIndex(conv => conv._id === message.conversationId);
@@ -59,7 +59,7 @@ const MessagesPage = () => {
           updatedConversations.unshift({
             ...conversation,
             lastMessage: message,
-            unreadCount: conversation.unreadCount + 1
+            unreadCount: conversation.unreadCount + 1,
           });
           return updatedConversations;
         });
@@ -74,7 +74,7 @@ const MessagesPage = () => {
   }, [socket]);
 
   // 处理会话点击
-  const handleConversationClick = (conversation) => {
+  const handleConversationClick = conversation => {
     router.push(`/messages/${conversation._id}`);
   };
 
@@ -85,11 +85,7 @@ const MessagesPage = () => {
           <EmptyState
             title="请先登录"
             description="登录后查看你的私信"
-            action={
-              <Button onClick={() => router.push('/login')}>
-                去登录
-              </Button>
-            }
+            action={<Button onClick={() => router.push('/login')}>去登录</Button>}
           />
         </div>
       </MainLayout>
@@ -103,13 +99,8 @@ const MessagesPage = () => {
         <div className="mb-6 bg-white rounded-lg shadow-sm">
           <div className="p-4 border-b">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900">
-                私信
-              </h1>
-              <Button
-                variant="primary"
-                onClick={() => router.push('/messages/new')}
-              >
+              <h1 className="text-2xl font-bold text-gray-900">私信</h1>
+              <Button variant="primary" onClick={() => router.push('/messages/new')}>
                 发起私信
               </Button>
             </div>
@@ -121,28 +112,18 @@ const MessagesPage = () => {
             <ErrorState
               title="获取私信列表失败"
               description={error}
-              action={
-                <Button onClick={fetchConversations}>
-                  重试
-                </Button>
-              }
+              action={<Button onClick={fetchConversations}>重试</Button>}
             />
           ) : conversations.length === 0 ? (
             <EmptyState
               title="暂无私信"
               description="开始和其他用户交流吧"
-              action={
-                <Button onClick={() => router.push('/messages/new')}>
-                  发起私信
-                </Button>
-              }
+              action={<Button onClick={() => router.push('/messages/new')}>发起私信</Button>}
             />
           ) : (
             <div className="space-y-2">
               {conversations.map(conversation => {
-                const otherUser = conversation.participants.find(
-                  p => p._id !== user._id
-                );
+                const otherUser = conversation.participants.find(p => p._id !== user._id);
                 return (
                   <div
                     key={conversation._id}
@@ -165,7 +146,7 @@ const MessagesPage = () => {
                             <span className="text-sm text-gray-500">
                               {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), {
                                 addSuffix: true,
-                                locale: zhCN
+                                locale: zhCN,
                               })}
                             </span>
                           </div>
@@ -193,4 +174,4 @@ const MessagesPage = () => {
   );
 };
 
-export default MessagesPage; 
+export default MessagesPage;

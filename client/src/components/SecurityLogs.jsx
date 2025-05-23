@@ -36,7 +36,7 @@ const SecurityLogs = ({ open, onOpenChange }) => {
     }
   };
 
-  const getActionIcon = (action) => {
+  const getActionIcon = action => {
     switch (action) {
       case '登录':
         return <LogOut className="w-4 h-4" />;
@@ -62,39 +62,24 @@ const SecurityLogs = ({ open, onOpenChange }) => {
             <History className="w-5 h-5" />
             安全日志
           </DialogTitle>
-          <DialogDescription>
-            查看您的账户安全活动记录
-          </DialogDescription>
+          <DialogDescription>查看您的账户安全活动记录</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {logs.length === 0 ? (
             <Alert>
               <History className="w-4 h-4 mr-2" />
-              <AlertDescription>
-                暂无安全日志记录
-              </AlertDescription>
+              <AlertDescription>暂无安全日志记录</AlertDescription>
             </Alert>
           ) : (
             logs.map((log, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-4 p-4 border rounded-lg"
-              >
-                <div className="p-2 bg-muted rounded-full">
-                  {getActionIcon(log.action)}
-                </div>
+              <div key={index} className="flex items-start gap-4 p-4 border rounded-lg">
+                <div className="p-2 bg-muted rounded-full">{getActionIcon(log.action)}</div>
                 <div className="flex-1 space-y-1">
                   <p className="font-medium">{log.action}</p>
-                  <p className="text-sm text-muted-foreground">
-                    IP: {log.ip}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    设备: {log.device}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    时间: {log.timestamp}
-                  </p>
+                  <p className="text-sm text-muted-foreground">IP: {log.ip}</p>
+                  <p className="text-sm text-muted-foreground">设备: {log.device}</p>
+                  <p className="text-sm text-muted-foreground">时间: {log.timestamp}</p>
                 </div>
               </div>
             ))
@@ -105,4 +90,4 @@ const SecurityLogs = ({ open, onOpenChange }) => {
   );
 };
 
-export default SecurityLogs; 
+export default SecurityLogs;

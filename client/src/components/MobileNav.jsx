@@ -6,7 +6,7 @@ function MobileNav() {
   const { user } = useAuth();
   const location = useLocation();
 
-  const isActive = (path) => {
+  const isActive = path => {
     return location.pathname === path;
   };
 
@@ -20,20 +20,21 @@ function MobileNav() {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-twitter-gray-900 border-t border-twitter-gray-200 dark:border-twitter-gray-800 md:hidden">
       <div className="flex justify-around items-center h-16">
-        {Array.isArray(navItems) && navItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`flex flex-col items-center justify-center flex-1 h-full ${
-              isActive(item.path)
-                ? 'text-twitter-blue'
-                : 'text-twitter-gray-500 hover:text-twitter-blue'
-            }`}
-          >
-            <span className="text-xl">{item.icon}</span>
-            <span className="text-xs mt-1">{item.label}</span>
-          </Link>
-        ))}
+        {Array.isArray(navItems) &&
+          navItems.map(item => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex flex-col items-center justify-center flex-1 h-full ${
+                isActive(item.path)
+                  ? 'text-twitter-blue'
+                  : 'text-twitter-gray-500 hover:text-twitter-blue'
+              }`}
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span className="text-xs mt-1">{item.label}</span>
+            </Link>
+          ))}
         <Link
           to={`/profile/${user?._id}`}
           className={`flex flex-col items-center justify-center flex-1 h-full ${
@@ -54,4 +55,4 @@ function MobileNav() {
   );
 }
 
-export default MobileNav; 
+export default MobileNav;

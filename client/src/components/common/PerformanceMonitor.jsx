@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { useUserStore } from '../../store';
 
 const PerformanceMonitor = () => {
-  const user = useUserStore((state) => state.user);
+  const user = useUserStore(state => state.user);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       // 监控页面加载性能
       const reportWebVitals = async () => {
         const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
-        
+
         getCLS(console.log); // Cumulative Layout Shift
         getFID(console.log); // First Input Delay
         getFCP(console.log); // First Contentful Paint
@@ -26,16 +26,17 @@ const PerformanceMonitor = () => {
           console.log('Memory Usage:', {
             usedJSHeapSize: Math.round(memory.usedJSHeapSize / 1024 / 1024) + 'MB',
             totalJSHeapSize: Math.round(memory.totalJSHeapSize / 1024 / 1024) + 'MB',
-            jsHeapSizeLimit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024) + 'MB'
+            jsHeapSizeLimit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024) + 'MB',
           });
         }, 5000);
       }
 
       // 监控长任务
       if ('PerformanceObserver' in window) {
-        const observer = new PerformanceObserver((list) => {
+        const observer = new PerformanceObserver(list => {
           for (const entry of list.getEntries()) {
-            if (entry.duration > 50) { // 超过50ms的任务
+            if (entry.duration > 50) {
+              // 超过50ms的任务
               console.warn('Long task detected:', entry);
             }
           }
@@ -59,4 +60,4 @@ const PerformanceMonitor = () => {
   );
 };
 
-export default PerformanceMonitor; 
+export default PerformanceMonitor;

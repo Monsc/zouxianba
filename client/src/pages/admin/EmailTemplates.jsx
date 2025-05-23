@@ -19,16 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Plus,
-  Save,
-  Trash2,
-  Eye,
-  Edit,
-  Mail,
-  Send,
-  Copy,
-} from 'lucide-react';
+import { Plus, Save, Trash2, Eye, Edit, Mail, Send, Copy } from 'lucide-react';
 
 // 模拟数据
 const templates = [
@@ -113,17 +104,17 @@ export default function EmailTemplates() {
     console.log('创建模板');
   };
 
-  const handleEdit = (id) => {
+  const handleEdit = id => {
     setSelectedTemplate(id);
     setIsEditing(true);
   };
 
-  const handlePreview = (id) => {
+  const handlePreview = id => {
     setSelectedTemplate(id);
     setIsPreviewing(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = id => {
     // 实现删除模板的逻辑
     console.log('删除模板', id);
   };
@@ -162,7 +153,7 @@ export default function EmailTemplates() {
                     <SelectValue placeholder="选择类型" />
                   </SelectTrigger>
                   <SelectContent>
-                    {templateTypes.map((type) => (
+                    {templateTypes.map(type => (
                       <SelectItem key={type.value} value={type.value}>
                         {type.label}
                       </SelectItem>
@@ -192,11 +183,11 @@ export default function EmailTemplates() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {templates.map((template) => (
+                  {templates.map(template => (
                     <TableRow key={template.id}>
                       <TableCell>{template.name}</TableCell>
                       <TableCell>
-                        {templateTypes.find((t) => t.value === template.type)?.label}
+                        {templateTypes.find(t => t.value === template.type)?.label}
                       </TableCell>
                       <TableCell>{template.description}</TableCell>
                       <TableCell>
@@ -249,9 +240,7 @@ export default function EmailTemplates() {
         <Card className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">
-                {isEditing ? '编辑模板' : '预览模板'}
-              </h2>
+              <h2 className="text-xl font-semibold">{isEditing ? '编辑模板' : '预览模板'}</h2>
               <div className="flex items-center space-x-2">
                 {isEditing && (
                   <>
@@ -282,21 +271,21 @@ export default function EmailTemplates() {
               <div>
                 <Label>模板名称</Label>
                 <Input
-                  defaultValue={templates.find((t) => t.id === selectedTemplate)?.name}
+                  defaultValue={templates.find(t => t.id === selectedTemplate)?.name}
                   disabled={!isEditing}
                 />
               </div>
               <div>
                 <Label>邮件主题</Label>
                 <Input
-                  defaultValue={templates.find((t) => t.id === selectedTemplate)?.subject}
+                  defaultValue={templates.find(t => t.id === selectedTemplate)?.subject}
                   disabled={!isEditing}
                 />
               </div>
               <div>
                 <Label>邮件内容</Label>
                 <Textarea
-                  defaultValue={templates.find((t) => t.id === selectedTemplate)?.content}
+                  defaultValue={templates.find(t => t.id === selectedTemplate)?.content}
                   disabled={!isEditing}
                   className="h-[400px]"
                 />
@@ -305,8 +294,8 @@ export default function EmailTemplates() {
                 <Label>可用变量</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {templates
-                    .find((t) => t.id === selectedTemplate)
-                    ?.variables.map((variable) => (
+                    .find(t => t.id === selectedTemplate)
+                    ?.variables.map(variable => (
                       <Button
                         key={variable}
                         variant="outline"
@@ -329,4 +318,4 @@ export default function EmailTemplates() {
       )}
     </div>
   );
-} 
+}

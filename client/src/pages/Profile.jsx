@@ -65,7 +65,7 @@ export const Profile = () => {
     }
   };
 
-  const handleLike = async (postId) => {
+  const handleLike = async postId => {
     setPosts(
       posts.map(p =>
         p._id === postId
@@ -107,18 +107,11 @@ export const Profile = () => {
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {profile.username}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              @{profile.handle}
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.username}</h1>
+            <p className="text-gray-600 dark:text-gray-400">@{profile.handle}</p>
           </div>
           {currentUser && currentUser.username !== username && (
-            <Button
-              onClick={handleFollow}
-              variant={isFollowing ? 'secondary' : 'primary'}
-            >
+            <Button onClick={handleFollow} variant={isFollowing ? 'secondary' : 'primary'}>
               {isFollowing ? 'Unfollow' : 'Follow'}
             </Button>
           )}
@@ -137,15 +130,14 @@ export const Profile = () => {
             <span className="text-gray-600 dark:text-gray-400">Following</span>
           </div>
         </div>
-        {profile.bio && (
-          <p className="mt-4 text-gray-600 dark:text-gray-400">{profile.bio}</p>
-        )}
+        {profile.bio && <p className="mt-4 text-gray-600 dark:text-gray-400">{profile.bio}</p>}
       </div>
       <Feed username={username} />
       <div className="profile-posts">
-        {Array.isArray(posts) && posts.map(post => (
-          <PostCard key={post._id} post={post} onLike={() => handleLike(post._id)} />
-        ))}
+        {Array.isArray(posts) &&
+          posts.map(post => (
+            <PostCard key={post._id} post={post} onLike={() => handleLike(post._id)} />
+          ))}
       </div>
       {!currentUser && (
         <div className="flex gap-2 mt-2">

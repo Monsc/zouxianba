@@ -1,12 +1,7 @@
 import React from 'react';
 import LoadingSpinner from './LoadingSpinner';
 
-const LoadingOverlay = ({
-  isLoading,
-  text = '加载中...',
-  children,
-  className = '',
-}) => {
+const LoadingOverlay = ({ isLoading, text = '加载中...', children, className = '' }) => {
   if (!isLoading) {
     return children;
   }
@@ -26,4 +21,4 @@ const LoadingOverlay = ({
   );
 };
 
-export default LoadingOverlay; 
+export default LoadingOverlay;

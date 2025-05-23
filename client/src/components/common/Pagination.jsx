@@ -29,19 +29,22 @@ const Pagination = ({
   const renderPageNumbers = () => {
     const visiblePages = getVisiblePages();
 
-    return Array.isArray(visiblePages) && visiblePages.map((page) => (
-      <button
-        key={page}
-        onClick={() => onPageChange(page)}
-        className={`relative inline-flex items-center px-4 py-2 text-sm font-medium ${
-          currentPage === page
-            ? 'z-10 bg-primary text-white'
-            : 'bg-white text-gray-500 hover:bg-gray-50'
-        } border border-gray-300`}
-      >
-        {page}
-      </button>
-    ));
+    return (
+      Array.isArray(visiblePages) &&
+      visiblePages.map(page => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`relative inline-flex items-center px-4 py-2 text-sm font-medium ${
+            currentPage === page
+              ? 'z-10 bg-primary text-white'
+              : 'bg-white text-gray-500 hover:bg-gray-50'
+          } border border-gray-300`}
+        >
+          {page}
+        </button>
+      ))
+    );
   };
 
   return (
@@ -53,12 +56,7 @@ const Pagination = ({
           className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="sr-only">首页</span>
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -75,18 +73,8 @@ const Pagination = ({
         className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="sr-only">上一页</span>
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M15 19l-7-7 7-7"
-          />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
 
@@ -98,18 +86,8 @@ const Pagination = ({
         className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="sr-only">下一页</span>
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M9 5l7 7-7 7"
-          />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
         </svg>
       </button>
 
@@ -120,12 +98,7 @@ const Pagination = ({
           className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="sr-only">末页</span>
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -139,4 +112,4 @@ const Pagination = ({
   );
 };
 
-export default Pagination; 
+export default Pagination;

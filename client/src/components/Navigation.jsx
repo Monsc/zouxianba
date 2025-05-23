@@ -15,23 +15,17 @@ const Navigation = () => {
 
   return (
     <nav className="space-y-2">
-      {navItems.map((item) => (
+      {navItems.map(item => (
         <NavLink
           key={item.to}
           to={item.to}
           className={({ isActive }) =>
             `flex items-center space-x-4 px-4 py-3 rounded-full transition-colors ${
-              isActive
-                ? 'bg-twitter-blue text-white'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+              isActive ? 'bg-twitter-blue text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
             }`
           }
         >
-          <motion.span
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="text-xl"
-          >
+          <motion.span whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="text-xl">
             {item.icon}
           </motion.span>
           <span className="font-medium">{item.label}</span>
@@ -49,4 +43,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation; 
+export default Navigation;

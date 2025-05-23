@@ -9,14 +9,14 @@ const PullToRefresh = ({ onRefresh, children, threshold = 100, resistance = 2.5 
   const containerRef = useRef(null);
   const startY = useRef(0);
 
-  const handleTouchStart = (e) => {
+  const handleTouchStart = e => {
     if (containerRef.current.scrollTop === 0) {
       startY.current = e.touches[0].clientY;
       setIsPulling(true);
     }
   };
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = e => {
     if (!isPulling) return;
 
     const currentY = e.touches[0].clientY;
@@ -79,11 +79,9 @@ const PullToRefresh = ({ onRefresh, children, threshold = 100, resistance = 2.5 
           </motion.div>
         )}
       </AnimatePresence>
-      <div style={{ transform: `translateY(${pullDistance}px)` }}>
-        {children}
-      </div>
+      <div style={{ transform: `translateY(${pullDistance}px)` }}>{children}</div>
     </div>
   );
 };
 
-export default PullToRefresh; 
+export default PullToRefresh;

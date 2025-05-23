@@ -5,7 +5,7 @@ export const ErrorBoundary = ({ children }) => {
   const [error, setError] = React.useState(null);
 
   React.useEffect(() => {
-    const handleError = (error) => {
+    const handleError = error => {
       setHasError(true);
       setError(error);
       console.error('Error caught by boundary:', error);
@@ -37,4 +37,4 @@ export const ErrorBoundary = ({ children }) => {
   return children;
 };
 
-export default ErrorBoundary; 
+export default ErrorBoundary;

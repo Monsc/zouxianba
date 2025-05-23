@@ -33,10 +33,10 @@ export const Post = ({ post, onDelete }) => {
     try {
       if (isLiked) {
         await PostService.unlikePost(post.id);
-        setLikes((prev) => prev - 1);
+        setLikes(prev => prev - 1);
       } else {
         await PostService.likePost(post.id);
-        setLikes((prev) => prev + 1);
+        setLikes(prev => prev + 1);
       }
       setIsLiked(!isLiked);
     } catch (error) {
@@ -70,32 +70,33 @@ export const Post = ({ post, onDelete }) => {
   };
 
   const handleShareSuccess = () => {
-    setShares((prev) => prev + 1);
+    setShares(prev => prev + 1);
   };
 
   const renderMedia = () => {
     if (post.video) {
       return (
-        <video
-          className="w-full rounded-lg"
-          controls
-          poster={post.images?.[0]}
-        >
+        <video className="w-full rounded-lg" controls poster={post.images?.[0]}>
           <source src={post.video} type="video/mp4" />
           您的浏览器不支持视频播放
         </video>
       );
     }
 
-    if (post.images?.length) {
+    if (Array.isArray(post.images) && post.images.length > 0) {
       return (
-        <div className={cn(
-          'grid gap-2',
-          post.images.length === 1 ? 'grid-cols-1' :
-          post.images.length === 2 ? 'grid-cols-2' :
-          post.images.length === 3 ? 'grid-cols-2' :
-          'grid-cols-2'
-        )}>
+        <div
+          className={cn(
+            'grid gap-2',
+            post.images.length === 1
+              ? 'grid-cols-1'
+              : post.images.length === 2
+                ? 'grid-cols-2'
+                : post.images.length === 3
+                  ? 'grid-cols-2'
+                  : 'grid-cols-2'
+          )}
+        >
           {post.images.map((image, index) => (
             <LazyImage
               key={index}
@@ -154,9 +155,9 @@ export const Post = ({ post, onDelete }) => {
               {post.content}
             </div>
 
-            {post.tags && post.tags.length > 0 && (
+            {Array.isArray(post.tags) && post.tags.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
+                {post.tags.map(tag => (
                   <span
                     key={tag}
                     className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
@@ -179,10 +180,7 @@ export const Post = ({ post, onDelete }) => {
                   isLiked ? 'text-red-500' : 'text-gray-500'
                 )}
               >
-                <Icon
-                  name={isLiked ? 'heart-filled' : 'heart'}
-                  className="w-4 h-4"
-                />
+                <Icon name={isLiked ? 'heart-filled' : 'heart'} className="w-4 h-4" />
                 <span>{likes}</span>
               </Button>
               <Button
@@ -214,4 +212,4 @@ export const Post = ({ post, onDelete }) => {
       </Dialog>
     </>
   );
-}; 
+};

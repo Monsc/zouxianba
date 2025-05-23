@@ -18,4 +18,4 @@ const PWARegister = () => {
   return null;
 };
 
-export default PWARegister; 
+export default PWARegister;

@@ -115,12 +115,12 @@ export default function SystemLogs() {
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
 
-  const getTypeIcon = (type) => {
-    const option = typeOptions.find((opt) => opt.value === type);
+  const getTypeIcon = type => {
+    const option = typeOptions.find(opt => opt.value === type);
     return option?.icon || Info;
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
       case 'success':
         return 'bg-green-500';
@@ -158,7 +158,7 @@ export default function SystemLogs() {
                 className="pl-10"
                 placeholder="搜索日志..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={e => setSearch(e.target.value)}
               />
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function SystemLogs() {
                 <SelectValue placeholder="选择类型" />
               </SelectTrigger>
               <SelectContent>
-                {typeOptions.map((option) => (
+                {typeOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     <div className="flex items-center">
                       <option.icon className="w-4 h-4 mr-2" />
@@ -183,7 +183,7 @@ export default function SystemLogs() {
                 <SelectValue placeholder="选择状态" />
               </SelectTrigger>
               <SelectContent>
-                {statusOptions.map((option) => (
+                {statusOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -206,14 +206,14 @@ export default function SystemLogs() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {logs.map((log) => {
+              {logs.map(log => {
                 const TypeIcon = getTypeIcon(log.type);
                 return (
                   <TableRow key={log.id}>
                     <TableCell>
                       <div className="flex items-center">
                         <TypeIcon className="w-4 h-4 mr-2 text-gray-500" />
-                        {typeOptions.find((opt) => opt.value === log.type)?.label}
+                        {typeOptions.find(opt => opt.value === log.type)?.label}
                       </div>
                     </TableCell>
                     <TableCell>{log.description}</TableCell>
@@ -227,20 +227,15 @@ export default function SystemLogs() {
                     </TableCell>
                     <TableCell>{log.ip}</TableCell>
                     <TableCell>
-                      <Badge
-                        className={getStatusColor(log.status)}
-                        variant="secondary"
-                      >
+                      <Badge className={getStatusColor(log.status)} variant="secondary">
                         {log.status === 'success'
                           ? '成功'
                           : log.status === 'error'
-                          ? '失败'
-                          : '警告'}
+                            ? '失败'
+                            : '警告'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {new Date(log.createdAt).toLocaleString()}
-                    </TableCell>
+                    <TableCell>{new Date(log.createdAt).toLocaleString()}</TableCell>
                   </TableRow>
                 );
               })}
@@ -250,4 +245,4 @@ export default function SystemLogs() {
       </Card>
     </div>
   );
-} 
+}

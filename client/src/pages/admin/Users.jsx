@@ -44,21 +44,17 @@ export default function Users() {
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState(mockUsers);
 
-  const handleSearch = (query) => {
+  const handleSearch = query => {
     setSearchQuery(query);
     // 实现搜索逻辑
   };
 
   const handleStatusChange = (userId, newStatus) => {
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, status: newStatus } : user
-    ));
+    setUsers(users.map(user => (user.id === userId ? { ...user, status: newStatus } : user)));
   };
 
   const handleRoleChange = (userId, newRole) => {
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, role: newRole } : user
-    ));
+    setUsers(users.map(user => (user.id === userId ? { ...user, role: newRole } : user)));
   };
 
   return (
@@ -79,7 +75,7 @@ export default function Users() {
               placeholder="搜索用户..."
               className="pl-10"
               value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
             />
           </div>
         </div>
@@ -97,28 +93,38 @@ export default function Users() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
+            {users.map(user => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                    user.role === 'moderator' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {user.role === 'admin' ? '管理员' :
-                     user.role === 'moderator' ? '版主' : '用户'}
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      user.role === 'admin'
+                        ? 'bg-purple-100 text-purple-800'
+                        : user.role === 'moderator'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {user.role === 'admin' ? '管理员' : user.role === 'moderator' ? '版主' : '用户'}
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    user.status === 'active' ? 'bg-green-100 text-green-800' :
-                    user.status === 'suspended' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {user.status === 'active' ? '正常' :
-                     user.status === 'suspended' ? '已封禁' : '已禁用'}
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      user.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : user.status === 'suspended'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {user.status === 'active'
+                      ? '正常'
+                      : user.status === 'suspended'
+                        ? '已封禁'
+                        : '已禁用'}
                   </span>
                 </TableCell>
                 <TableCell>{user.lastLogin}</TableCell>
@@ -156,4 +162,4 @@ export default function Users() {
       </Card>
     </div>
   );
-} 
+}

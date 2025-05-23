@@ -13,14 +13,7 @@ import {
 } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement
-);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 function ShareModal({ post, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -47,7 +40,7 @@ function ShareModal({ post, onClose }) {
     fetchStats();
   }, [post._id]);
 
-  const handleShare = async (platform) => {
+  const handleShare = async platform => {
     try {
       setLoading(true);
       await apiService.post(`/posts/${post._id}/share`, {
@@ -198,7 +191,7 @@ function ShareModal({ post, onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-white dark:bg-twitter-gray-900 rounded-2xl w-full max-w-md mx-4 overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* 头部 */}
           <div className="p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800">
@@ -271,9 +264,7 @@ function ShareModal({ post, onClose }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
                       <span className="font-bold">{post.author.username}</span>
-                      <span className="text-twitter-gray-500">
-                        @{post.author.handle}
-                      </span>
+                      <span className="text-twitter-gray-500">@{post.author.handle}</span>
                     </div>
                     <p className="mt-1 text-sm line-clamp-2">{post.content}</p>
                     {post.media && post.media.length > 0 && (
@@ -311,7 +302,7 @@ function ShareModal({ post, onClose }) {
               {/* 分享选项 */}
               <div className="p-4">
                 <div className="grid grid-cols-3 gap-4">
-                  {shareOptions.map((option) => (
+                  {shareOptions.map(option => (
                     <button
                       key={option.name}
                       onClick={option.action}
@@ -355,4 +346,4 @@ function ShareModal({ post, onClose }) {
   );
 }
 
-export default ShareModal; 
+export default ShareModal;

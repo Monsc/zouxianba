@@ -38,11 +38,9 @@ const FormInput = ({
         })}
         {...props}
       />
-      {errors[name] && (
-        <p className="text-sm text-red-500">{errors[name].message}</p>
-      )}
+      {errors[name] && <p className="text-sm text-red-500">{errors[name].message}</p>}
     </div>
   );
 };
 
-export default FormInput; 
+export default FormInput;

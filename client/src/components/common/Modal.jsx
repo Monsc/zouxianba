@@ -1,16 +1,9 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-const Modal = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = 'md',
-  showClose = true,
-}) => {
+const Modal = ({ isOpen, onClose, title, children, size = 'md', showClose = true }) => {
   useEffect(() => {
-    const handleEscape = (e) => {
+    const handleEscape = e => {
       if (e.key === 'Escape') {
         onClose();
       }
@@ -44,10 +37,7 @@ const Modal = ({
           onClick={onClose}
         />
 
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
-        >
+        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
 
@@ -56,9 +46,7 @@ const Modal = ({
         >
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-start justify-between">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
-                {title}
-              </h3>
+              <h3 className="text-lg font-medium leading-6 text-gray-900">{title}</h3>
               {showClose && (
                 <button
                   type="button"
@@ -66,12 +54,7 @@ const Modal = ({
                   onClick={onClose}
                 >
                   <span className="sr-only">关闭</span>
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -91,4 +74,4 @@ const Modal = ({
   );
 };
 
-export default Modal; 
+export default Modal;

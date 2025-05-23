@@ -45,7 +45,7 @@ const VoiceChatPage = () => {
   }, [user]);
 
   // 创建房间
-  const handleCreateRoom = async (e) => {
+  const handleCreateRoom = async e => {
     e.preventDefault();
     if (!title.trim()) {
       toast.error('请输入房间标题');
@@ -57,7 +57,7 @@ const VoiceChatPage = () => {
       const response = await api.post('/voice-chat/rooms', {
         title: title.trim(),
         description: description.trim(),
-        isPrivate
+        isPrivate,
       });
       toast.success('房间创建成功');
       setShowCreateModal(false);
@@ -76,11 +76,7 @@ const VoiceChatPage = () => {
           <EmptyState
             title="请先登录"
             description="登录后可以创建和加入语音聊天室"
-            action={
-              <Button onClick={() => router.push('/login')}>
-                去登录
-              </Button>
-            }
+            action={<Button onClick={() => router.push('/login')}>去登录</Button>}
           />
         </div>
       </MainLayout>
@@ -94,13 +90,8 @@ const VoiceChatPage = () => {
         <div className="mb-6 bg-white rounded-lg shadow-sm">
           <div className="p-4 border-b">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900">
-                语音聊天室
-              </h1>
-              <Button
-                variant="primary"
-                onClick={() => setShowCreateModal(true)}
-              >
+              <h1 className="text-2xl font-bold text-gray-900">语音聊天室</h1>
+              <Button variant="primary" onClick={() => setShowCreateModal(true)}>
                 创建房间
               </Button>
             </div>
@@ -112,21 +103,13 @@ const VoiceChatPage = () => {
             <ErrorState
               title="获取房间列表失败"
               description={error}
-              action={
-                <Button onClick={fetchRooms}>
-                  重试
-                </Button>
-              }
+              action={<Button onClick={fetchRooms}>重试</Button>}
             />
           ) : rooms.length === 0 ? (
             <EmptyState
               title="暂无语音聊天室"
               description="创建第一个语音聊天室吧"
-              action={
-                <Button onClick={() => setShowCreateModal(true)}>
-                  创建房间
-                </Button>
-              }
+              action={<Button onClick={() => setShowCreateModal(true)}>创建房间</Button>}
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -138,9 +121,7 @@ const VoiceChatPage = () => {
                 >
                   <div className="p-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {room.title}
-                      </h3>
+                      <h3 className="text-lg font-medium text-gray-900">{room.title}</h3>
                       {room.isPrivate && (
                         <span className="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">
                           私密
@@ -148,9 +129,7 @@ const VoiceChatPage = () => {
                       )}
                     </div>
                     {room.description && (
-                      <p className="mt-1 text-sm text-gray-600">
-                        {room.description}
-                      </p>
+                      <p className="mt-1 text-sm text-gray-600">{room.description}</p>
                     )}
                     <div className="mt-4 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
@@ -160,9 +139,7 @@ const VoiceChatPage = () => {
                             alt={room.host.username}
                             className="w-6 h-6 rounded-full"
                           />
-                          <span className="text-sm text-gray-600">
-                            {room.host.username}
-                          </span>
+                          <span className="text-sm text-gray-600">{room.host.username}</span>
                         </div>
                         <span className="text-sm text-gray-500">
                           {room.participants.length} 人在线
@@ -171,7 +148,7 @@ const VoiceChatPage = () => {
                       <span className="text-sm text-gray-500">
                         {formatDistanceToNow(new Date(room.createdAt), {
                           addSuffix: true,
-                          locale: zhCN
+                          locale: zhCN,
                         })}
                       </span>
                     </div>
@@ -186,18 +163,14 @@ const VoiceChatPage = () => {
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                创建语音聊天室
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">创建语音聊天室</h3>
               <form onSubmit={handleCreateRoom} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    房间标题
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">房间标题</label>
                   <input
                     type="text"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={e => setTitle(e.target.value)}
                     placeholder="输入房间标题"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
@@ -208,7 +181,7 @@ const VoiceChatPage = () => {
                   </label>
                   <textarea
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={e => setDescription(e.target.value)}
                     placeholder="输入房间描述"
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -219,7 +192,7 @@ const VoiceChatPage = () => {
                     type="checkbox"
                     id="isPrivate"
                     checked={isPrivate}
-                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    onChange={e => setIsPrivate(e.target.checked)}
                     className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
                   />
                   <label htmlFor="isPrivate" className="ml-2 block text-sm text-gray-700">
@@ -234,10 +207,7 @@ const VoiceChatPage = () => {
                   >
                     取消
                   </Button>
-                  <Button
-                    type="submit"
-                    disabled={creating || !title.trim()}
-                  >
+                  <Button type="submit" disabled={creating || !title.trim()}>
                     {creating ? '创建中...' : '创建'}
                   </Button>
                 </div>
@@ -250,4 +220,4 @@ const VoiceChatPage = () => {
   );
 };
 
-export default VoiceChatPage; 
+export default VoiceChatPage;

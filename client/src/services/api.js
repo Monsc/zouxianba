@@ -32,7 +32,7 @@ class ApiService {
 
     // 请求拦截器
     this.api.interceptors.request.use(
-      (config) => {
+      config => {
         const token = useUserStore.getState().user?.token;
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -51,20 +51,20 @@ class ApiService {
 
         return config;
       },
-      (error) => {
+      error => {
         return Promise.reject(error);
       }
     );
 
     // 响应拦截器
     this.api.interceptors.response.use(
-      (response) => {
+      response => {
         // 请求完成后从队列中移除
         const requestKey = `${response.config.method}-${response.config.url}`;
         requestQueue.delete(requestKey);
         return response;
       },
-      async (error) => {
+      async error => {
         // 新增详细日志
         console.error('API Error:', error, error?.response, error?.message, error?.stack);
         if (axios.isCancel(error)) {

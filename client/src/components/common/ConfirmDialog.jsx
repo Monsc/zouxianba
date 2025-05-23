@@ -19,18 +19,10 @@ const ConfirmDialog = ({
         <h3 className="text-lg font-medium text-gray-900 mb-4">{title}</h3>
         <p className="text-sm text-gray-500 mb-6">{message}</p>
         <div className="flex justify-end space-x-3">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
+          <Button variant="secondary" onClick={onClose} disabled={loading}>
             {cancelText}
           </Button>
-          <Button
-            variant={variant}
-            onClick={onConfirm}
-            loading={loading}
-          >
+          <Button variant={variant} onClick={onConfirm} loading={loading}>
             {confirmText}
           </Button>
         </div>
@@ -39,4 +31,4 @@ const ConfirmDialog = ({
   );
 };
 
-export default ConfirmDialog; 
+export default ConfirmDialog;

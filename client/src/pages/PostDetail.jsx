@@ -75,7 +75,7 @@ function PostDetail() {
     }
   };
 
-  const handleCommentLike = async (commentId) => {
+  const handleCommentLike = async commentId => {
     setComments(
       comments.map(c =>
         c._id === commentId
@@ -89,7 +89,7 @@ function PostDetail() {
     );
   };
 
-  const handleCommentSubmit = async (e) => {
+  const handleCommentSubmit = async e => {
     e.preventDefault();
     if (!newComment.trim() || !postId) return;
 

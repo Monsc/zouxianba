@@ -123,7 +123,7 @@ export default function Feedback() {
   const [isReplying, setIsReplying] = useState(false);
   const [reply, setReply] = useState('');
 
-  const handleReply = (id) => {
+  const handleReply = id => {
     setSelectedFeedback(id);
     setIsReplying(true);
   };
@@ -135,7 +135,7 @@ export default function Feedback() {
     setReply('');
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = id => {
     // 实现删除反馈的逻辑
     console.log('删除反馈', id);
   };
@@ -156,10 +156,7 @@ export default function Feedback() {
           </Button>
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="搜索反馈..."
-              className="pl-10 w-[200px]"
-            />
+            <Input placeholder="搜索反馈..." className="pl-10 w-[200px]" />
           </div>
         </div>
       </div>
@@ -180,76 +177,78 @@ export default function Feedback() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.isArray(feedbacks) && feedbacks.map((feedback) => (
-                <TableRow key={feedback.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <img
-                        src={feedback.user.avatar}
-                        alt={feedback.user.name}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <span>{feedback.user.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {feedbackTypes.find((t) => t.value === feedback.type)?.label}
-                  </TableCell>
-                  <TableCell>{feedback.title}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={feedback.status}
-                      onValueChange={(value) => handleStatusChange(feedback.id, value)}
-                    >
-                      <SelectTrigger className="w-[120px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.isArray(statusTypes) && statusTypes.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        feedback.priority === 'high'
-                          ? 'bg-red-100 text-red-800'
-                          : feedback.priority === 'medium'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-green-100 text-green-800'
-                      }`}
-                    >
-                      {priorityTypes.find((p) => p.value === feedback.priority)?.label}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <RatingStars rating={feedback.rating} />
-                  </TableCell>
-                  <TableCell>{feedback.createdAt}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleReply(feedback.id)}
+              {Array.isArray(feedbacks) &&
+                feedbacks.map(feedback => (
+                  <TableRow key={feedback.id}>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src={feedback.user.avatar}
+                          alt={feedback.user.name}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <span>{feedback.user.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {feedbackTypes.find(t => t.value === feedback.type)?.label}
+                    </TableCell>
+                    <TableCell>{feedback.title}</TableCell>
+                    <TableCell>
+                      <Select
+                        value={feedback.status}
+                        onValueChange={value => handleStatusChange(feedback.id, value)}
                       >
-                        <Reply className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(feedback.id)}
+                        <SelectTrigger className="w-[120px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.isArray(statusTypes) &&
+                            statusTypes.map(status => (
+                              <SelectItem key={status.value} value={status.value}>
+                                {status.label}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          feedback.priority === 'high'
+                            ? 'bg-red-100 text-red-800'
+                            : feedback.priority === 'medium'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-green-100 text-green-800'
+                        }`}
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        {priorityTypes.find(p => p.value === feedback.priority)?.label}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <RatingStars rating={feedback.rating} />
+                    </TableCell>
+                    <TableCell>{feedback.createdAt}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleReply(feedback.id)}
+                        >
+                          <Reply className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(feedback.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </div>
@@ -260,7 +259,7 @@ export default function Feedback() {
           <h2 className="text-lg font-semibold mb-4">回复反馈</h2>
           <Textarea
             value={reply}
-            onChange={(e) => setReply(e.target.value)}
+            onChange={e => setReply(e.target.value)}
             placeholder="请输入回复内容..."
             rows={4}
           />
@@ -268,12 +267,10 @@ export default function Feedback() {
             <Button variant="outline" onClick={() => setIsReplying(false)}>
               取消
             </Button>
-            <Button onClick={handleSubmitReply}>
-              提交回复
-            </Button>
+            <Button onClick={handleSubmitReply}>提交回复</Button>
           </div>
         </Card>
       )}
     </div>
   );
-} 
+}

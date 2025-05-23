@@ -9,14 +9,7 @@ export const Icon = ({ name, size = 24, color = 'currentColor', className, ...pr
     return null;
   }
 
-  return (
-    <LucideIcon
-      size={size}
-      color={color}
-      className={className}
-      {...props}
-    />
-  );
+  return <LucideIcon size={size} color={color} className={className} {...props} />;
 };
 
-export default Icon; 
+export default Icon;

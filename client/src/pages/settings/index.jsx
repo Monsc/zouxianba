@@ -15,16 +15,20 @@ const SettingsPage = () => {
   const { user, updateProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       username: user?.username || '',
       email: user?.email || '',
       bio: user?.bio || '',
-    }
+    },
   });
 
   // 处理个人资料更新
-  const handleProfileUpdate = async (data) => {
+  const handleProfileUpdate = async data => {
     try {
       setLoading(true);
       await updateProfile(data);
@@ -37,7 +41,7 @@ const SettingsPage = () => {
   };
 
   // 处理头像上传
-  const handleAvatarUpload = async (file) => {
+  const handleAvatarUpload = async file => {
     try {
       setLoading(true);
       const formData = new FormData();
@@ -52,7 +56,7 @@ const SettingsPage = () => {
   };
 
   // 处理密码修改
-  const handlePasswordChange = async (data) => {
+  const handlePasswordChange = async data => {
     try {
       setLoading(true);
       await api.put('/users/password', data);
@@ -108,12 +112,10 @@ const SettingsPage = () => {
                   <form onSubmit={handleSubmit(handleProfileUpdate)} className="space-y-6">
                     <div>
                       <h2 className="text-lg font-medium text-gray-900 mb-4">个人资料</h2>
-                      
+
                       {/* 头像上传 */}
                       <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          头像
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">头像</label>
                         <ImageUpload
                           value={user?.avatar}
                           onChange={handleAvatarUpload}
@@ -133,8 +135,8 @@ const SettingsPage = () => {
                           required: '请输入用户名',
                           minLength: {
                             value: 3,
-                            message: '用户名长度至少为3个字符'
-                          }
+                            message: '用户名长度至少为3个字符',
+                          },
                         }}
                       />
 
@@ -150,8 +152,8 @@ const SettingsPage = () => {
                           required: '请输入邮箱',
                           pattern: {
                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: '请输入有效的邮箱地址'
-                          }
+                            message: '请输入有效的邮箱地址',
+                          },
                         }}
                       />
 
@@ -181,7 +183,7 @@ const SettingsPage = () => {
                   <form onSubmit={handleSubmit(handlePasswordChange)} className="space-y-6">
                     <div>
                       <h2 className="text-lg font-medium text-gray-900 mb-4">修改密码</h2>
-                      
+
                       <FormInput
                         label="当前密码"
                         name="currentPassword"
@@ -190,7 +192,7 @@ const SettingsPage = () => {
                         required
                         error={errors.currentPassword}
                         rules={{
-                          required: '请输入当前密码'
+                          required: '请输入当前密码',
                         }}
                       />
 
@@ -205,8 +207,8 @@ const SettingsPage = () => {
                           required: '请输入新密码',
                           minLength: {
                             value: 6,
-                            message: '密码长度至少为6个字符'
-                          }
+                            message: '密码长度至少为6个字符',
+                          },
                         }}
                       />
 
@@ -220,7 +222,7 @@ const SettingsPage = () => {
                         rules={{
                           required: '请确认新密码',
                           validate: value =>
-                            value === watch('newPassword') || '两次输入的密码不一致'
+                            value === watch('newPassword') || '两次输入的密码不一致',
                         }}
                       />
 
@@ -326,4 +328,4 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage; 
+export default SettingsPage;

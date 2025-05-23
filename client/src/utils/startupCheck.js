@@ -29,7 +29,11 @@ export const startupCheck = async () => {
     // 3. WebSocket 连接检查 (socket.io)
     try {
       const { io } = await import('socket.io-client');
-      const socket = io(envConfig.wsUrl, { transports: ['websocket'], timeout: 5000, reconnection: false });
+      const socket = io(envConfig.wsUrl, {
+        transports: ['websocket'],
+        timeout: 5000,
+        reconnection: false,
+      });
       await new Promise((resolve, reject) => {
         socket.on('connect', resolve);
         socket.on('connect_error', reject);
@@ -88,7 +92,7 @@ export const getStartupStatus = () => {
 /**
  * 保存启动检查结果
  */
-export const saveStartupStatus = (status) => {
+export const saveStartupStatus = status => {
   localStorage.setItem('startupStatus', JSON.stringify(status));
 };
 
@@ -97,4 +101,4 @@ export const saveStartupStatus = (status) => {
  */
 export const clearStartupStatus = () => {
   localStorage.removeItem('startupStatus');
-}; 
+};

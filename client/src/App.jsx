@@ -39,7 +39,7 @@ import './styles/global.css';
 // 受保护的管理路由组件
 const ProtectedAdminRoute = ({ children }) => {
   const { user } = useAuth();
-  
+
   if (!user || user.role !== 'admin') {
     return <Navigate to="/login" replace />;
   }
@@ -49,11 +49,7 @@ const ProtectedAdminRoute = ({ children }) => {
 
 // 页面过渡组件
 const PageTransition = ({ children }) => {
-  return (
-    <div className="animate-fade-in">
-      {children}
-    </div>
-  );
+  return <div className="animate-fade-in">{children}</div>;
 };
 
 export const App = () => {

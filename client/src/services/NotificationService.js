@@ -31,15 +31,15 @@ export class NotificationService {
   static connectWebSocket(userId, onNotification) {
     const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/notifications?userId=${userId}`);
 
-    ws.onmessage = (event) => {
+    ws.onmessage = event => {
       const notification = JSON.parse(event.data);
       onNotification(notification);
     };
 
-    ws.onerror = (error) => {
+    ws.onerror = error => {
       console.error('WebSocket error:', error);
     };
 
     return ws;
   }
-} 
+}

@@ -24,8 +24,8 @@ const NotificationDropdown = () => {
       const response = await api.get('/notifications', {
         params: {
           page: 1,
-          limit: 5
-        }
+          limit: 5,
+        },
       });
       setNotifications(response.data.notifications);
       setUnreadCount(response.data.unreadCount);
@@ -45,7 +45,7 @@ const NotificationDropdown = () => {
   // 监听新通知
   useEffect(() => {
     if (socket) {
-      socket.on('notification', (notification) => {
+      socket.on('notification', notification => {
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(prev => prev + 1);
       });
@@ -60,7 +60,7 @@ const NotificationDropdown = () => {
 
   // 点击外部关闭下拉菜单
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -71,14 +71,14 @@ const NotificationDropdown = () => {
   }, []);
 
   // 标记通知为已读
-  const markAsRead = async (notificationId) => {
+  const markAsRead = async notificationId => {
     try {
       await api.put(`/notifications/${notificationId}/read`);
-      setNotifications(notifications.map(notification =>
-        notification._id === notificationId
-          ? { ...notification, read: true }
-          : notification
-      ));
+      setNotifications(
+        notifications.map(notification =>
+          notification._id === notificationId ? { ...notification, read: true } : notification
+        )
+      );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       toast.error('操作失败');
@@ -86,7 +86,7 @@ const NotificationDropdown = () => {
   };
 
   // 处理通知点击
-  const handleNotificationClick = (notification) => {
+  const handleNotificationClick = notification => {
     if (!notification.read) {
       markAsRead(notification._id);
     }
@@ -111,7 +111,7 @@ const NotificationDropdown = () => {
   };
 
   // 渲染通知内容
-  const renderNotificationContent = (notification) => {
+  const renderNotificationContent = notification => {
     switch (notification.type) {
       case 'follow':
         return (
@@ -186,7 +186,12 @@ const NotificationDropdown = () => {
         className="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+          />
         </svg>
         {unreadCount > 0 && (
           <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
@@ -200,17 +205,17 @@ const NotificationDropdown = () => {
         <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg overflow-hidden z-50">
           <div className="p-4 border-b">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">
-                通知
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900">通知</h3>
               {unreadCount > 0 && (
                 <button
                   onClick={() => {
                     api.put('/notifications/read-all');
-                    setNotifications(notifications.map(notification => ({
-                      ...notification,
-                      read: true
-                    })));
+                    setNotifications(
+                      notifications.map(notification => ({
+                        ...notification,
+                        read: true,
+                      }))
+                    );
                     setUnreadCount(0);
                   }}
                   className="text-sm text-primary hover:text-primary-dark"
@@ -223,13 +228,9 @@ const NotificationDropdown = () => {
 
           <div className="max-h-96 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-gray-500">
-                加载中...
-              </div>
+              <div className="p-4 text-center text-gray-500">加载中...</div>
             ) : notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                暂无通知
-              </div>
+              <div className="p-4 text-center text-gray-500">暂无通知</div>
             ) : (
               <div className="divide-y">
                 {notifications.map(notification => (
@@ -247,7 +248,7 @@ const NotificationDropdown = () => {
                       <div className="ml-4 text-sm text-gray-500 whitespace-nowrap">
                         {formatDistanceToNow(new Date(notification.createdAt), {
                           addSuffix: true,
-                          locale: zhCN
+                          locale: zhCN,
                         })}
                       </div>
                     </div>
@@ -274,4 +275,4 @@ const NotificationDropdown = () => {
   );
 };
 
-export default NotificationDropdown; 
+export default NotificationDropdown;

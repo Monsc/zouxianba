@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
@@ -19,8 +19,12 @@ export const NotificationList = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // 使用无限滚动加载更多通知
-  const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
-    fetchData: async (page) => {
+  const {
+    loadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useInfiniteScroll({
+    fetchData: async page => {
       try {
         const response = await NotificationService.getNotifications(page);
         return response.notifications;
@@ -52,14 +56,12 @@ export const NotificationList = () => {
   }, []);
 
   // 标记通知为已读
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = async notificationId => {
     try {
       await NotificationService.markAsRead(notificationId);
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, read: true }
-            : notification
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === notificationId ? { ...notification, read: true } : notification
         )
       );
     } catch (error) {
@@ -69,7 +71,7 @@ export const NotificationList = () => {
   };
 
   // 处理通知点击
-  const handleNotificationClick = async (notification) => {
+  const handleNotificationClick = async notification => {
     if (!notification.read) {
       await handleMarkAsRead(notification.id);
     }
@@ -92,7 +94,7 @@ export const NotificationList = () => {
   };
 
   // 获取通知图标
-  const getNotificationIcon = (type) => {
+  const getNotificationIcon = type => {
     switch (type) {
       case 'like':
         return 'heart';
@@ -108,7 +110,7 @@ export const NotificationList = () => {
   };
 
   // 获取通知文本
-  const getNotificationText = (notification) => {
+  const getNotificationText = notification => {
     switch (notification.type) {
       case 'like':
         return '赞了你的帖子';
@@ -133,17 +135,13 @@ export const NotificationList = () => {
 
   if (notifications.length === 0) {
     return (
-      <Toaster
-        title="暂无通知"
-        description="当有人与你互动时，你会在这里收到通知"
-        icon="bell"
-      />
+      <Toaster title="暂无通知" description="当有人与你互动时，你会在这里收到通知" icon="bell" />
     );
   }
 
   return (
     <div className="space-y-4">
-      {notifications.map((notification) => (
+      {notifications.map(notification => (
         <div
           key={notification.id}
           className={cn(
@@ -159,7 +157,7 @@ export const NotificationList = () => {
                 alt={notification.fromUser.username}
                 size="md"
                 className="cursor-pointer"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   router.push(`/user/${notification.fromUser.id}`);
                 }}
@@ -169,7 +167,7 @@ export const NotificationList = () => {
                   <div>
                     <h3
                       className="text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:underline"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         router.push(`/user/${notification.fromUser.id}`);
                       }}
@@ -185,9 +183,7 @@ export const NotificationList = () => {
                       name={getNotificationIcon(notification.type)}
                       className={cn(
                         'w-5 h-5',
-                        notification.type === 'like'
-                          ? 'text-red-500'
-                          : 'text-gray-400'
+                        notification.type === 'like' ? 'text-red-500' : 'text-gray-400'
                       )}
                     />
                     <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -217,14 +213,10 @@ export const NotificationList = () => {
             disabled={loadingMore}
             className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
-            {loadingMore ? (
-              <LoadingSpinner size="sm" />
-            ) : (
-              '加载更多'
-            )}
+            {loadingMore ? <LoadingSpinner size="sm" /> : '加载更多'}
           </button>
         </div>
       )}
     </div>
   );
-}; 
+};

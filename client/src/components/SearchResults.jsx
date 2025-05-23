@@ -22,8 +22,12 @@ export const SearchResults = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // 使用无限滚动加载更多结果
-  const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
-    fetchData: async (page) => {
+  const {
+    loadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useInfiniteScroll({
+    fetchData: async page => {
       try {
         const response = await SearchService.search(query, type, page);
         return response.results;
@@ -37,7 +41,7 @@ export const SearchResults = () => {
   });
 
   // 处理搜索
-  const handleSearch = async (e) => {
+  const handleSearch = async e => {
     e.preventDefault();
     if (!query.trim()) return;
 
@@ -74,7 +78,7 @@ export const SearchResults = () => {
             <input
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={e => setQuery(e.target.value)}
               placeholder="搜索帖子和用户..."
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
             />
@@ -130,14 +134,10 @@ export const SearchResults = () => {
           <LoadingSpinner size="lg" />
         </div>
       ) : results.length === 0 ? (
-        <Toaster
-          title="暂无结果"
-          description="尝试使用其他关键词搜索"
-          icon="search"
-        />
+        <Toaster title="暂无结果" description="尝试使用其他关键词搜索" icon="search" />
       ) : (
         <div className="space-y-6">
-          {results.map((result) => (
+          {results.map(result => (
             <div
               key={result.id}
               className="bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden"
@@ -245,11 +245,7 @@ export const SearchResults = () => {
                 disabled={loadingMore}
                 className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
-                {loadingMore ? (
-                  <LoadingSpinner size="sm" />
-                ) : (
-                  '加载更多'
-                )}
+                {loadingMore ? <LoadingSpinner size="sm" /> : '加载更多'}
               </button>
             </div>
           )}
@@ -257,4 +253,4 @@ export const SearchResults = () => {
       )}
     </div>
   );
-}; 
+};

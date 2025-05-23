@@ -49,5 +49,5 @@ export const notificationService = {
       console.error('Failed to delete notification:', error);
       return false;
     }
-  }
-}; 
+  },
+};

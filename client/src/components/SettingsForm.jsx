@@ -44,17 +44,17 @@ export const SettingsForm = () => {
   }, [user]);
 
   // 处理表单输入
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
     // 清除对应字段的错误
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   // 处理头像上传
-  const handleAvatarUpload = async (e) => {
+  const handleAvatarUpload = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -63,7 +63,7 @@ export const SettingsForm = () => {
       const formDataObj = new FormData();
       formDataObj.append('avatar', file);
       const response = await UserService.uploadAvatar(formDataObj);
-      setFormData((prev) => ({ ...prev, avatar: response.avatar }));
+      setFormData(prev => ({ ...prev, avatar: response.avatar }));
       showToast('头像上传成功', 'success');
     } catch (error) {
       console.error('Upload avatar failed:', error);
@@ -106,7 +106,7 @@ export const SettingsForm = () => {
   };
 
   // 处理表单提交
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -133,9 +133,7 @@ export const SettingsForm = () => {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* 头像设置 */}
       <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          头像
-        </label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">头像</label>
         <div className="flex items-center space-x-4">
           <Avatar
             src={formData.avatar}
@@ -167,9 +165,7 @@ export const SettingsForm = () => {
 
       {/* 基本信息 */}
       <div className="space-y-4">
-        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-          基本信息
-        </h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">基本信息</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <Input
@@ -207,9 +203,7 @@ export const SettingsForm = () => {
 
       {/* 修改密码 */}
       <div className="space-y-4">
-        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-          修改密码
-        </h2>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">修改密码</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <Input
@@ -241,4 +235,4 @@ export const SettingsForm = () => {
       </div>
     </form>
   );
-}; 
+};

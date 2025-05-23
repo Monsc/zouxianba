@@ -76,7 +76,8 @@ const VoiceChatRoom = () => {
   // 初始化音频
   useEffect(() => {
     if (user) {
-      navigator.mediaDevices.getUserMedia({ audio: true })
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
         .then(stream => {
           audioRef.current = stream;
         })
@@ -96,40 +97,40 @@ const VoiceChatRoom = () => {
   useEffect(() => {
     if (socket && id) {
       // 用户加入
-      socket.on('user_joined', (data) => {
+      socket.on('user_joined', data => {
         setParticipants(prev => [...prev, data.user]);
         toast.success(`${data.user.username} 加入了房间`);
       });
 
       // 用户离开
-      socket.on('user_left', (data) => {
+      socket.on('user_left', data => {
         setParticipants(prev => prev.filter(p => p._id !== data.userId));
         toast.info(`${data.username} 离开了房间`);
       });
 
       // 用户静音状态改变
-      socket.on('user_muted', (data) => {
-        setParticipants(prev => prev.map(p =>
-          p._id === data.userId ? { ...p, isMuted: data.isMuted } : p
-        ));
+      socket.on('user_muted', data => {
+        setParticipants(prev =>
+          prev.map(p => (p._id === data.userId ? { ...p, isMuted: data.isMuted } : p))
+        );
       });
 
       // 用户举手状态改变
-      socket.on('user_hand_raised', (data) => {
-        setParticipants(prev => prev.map(p =>
-          p._id === data.userId ? { ...p, isHandRaised: data.isHandRaised } : p
-        ));
+      socket.on('user_hand_raised', data => {
+        setParticipants(prev =>
+          prev.map(p => (p._id === data.userId ? { ...p, isHandRaised: data.isHandRaised } : p))
+        );
       });
 
       // 用户发言状态改变
-      socket.on('user_speaking', (data) => {
-        setParticipants(prev => prev.map(p =>
-          p._id === data.userId ? { ...p, isSpeaking: data.isSpeaking } : p
-        ));
+      socket.on('user_speaking', data => {
+        setParticipants(prev =>
+          prev.map(p => (p._id === data.userId ? { ...p, isSpeaking: data.isSpeaking } : p))
+        );
       });
 
       // 用户被踢出
-      socket.on('user_kicked', (data) => {
+      socket.on('user_kicked', data => {
         if (data.userId === user._id) {
           toast.error('你已被踢出房间');
           router.push('/voice-chat');
@@ -189,7 +190,7 @@ const VoiceChatRoom = () => {
       mediaRecorderRef.current = mediaRecorder;
       const chunks = [];
 
-      mediaRecorder.ondataavailable = (e) => {
+      mediaRecorder.ondataavailable = e => {
         if (e.data.size > 0) {
           chunks.push(e.data);
         }
@@ -224,7 +225,7 @@ const VoiceChatRoom = () => {
   };
 
   // 踢出用户
-  const kickUser = (userId) => {
+  const kickUser = userId => {
     if (isHost || isModerator) {
       socket.emit('kick_user', { roomId: id, userId });
     }
@@ -251,7 +252,7 @@ const VoiceChatRoom = () => {
   };
 
   // 搜索用户
-  const searchUsers = async (query) => {
+  const searchUsers = async query => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
@@ -260,7 +261,7 @@ const VoiceChatRoom = () => {
     try {
       setIsSearching(true);
       const response = await api.get('/users/search', {
-        params: { query, limit: 5 }
+        params: { query, limit: 5 },
       });
       setSearchResults(response.data.users);
     } catch (err) {
@@ -271,7 +272,7 @@ const VoiceChatRoom = () => {
   };
 
   // 邀请用户
-  const inviteUser = (userId) => {
+  const inviteUser = userId => {
     socket.emit('invite_user', { roomId: id, userId });
     toast.success('邀请已发送');
     setShowInviteModal(false);
@@ -294,7 +295,7 @@ const VoiceChatRoom = () => {
   }, [id]);
 
   // 播放录音
-  const playRecording = (recording) => {
+  const playRecording = recording => {
     if (currentRecording && currentRecording._id === recording._id) {
       if (isPlaying) {
         audioRef.current.pause();
@@ -320,7 +321,7 @@ const VoiceChatRoom = () => {
   };
 
   // 分享录音
-  const shareRecording = (recording) => {
+  const shareRecording = recording => {
     const url = `${window.location.origin}/voice-chat/recording/${recording._id}`;
     setShareUrl(url);
     setShowShareModal(true);
@@ -330,15 +331,9 @@ const VoiceChatRoom = () => {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            请先登录
-          </h2>
-          <p className="text-gray-600 mb-4">
-            登录后可以加入语音聊天
-          </p>
-          <Button onClick={() => router.push('/login')}>
-            去登录
-          </Button>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">请先登录</h2>
+          <p className="text-gray-600 mb-4">登录后可以加入语音聊天</p>
+          <Button onClick={() => router.push('/login')}>去登录</Button>
         </div>
       </div>
     );
@@ -359,34 +354,24 @@ const VoiceChatRoom = () => {
         <div className="p-4 border-b">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {room.title}
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">{room.title}</h1>
               <p className="text-sm text-gray-500">
-                创建于 {formatDistanceToNow(new Date(room.createdAt), {
+                创建于{' '}
+                {formatDistanceToNow(new Date(room.createdAt), {
                   addSuffix: true,
-                  locale: zhCN
+                  locale: zhCN,
                 })}
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <Button
-                variant="secondary"
-                onClick={() => setShowParticipants(!showParticipants)}
-              >
+              <Button variant="secondary" onClick={() => setShowParticipants(!showParticipants)}>
                 参与者 ({participants.length})
               </Button>
-              <Button
-                variant="secondary"
-                onClick={generateInviteLink}
-              >
+              <Button variant="secondary" onClick={generateInviteLink}>
                 邀请
               </Button>
               {isHost && (
-                <Button
-                  variant="danger"
-                  onClick={closeRoom}
-                >
+                <Button variant="danger" onClick={closeRoom}>
                   结束房间
                 </Button>
               )}
@@ -398,42 +383,43 @@ const VoiceChatRoom = () => {
         {showParticipants && (
           <div className="p-4 border-b">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {Array.isArray(participants) && participants.map(participant => (
-                <div
-                  key={participant._id}
-                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50"
-                >
-                  <img
-                    src={participant.avatar}
-                    alt={participant.username}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {participant.username}
-                    </p>
-                    <div className="flex items-center space-x-1">
-                      {participant.isMuted && (
-                        <span className="text-xs text-gray-500">已静音</span>
-                      )}
-                      {participant.isHandRaised && (
-                        <span className="text-xs text-blue-500">已举手</span>
-                      )}
-                      {participant.isSpeaking && (
-                        <span className="text-xs text-green-500">正在发言</span>
-                      )}
+              {Array.isArray(participants) &&
+                participants.map(participant => (
+                  <div
+                    key={participant._id}
+                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50"
+                  >
+                    <img
+                      src={participant.avatar}
+                      alt={participant.username}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {participant.username}
+                      </p>
+                      <div className="flex items-center space-x-1">
+                        {participant.isMuted && (
+                          <span className="text-xs text-gray-500">已静音</span>
+                        )}
+                        {participant.isHandRaised && (
+                          <span className="text-xs text-blue-500">已举手</span>
+                        )}
+                        {participant.isSpeaking && (
+                          <span className="text-xs text-green-500">正在发言</span>
+                        )}
+                      </div>
                     </div>
+                    {(isHost || isModerator) && participant._id !== user._id && (
+                      <button
+                        onClick={() => kickUser(participant._id)}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        踢出
+                      </button>
+                    )}
                   </div>
-                  {(isHost || isModerator) && participant._id !== user._id && (
-                    <button
-                      onClick={() => kickUser(participant._id)}
-                      className="text-red-500 hover:text-red-600"
-                    >
-                      踢出
-                    </button>
-                  )}
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
@@ -441,22 +427,13 @@ const VoiceChatRoom = () => {
         {/* 控制栏 */}
         <div className="p-4 border-t">
           <div className="flex items-center justify-center space-x-4">
-            <Button
-              variant={isMuted ? 'danger' : 'primary'}
-              onClick={toggleMute}
-            >
+            <Button variant={isMuted ? 'danger' : 'primary'} onClick={toggleMute}>
               {isMuted ? '取消静音' : '静音'}
             </Button>
-            <Button
-              variant={isHandRaised ? 'primary' : 'secondary'}
-              onClick={toggleHandRaise}
-            >
+            <Button variant={isHandRaised ? 'primary' : 'secondary'} onClick={toggleHandRaise}>
               {isHandRaised ? '放下手' : '举手'}
             </Button>
-            <Button
-              variant={isRecording ? 'danger' : 'secondary'}
-              onClick={toggleRecording}
-            >
+            <Button variant={isRecording ? 'danger' : 'secondary'} onClick={toggleRecording}>
               {isRecording ? `停止录音 (${recordingTime}s)` : '开始录音'}
             </Button>
             <Button
@@ -465,10 +442,7 @@ const VoiceChatRoom = () => {
             >
               {isSpeechToTextEnabled ? '关闭字幕' : '开启字幕'}
             </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setShowRecordings(!showRecordings)}
-            >
+            <Button variant="secondary" onClick={() => setShowRecordings(!showRecordings)}>
               录音记录
             </Button>
             <Reactions roomId={id} />
@@ -479,9 +453,7 @@ const VoiceChatRoom = () => {
         {/* 录音列表 */}
         {showRecordings && (
           <div className="p-4 border-t">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              录音记录
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">录音记录</h3>
             <div className="space-y-4">
               {recordings.map(recording => (
                 <div
@@ -494,13 +466,38 @@ const VoiceChatRoom = () => {
                       className="p-2 rounded-full hover:bg-gray-200"
                     >
                       {currentRecording?._id === recording._id && isPlaying ? (
-                        <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-6 h-6 text-primary"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                       ) : (
-                        <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-6 h-6 text-primary"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                       )}
                     </button>
@@ -511,17 +508,13 @@ const VoiceChatRoom = () => {
                       <p className="text-xs text-gray-500">
                         {formatDistanceToNow(new Date(recording.createdAt), {
                           addSuffix: true,
-                          locale: zhCN
+                          locale: zhCN,
                         })}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => shareRecording(recording)}
-                    >
+                    <Button size="sm" variant="secondary" onClick={() => shareRecording(recording)}>
                       分享
                     </Button>
                   </div>
@@ -536,26 +529,20 @@ const VoiceChatRoom = () => {
       {showInviteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              邀请用户
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">邀请用户</h3>
             <div className="space-y-4">
               <div>
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchQuery(e.target.value);
                     searchUsers(e.target.value);
                   }}
                   placeholder="搜索用户..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
-                {isSearching && (
-                  <div className="mt-2 text-sm text-gray-500">
-                    搜索中...
-                  </div>
-                )}
+                {isSearching && <div className="mt-2 text-sm text-gray-500">搜索中...</div>}
                 {searchResults.length > 0 && (
                   <div className="mt-2 space-y-2">
                     {searchResults.map(user => (
@@ -571,10 +558,7 @@ const VoiceChatRoom = () => {
                           />
                           <span className="text-sm">{user.username}</span>
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={() => inviteUser(user._id)}
-                        >
+                        <Button size="sm" onClick={() => inviteUser(user._id)}>
                           邀请
                         </Button>
                       </div>
@@ -583,9 +567,7 @@ const VoiceChatRoom = () => {
                 )}
               </div>
               <div>
-                <p className="text-sm text-gray-500 mb-2">
-                  或者分享邀请链接：
-                </p>
+                <p className="text-sm text-gray-500 mb-2">或者分享邀请链接：</p>
                 <div className="flex space-x-2">
                   <input
                     type="text"
@@ -604,10 +586,7 @@ const VoiceChatRoom = () => {
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowInviteModal(false)}
-                >
+                <Button variant="secondary" onClick={() => setShowInviteModal(false)}>
                   关闭
                 </Button>
               </div>
@@ -620,14 +599,10 @@ const VoiceChatRoom = () => {
       {showShareModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              分享录音
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">分享录音</h3>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-500 mb-2">
-                  复制以下链接分享：
-                </p>
+                <p className="text-sm text-gray-500 mb-2">复制以下链接分享：</p>
                 <div className="flex space-x-2">
                   <input
                     type="text"
@@ -646,10 +621,7 @@ const VoiceChatRoom = () => {
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowShareModal(false)}
-                >
+                <Button variant="secondary" onClick={() => setShowShareModal(false)}>
                   关闭
                 </Button>
               </div>
@@ -661,4 +633,4 @@ const VoiceChatRoom = () => {
   );
 };
 
-export default VoiceChatRoom; 
+export default VoiceChatRoom;

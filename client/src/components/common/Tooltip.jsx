@@ -1,12 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const Tooltip = ({
-  content,
-  children,
-  position = 'top',
-  delay = 200,
-  className = '',
-}) => {
+const Tooltip = ({ content, children, position = 'top', delay = 200, className = '' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [timeoutId, setTimeoutId] = useState(null);
   const tooltipRef = useRef(null);
@@ -59,13 +53,11 @@ const Tooltip = ({
           role="tooltip"
         >
           {content}
-          <div
-            className={`absolute w-2 h-2 bg-gray-900 ${arrows[position]}`}
-          />
+          <div className={`absolute w-2 h-2 bg-gray-900 ${arrows[position]}`} />
         </div>
       )}
     </div>
   );
 };
 
-export default Tooltip; 
+export default Tooltip;

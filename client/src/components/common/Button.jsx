@@ -10,8 +10,9 @@ const Button = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors';
-  
+  const baseStyles =
+    'inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors';
+
   const variants = {
     primary: 'bg-primary text-white hover:bg-primary-dark focus:ring-primary',
     secondary: 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500',
@@ -61,4 +62,4 @@ const Button = ({
   );
 };
 
-export default Button; 
+export default Button;

@@ -22,9 +22,7 @@ function PostList({ posts, loading, error }) {
 
   return (
     <div className="space-y-4">
-      {Array.isArray(posts) && posts.map(post => (
-        <PostCard key={post._id} post={post} />
-      ))}
+      {Array.isArray(posts) && posts.map(post => <PostCard key={post._id} post={post} />)}
     </div>
   );
 }

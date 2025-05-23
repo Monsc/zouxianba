@@ -21,11 +21,11 @@ function ProfileEdit({ onClose }) {
 
   const { showToast } = useToast();
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -33,7 +33,7 @@ function ProfileEdit({ onClose }) {
     fileInputRef.current?.click();
   };
 
-  const handleAvatarChange = async (e) => {
+  const handleAvatarChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -55,7 +55,7 @@ function ProfileEdit({ onClose }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -96,16 +96,13 @@ function ProfileEdit({ onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-white dark:bg-twitter-gray-900 rounded-2xl w-full max-w-md mx-4 overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* 头部 */}
           <div className="p-4 border-b border-twitter-gray-200 dark:border-twitter-gray-800">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">编辑个人资料</h2>
-              <button
-                onClick={onClose}
-                className="text-twitter-blue hover:underline"
-              >
+              <button onClick={onClose} className="text-twitter-blue hover:underline">
                 取消
               </button>
             </div>
@@ -252,4 +249,4 @@ function ProfileEdit({ onClose }) {
   );
 }
 
-export default ProfileEdit; 
+export default ProfileEdit;

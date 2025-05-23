@@ -13,7 +13,7 @@ const ImageUpload = ({
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = async (event) => {
+  const handleFileSelect = async event => {
     const files = Array.from(event.target.files);
     setError('');
 
@@ -67,7 +67,7 @@ const ImageUpload = ({
     }
   };
 
-  const removePreview = (index) => {
+  const removePreview = index => {
     setPreviews(prev => {
       const newPreviews = [...prev];
       URL.revokeObjectURL(newPreviews[index].preview);
@@ -149,4 +149,4 @@ const ImageUpload = ({
   );
 };
 
-export default ImageUpload; 
+export default ImageUpload;

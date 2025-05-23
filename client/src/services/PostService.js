@@ -45,4 +45,4 @@ export class PostService {
     const response = await api.get(`/posts/${id}/comments?page=${page}&limit=${limit}`);
     return response.data;
   }
-} 
+}

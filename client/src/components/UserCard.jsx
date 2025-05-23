@@ -44,12 +44,7 @@ export const UserCard = ({ user, onFollowChange, showBio = true, showStats = tru
   return (
     <div className="flex items-start space-x-3 p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
       <Link href={`/users/${user.id}`}>
-        <Avatar
-          src={user.avatar}
-          alt={user.username}
-          size="md"
-          className="flex-shrink-0"
-        />
+        <Avatar src={user.avatar} alt={user.username} size="md" className="flex-shrink-0" />
       </Link>
 
       <div className="flex-1 min-w-0">
@@ -74,10 +69,7 @@ export const UserCard = ({ user, onFollowChange, showBio = true, showStats = tru
               size="sm"
               onClick={handleFollow}
               disabled={isLoading}
-              className={cn(
-                'ml-4',
-                isFollowing && 'text-gray-500 hover:text-red-500'
-              )}
+              className={cn('ml-4', isFollowing && 'text-gray-500 hover:text-red-500')}
             >
               {isFollowing ? '取消关注' : '关注'}
             </Button>
@@ -109,4 +101,4 @@ export const UserCard = ({ user, onFollowChange, showBio = true, showStats = tru
       </div>
     </div>
   );
-}; 
+};

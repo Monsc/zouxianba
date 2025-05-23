@@ -9,11 +9,7 @@ import { useToast } from '@/hooks/useToast';
 import { CommentService } from '@/services/CommentService';
 import { cn } from '@/lib/utils';
 
-export const Comment = ({
-  comment,
-  onDelete,
-  onReply,
-}) => {
+export const Comment = ({ comment, onDelete, onReply }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [isLiked, setIsLiked] = useState(comment.isLiked);
@@ -29,10 +25,10 @@ export const Comment = ({
     try {
       if (isLiked) {
         await CommentService.unlikeComment(comment.id);
-        setLikes((prev) => prev - 1);
+        setLikes(prev => prev - 1);
       } else {
         await CommentService.likeComment(comment.id);
-        setLikes((prev) => prev + 1);
+        setLikes(prev => prev + 1);
       }
       setIsLiked(!isLiked);
     } catch (error) {
@@ -99,9 +95,7 @@ export const Comment = ({
           )}
         </div>
 
-        <div className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-          {comment.content}
-        </div>
+        <div className="mt-1 text-sm text-gray-900 dark:text-gray-100">{comment.content}</div>
 
         <div className="mt-2 flex items-center space-x-4">
           <Button
@@ -113,10 +107,7 @@ export const Comment = ({
               isLiked ? 'text-red-500' : 'text-gray-500'
             )}
           >
-            <Icon
-              name={isLiked ? 'heart-filled' : 'heart'}
-              className="w-4 h-4"
-            />
+            <Icon name={isLiked ? 'heart-filled' : 'heart'} className="w-4 h-4" />
             <span>{likes}</span>
           </Button>
 
@@ -131,11 +122,7 @@ export const Comment = ({
           </Button>
 
           {comment.replies > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center space-x-1 text-gray-500"
-            >
+            <Button variant="ghost" size="sm" className="flex items-center space-x-1 text-gray-500">
               <Icon name="message" className="w-4 h-4" />
               <span>{comment.replies} 条回复</span>
             </Button>
@@ -144,4 +131,4 @@ export const Comment = ({
       </div>
     </div>
   );
-}; 
+};

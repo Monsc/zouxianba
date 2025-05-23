@@ -14,7 +14,7 @@ const UserActivity = ({ userId, className = '' }) => {
     fetchActivities(1);
   }, [userId]);
 
-  const fetchActivities = async (pageNum) => {
+  const fetchActivities = async pageNum => {
     try {
       const response = await apiService.getUserActivities(userId, pageNum);
       if (pageNum === 1) {
@@ -38,7 +38,7 @@ const UserActivity = ({ userId, className = '' }) => {
     await fetchActivities(nextPage);
   };
 
-  const getActivityIcon = (type) => {
+  const getActivityIcon = type => {
     switch (type) {
       case 'post':
         return '📝';
@@ -53,7 +53,7 @@ const UserActivity = ({ userId, className = '' }) => {
     }
   };
 
-  const getActivityText = (activity) => {
+  const getActivityText = activity => {
     switch (activity.type) {
       case 'post':
         return '发布了新帖子';
@@ -74,7 +74,7 @@ const UserActivity = ({ userId, className = '' }) => {
 
       <div className="space-y-4">
         <AnimatePresence>
-          {activities.map((activity) => (
+          {activities.map(activity => (
             <motion.div
               key={activity.id}
               initial={{ opacity: 0, y: 20 }}
@@ -92,15 +92,11 @@ const UserActivity = ({ userId, className = '' }) => {
                     >
                       {activity.user.name}
                     </Link>
-                    <span className="text-gray-500">
-                      {getActivityText(activity)}
-                    </span>
+                    <span className="text-gray-500">{getActivityText(activity)}</span>
                   </div>
 
                   {activity.content && (
-                    <p className="mt-2 text-gray-600 dark:text-gray-300">
-                      {activity.content}
-                    </p>
+                    <p className="mt-2 text-gray-600 dark:text-gray-300">{activity.content}</p>
                   )}
 
                   {activity.target && (
@@ -128,16 +124,11 @@ const UserActivity = ({ userId, className = '' }) => {
         )}
 
         {!loading && activities.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            暂无活动记录
-          </div>
+          <div className="text-center py-8 text-gray-500">暂无活动记录</div>
         )}
 
         {hasMore && !loading && (
-          <button
-            onClick={loadMore}
-            className="w-full py-2 text-twitter-blue hover:underline"
-          >
+          <button onClick={loadMore} className="w-full py-2 text-twitter-blue hover:underline">
             加载更多
           </button>
         )}
@@ -146,4 +137,4 @@ const UserActivity = ({ userId, className = '' }) => {
   );
 };
 
-export default UserActivity; 
+export default UserActivity;

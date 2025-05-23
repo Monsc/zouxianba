@@ -81,9 +81,7 @@ const UserInteraction = ({
           whileTap={{ scale: 0.9 }}
           onClick={handleLike}
           disabled={isLoading}
-          className={`flex items-center space-x-2 ${
-            isLiked ? 'text-red-500' : 'text-gray-500'
-          }`}
+          className={`flex items-center space-x-2 ${isLiked ? 'text-red-500' : 'text-gray-500'}`}
         >
           <span className="text-xl">{isLiked ? '❤️' : '🤍'}</span>
           <span>{likes}</span>
@@ -105,11 +103,13 @@ const UserInteraction = ({
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => {
-            navigator.share({
-              title: '分享帖子',
-              text: '看看这个有趣的帖子！',
-              url: window.location.href,
-            }).catch(console.error);
+            navigator
+              .share({
+                title: '分享帖子',
+                text: '看看这个有趣的帖子！',
+                url: window.location.href,
+              })
+              .catch(console.error);
           }}
           className="flex items-center space-x-2 text-gray-500"
         >
@@ -120,4 +120,4 @@ const UserInteraction = ({
   );
 };
 
-export default UserInteraction; 
+export default UserInteraction;

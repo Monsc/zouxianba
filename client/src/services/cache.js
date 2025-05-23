@@ -113,4 +113,4 @@ export async function preloadData(key, promise, expirationTime = CACHE_CONFIG.EX
   }
 }
 
-export default cacheService; 
+export default cacheService;

@@ -2,7 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../hooks/useToast';
 import { Button } from '../components/ui/button';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../components/ui/dialog';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { LogOut, Globe, Smartphone, Monitor } from 'lucide-react';
 import apiService from '../services/api';
@@ -29,7 +39,7 @@ export const ActiveSessions = () => {
     }
   };
 
-  const handleLogoutSession = async (sessionId) => {
+  const handleLogoutSession = async sessionId => {
     try {
       setLoading(true);
       await apiService.post(`/auth/sessions/${sessionId}/logout`);
@@ -55,7 +65,7 @@ export const ActiveSessions = () => {
     }
   };
 
-  const getDeviceIcon = (deviceType) => {
+  const getDeviceIcon = deviceType => {
     switch (deviceType) {
       case 'mobile':
         return <Smartphone className="w-4 h-4" />;
@@ -90,9 +100,7 @@ export const ActiveSessions = () => {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>取消</AlertDialogCancel>
-              <AlertDialogAction onClick={handleLogoutAllSessions}>
-                确认
-              </AlertDialogAction>
+              <AlertDialogAction onClick={handleLogoutAllSessions}>确认</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -104,7 +112,7 @@ export const ActiveSessions = () => {
         </Alert>
       ) : (
         <div className="space-y-2">
-          {sessions.map((session) => (
+          {sessions.map(session => (
             <div
               key={session.id}
               className="flex items-center justify-between p-4 border rounded-lg"
@@ -118,9 +126,7 @@ export const ActiveSessions = () => {
                   </p>
                 </div>
               </div>
-              {session.current && (
-                <span className="text-sm text-muted-foreground">当前会话</span>
-              )}
+              {session.current && <span className="text-sm text-muted-foreground">当前会话</span>}
               {!session.current && (
                 <Button
                   variant="outline"
@@ -137,4 +143,4 @@ export const ActiveSessions = () => {
       )}
     </div>
   );
-}; 
+};

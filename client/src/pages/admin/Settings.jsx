@@ -110,14 +110,16 @@ export default function Settings() {
                   <Label>网站名称</Label>
                   <Input
                     value={siteSettings.siteName}
-                    onChange={(e) => setSiteSettings({ ...siteSettings, siteName: e.target.value })}
+                    onChange={e => setSiteSettings({ ...siteSettings, siteName: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>网站描述</Label>
                   <Input
                     value={siteSettings.siteDescription}
-                    onChange={(e) => setSiteSettings({ ...siteSettings, siteDescription: e.target.value })}
+                    onChange={e =>
+                      setSiteSettings({ ...siteSettings, siteDescription: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -125,7 +127,7 @@ export default function Settings() {
                 <Label>网站关键词</Label>
                 <Input
                   value={siteSettings.siteKeywords}
-                  onChange={(e) => setSiteSettings({ ...siteSettings, siteKeywords: e.target.value })}
+                  onChange={e => setSiteSettings({ ...siteSettings, siteKeywords: e.target.value })}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -134,7 +136,7 @@ export default function Settings() {
                   <Input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={e => {
                       // 处理文件上传
                     }}
                   />
@@ -144,7 +146,7 @@ export default function Settings() {
                   <Input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={e => {
                       // 处理文件上传
                     }}
                   />
@@ -155,7 +157,7 @@ export default function Settings() {
                   <Label>允许新用户注册</Label>
                   <Switch
                     checked={siteSettings.allowRegistration}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={checked =>
                       setSiteSettings({ ...siteSettings, allowRegistration: checked })
                     }
                   />
@@ -164,7 +166,7 @@ export default function Settings() {
                   <Label>允许评论</Label>
                   <Switch
                     checked={siteSettings.allowComments}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={checked =>
                       setSiteSettings({ ...siteSettings, allowComments: checked })
                     }
                   />
@@ -173,7 +175,7 @@ export default function Settings() {
                   <Label>维护模式</Label>
                   <Switch
                     checked={siteSettings.maintenanceMode}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={checked =>
                       setSiteSettings({ ...siteSettings, maintenanceMode: checked })
                     }
                   />
@@ -190,7 +192,7 @@ export default function Settings() {
                 <Label>启用双因素认证</Label>
                 <Switch
                   checked={securitySettings.enableTwoFactor}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setSecuritySettings({ ...securitySettings, enableTwoFactor: checked })
                   }
                 />
@@ -201,7 +203,7 @@ export default function Settings() {
                   <Input
                     type="number"
                     value={securitySettings.passwordMinLength}
-                    onChange={(e) =>
+                    onChange={e =>
                       setSecuritySettings({
                         ...securitySettings,
                         passwordMinLength: parseInt(e.target.value),
@@ -214,7 +216,7 @@ export default function Settings() {
                   <Input
                     type="number"
                     value={securitySettings.loginAttempts}
-                    onChange={(e) =>
+                    onChange={e =>
                       setSecuritySettings({
                         ...securitySettings,
                         loginAttempts: parseInt(e.target.value),
@@ -229,7 +231,7 @@ export default function Settings() {
                   <Input
                     type="number"
                     value={securitySettings.lockoutDuration}
-                    onChange={(e) =>
+                    onChange={e =>
                       setSecuritySettings({
                         ...securitySettings,
                         lockoutDuration: parseInt(e.target.value),
@@ -242,7 +244,7 @@ export default function Settings() {
                   <Input
                     type="number"
                     value={securitySettings.sessionTimeout}
-                    onChange={(e) =>
+                    onChange={e =>
                       setSecuritySettings({
                         ...securitySettings,
                         sessionTimeout: parseInt(e.target.value),
@@ -255,7 +257,7 @@ export default function Settings() {
                 <Label>密码需包含特殊字符</Label>
                 <Switch
                   checked={securitySettings.requireSpecialChars}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setSecuritySettings({ ...securitySettings, requireSpecialChars: checked })
                   }
                 />
@@ -264,7 +266,7 @@ export default function Settings() {
                 <Label>密码需包含数字</Label>
                 <Switch
                   checked={securitySettings.requireNumbers}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setSecuritySettings({ ...securitySettings, requireNumbers: checked })
                   }
                 />
@@ -273,7 +275,7 @@ export default function Settings() {
                 <Label>密码需包含大写字母</Label>
                 <Switch
                   checked={securitySettings.requireUppercase}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setSecuritySettings({ ...securitySettings, requireUppercase: checked })
                   }
                 />
@@ -290,7 +292,7 @@ export default function Settings() {
                   <Label>SMTP 主机</Label>
                   <Input
                     value={emailSettings.smtpHost}
-                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpHost: e.target.value })}
+                    onChange={e => setEmailSettings({ ...emailSettings, smtpHost: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -298,7 +300,9 @@ export default function Settings() {
                   <Input
                     type="number"
                     value={emailSettings.smtpPort}
-                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpPort: parseInt(e.target.value) })}
+                    onChange={e =>
+                      setEmailSettings({ ...emailSettings, smtpPort: parseInt(e.target.value) })
+                    }
                   />
                 </div>
               </div>
@@ -307,7 +311,7 @@ export default function Settings() {
                   <Label>SMTP 用户名</Label>
                   <Input
                     value={emailSettings.smtpUser}
-                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpUser: e.target.value })}
+                    onChange={e => setEmailSettings({ ...emailSettings, smtpUser: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -315,7 +319,9 @@ export default function Settings() {
                   <Input
                     type="password"
                     value={emailSettings.smtpPassword}
-                    onChange={(e) => setEmailSettings({ ...emailSettings, smtpPassword: e.target.value })}
+                    onChange={e =>
+                      setEmailSettings({ ...emailSettings, smtpPassword: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -323,7 +329,7 @@ export default function Settings() {
                 <Label>使用 SSL/TLS</Label>
                 <Switch
                   checked={emailSettings.smtpSecure}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setEmailSettings({ ...emailSettings, smtpSecure: checked })
                   }
                 />
@@ -333,14 +339,16 @@ export default function Settings() {
                   <Label>发件人邮箱</Label>
                   <Input
                     value={emailSettings.fromEmail}
-                    onChange={(e) => setEmailSettings({ ...emailSettings, fromEmail: e.target.value })}
+                    onChange={e =>
+                      setEmailSettings({ ...emailSettings, fromEmail: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>发件人名称</Label>
                   <Input
                     value={emailSettings.fromName}
-                    onChange={(e) => setEmailSettings({ ...emailSettings, fromName: e.target.value })}
+                    onChange={e => setEmailSettings({ ...emailSettings, fromName: e.target.value })}
                   />
                 </div>
               </div>
@@ -355,8 +363,11 @@ export default function Settings() {
                 <Label>启用邮件通知</Label>
                 <Switch
                   checked={notificationSettings.enableEmailNotifications}
-                  onCheckedChange={(checked) =>
-                    setNotificationSettings({ ...notificationSettings, enableEmailNotifications: checked })
+                  onCheckedChange={checked =>
+                    setNotificationSettings({
+                      ...notificationSettings,
+                      enableEmailNotifications: checked,
+                    })
                   }
                 />
               </div>
@@ -364,8 +375,11 @@ export default function Settings() {
                 <Label>启用推送通知</Label>
                 <Switch
                   checked={notificationSettings.enablePushNotifications}
-                  onCheckedChange={(checked) =>
-                    setNotificationSettings({ ...notificationSettings, enablePushNotifications: checked })
+                  onCheckedChange={checked =>
+                    setNotificationSettings({
+                      ...notificationSettings,
+                      enablePushNotifications: checked,
+                    })
                   }
                 />
               </div>
@@ -373,7 +387,7 @@ export default function Settings() {
                 <Label>新用户注册通知</Label>
                 <Switch
                   checked={notificationSettings.notifyNewUsers}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setNotificationSettings({ ...notificationSettings, notifyNewUsers: checked })
                   }
                 />
@@ -382,7 +396,7 @@ export default function Settings() {
                 <Label>新帖子通知</Label>
                 <Switch
                   checked={notificationSettings.notifyNewPosts}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setNotificationSettings({ ...notificationSettings, notifyNewPosts: checked })
                   }
                 />
@@ -391,7 +405,7 @@ export default function Settings() {
                 <Label>新评论通知</Label>
                 <Switch
                   checked={notificationSettings.notifyNewComments}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setNotificationSettings({ ...notificationSettings, notifyNewComments: checked })
                   }
                 />
@@ -400,7 +414,7 @@ export default function Settings() {
                 <Label>举报通知</Label>
                 <Switch
                   checked={notificationSettings.notifyReports}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setNotificationSettings({ ...notificationSettings, notifyReports: checked })
                   }
                 />
@@ -411,4 +425,4 @@ export default function Settings() {
       </Tabs>
     </div>
   );
-} 
+}

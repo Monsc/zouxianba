@@ -69,11 +69,7 @@ const StatCard = ({ title, value, icon: Icon, growth, trend }) => (
             ) : (
               <ArrowDown className="w-4 h-4 text-red-500" />
             )}
-            <span
-              className={`text-sm ml-1 ${
-                trend === 'up' ? 'text-green-500' : 'text-red-500'
-              }`}
-            >
+            <span className={`text-sm ml-1 ${trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
               {Math.abs(growth)}%
             </span>
           </div>
@@ -99,7 +95,7 @@ export default function Analytics() {
               <SelectValue placeholder="选择时间范围" />
             </SelectTrigger>
             <SelectContent>
-              {timeRanges.map((range) => (
+              {timeRanges.map(range => (
                 <SelectItem key={range.value} value={range.value}>
                   {range.label}
                 </SelectItem>
@@ -118,26 +114,28 @@ export default function Analytics() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Array.isArray(stats.users) && stats.users.map((user, index) => (
-          <StatCard
-            key={index}
-            title={`总用户数`}
-            value={user.total}
-            icon={Users}
-            growth={user.growth}
-            trend="up"
-          />
-        ))}
-        {Array.isArray(stats.content) && stats.content.map((content, index) => (
-          <StatCard
-            key={index}
-            title={`内容总数`}
-            value={content.posts}
-            icon={FileText}
-            growth={content.growth}
-            trend="up"
-          />
-        ))}
+        {Array.isArray(stats.users) &&
+          stats.users.map((user, index) => (
+            <StatCard
+              key={index}
+              title={`总用户数`}
+              value={user.total}
+              icon={Users}
+              growth={user.growth}
+              trend="up"
+            />
+          ))}
+        {Array.isArray(stats.content) &&
+          stats.content.map((content, index) => (
+            <StatCard
+              key={index}
+              title={`内容总数`}
+              value={content.posts}
+              icon={FileText}
+              growth={content.growth}
+              trend="up"
+            />
+          ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -215,4 +213,4 @@ export default function Analytics() {
       </div>
     </div>
   );
-} 
+}

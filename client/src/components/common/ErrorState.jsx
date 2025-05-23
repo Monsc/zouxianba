@@ -7,16 +7,9 @@ const ErrorState = ({
   className = '',
 }) => {
   return (
-    <div
-      className={`flex flex-col items-center justify-center p-8 text-center ${className}`}
-    >
+    <div className={`flex flex-col items-center justify-center p-8 text-center ${className}`}>
       <div className="w-16 h-16 text-red-500 mb-4">
-        <svg
-          className="w-full h-full"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -26,12 +19,10 @@ const ErrorState = ({
         </svg>
       </div>
       <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-      {description && (
-        <p className="text-sm text-gray-500 mb-6 max-w-sm">{description}</p>
-      )}
+      {description && <p className="text-sm text-gray-500 mb-6 max-w-sm">{description}</p>}
       {action && <div>{action}</div>}
     </div>
   );
 };
 
-export default ErrorState; 
+export default ErrorState;

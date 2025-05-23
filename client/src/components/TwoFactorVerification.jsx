@@ -3,12 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import apiService from '../services/api';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -30,7 +25,7 @@ const TwoFactorVerification = ({ open, onOpenChange, tempToken }) => {
       const response = await apiService.post('/auth/verify-2fa', {
         tempToken,
         token: activeTab === 'totp' ? token : undefined,
-        backupCode: activeTab === 'backup' ? backupCode : undefined
+        backupCode: activeTab === 'backup' ? backupCode : undefined,
       });
 
       login(response.data.token, response.data.user);
@@ -38,10 +33,7 @@ const TwoFactorVerification = ({ open, onOpenChange, tempToken }) => {
       onOpenChange(false);
       navigate('/');
     } catch (error) {
-      showToast(
-        error.response?.data?.message || '验证失败，请重试',
-        'error'
-      );
+      showToast(error.response?.data?.message || '验证失败，请重试', 'error');
     } finally {
       setLoading(false);
     }
@@ -71,7 +63,7 @@ const TwoFactorVerification = ({ open, onOpenChange, tempToken }) => {
                   type="text"
                   placeholder="输入6位验证码"
                   value={token}
-                  onChange={(e) => setToken(e.target.value)}
+                  onChange={e => setToken(e.target.value)}
                   maxLength={6}
                 />
               </div>
@@ -93,14 +85,10 @@ const TwoFactorVerification = ({ open, onOpenChange, tempToken }) => {
                   type="text"
                   placeholder="输入备用码"
                   value={backupCode}
-                  onChange={(e) => setBackupCode(e.target.value)}
+                  onChange={e => setBackupCode(e.target.value)}
                 />
               </div>
-              <Button
-                className="w-full"
-                onClick={handleVerify}
-                disabled={loading || !backupCode}
-              >
+              <Button className="w-full" onClick={handleVerify} disabled={loading || !backupCode}>
                 验证
               </Button>
             </div>
@@ -111,4 +99,4 @@ const TwoFactorVerification = ({ open, onOpenChange, tempToken }) => {
   );
 };
 
-export default TwoFactorVerification; 
+export default TwoFactorVerification;

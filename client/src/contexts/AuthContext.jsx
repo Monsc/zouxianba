@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (userData) => {
+  const register = async userData => {
     try {
       const response = await apiService.post('/users/register', userData);
       return response.data;
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateProfile = async (data) => {
+  const updateProfile = async data => {
     try {
       const response = await apiService.patch('/users/me', data);
       setUser(response.data);

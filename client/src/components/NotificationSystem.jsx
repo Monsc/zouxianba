@@ -16,8 +16,8 @@ function NotificationSystem() {
       fetchNotifications();
       // 设置 WebSocket 连接
       const ws = new WebSocket(import.meta.env.VITE_WS_URL);
-      
-      ws.onmessage = (event) => {
+
+      ws.onmessage = event => {
         const notification = JSON.parse(event.data);
         handleNewNotification(notification);
       };
@@ -41,19 +41,17 @@ function NotificationSystem() {
     }
   };
 
-  const handleNewNotification = (notification) => {
+  const handleNewNotification = notification => {
     setNotifications(prev => [notification, ...prev]);
     setUnreadCount(prev => prev + 1);
   };
 
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = async notificationId => {
     try {
       await apiService.post(`/notifications/${notificationId}/read`);
       setNotifications(prev =>
         prev.map(notification =>
-          notification._id === notificationId
-            ? { ...notification, read: true }
-            : notification
+          notification._id === notificationId ? { ...notification, read: true } : notification
         )
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
@@ -66,9 +64,7 @@ function NotificationSystem() {
   const handleMarkAllAsRead = async () => {
     try {
       await apiService.post('/notifications/read-all');
-      setNotifications(prev =>
-        prev.map(notification => ({ ...notification, read: true }))
-      );
+      setNotifications(prev => prev.map(notification => ({ ...notification, read: true })));
       setUnreadCount(0);
       showToast('所有通知已标记为已读', 'success');
     } catch (error) {
@@ -76,7 +72,7 @@ function NotificationSystem() {
     }
   };
 
-  const getNotificationIcon = (type) => {
+  const getNotificationIcon = type => {
     switch (type) {
       case 'like':
         return '❤️';
@@ -133,11 +129,9 @@ function NotificationSystem() {
             {/* 通知列表 */}
             <div className="max-h-96 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-4 text-center text-twitter-gray-500">
-                  暂无通知
-                </div>
+                <div className="p-4 text-center text-twitter-gray-500">暂无通知</div>
               ) : (
-                notifications.map((notification) => (
+                notifications.map(notification => (
                   <motion.div
                     key={notification._id}
                     initial={{ opacity: 0 }}
@@ -149,15 +143,10 @@ function NotificationSystem() {
                     onClick={() => handleMarkAsRead(notification._id)}
                   >
                     <div className="flex items-start space-x-3">
-                      <span className="text-xl">
-                        {getNotificationIcon(notification.type)}
-                      </span>
+                      <span className="text-xl">{getNotificationIcon(notification.type)}</span>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm">
-                          <span className="font-bold">
-                            {notification.sender.username}
-                          </span>
-                          {' '}
+                          <span className="font-bold">{notification.sender.username}</span>{' '}
                           {notification.message}
                         </p>
                         <p className="text-xs text-twitter-gray-500 mt-1">
@@ -186,4 +175,4 @@ function NotificationSystem() {
   );
 }
 
-export default NotificationSystem; 
+export default NotificationSystem;

@@ -51,7 +51,7 @@ const NotificationItem = ({ notification, onRead }) => {
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {formatDistanceToNow(new Date(notification.createdAt), {
               addSuffix: true,
-              locale: zhCN
+              locale: zhCN,
             })}
           </p>
         </div>
@@ -86,14 +86,14 @@ export const Notifications = () => {
     }
   };
 
-  const handleRead = async (notificationId) => {
+  const handleRead = async notificationId => {
     try {
       await apiService.patch(`/notifications/${notificationId}/read`);
-      setNotifications(notifications.map(notification =>
-        notification._id === notificationId
-          ? { ...notification, read: true }
-          : notification
-      ));
+      setNotifications(
+        notifications.map(notification =>
+          notification._id === notificationId ? { ...notification, read: true } : notification
+        )
+      );
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
       showToast('标记已读失败，请稍后重试', 'error');
@@ -103,10 +103,12 @@ export const Notifications = () => {
   const handleReadAll = async () => {
     try {
       await apiService.patch('/notifications/read-all');
-      setNotifications(notifications.map(notification => ({
-        ...notification,
-        read: true
-      })));
+      setNotifications(
+        notifications.map(notification => ({
+          ...notification,
+          read: true,
+        }))
+      );
       showToast('已全部标记为已读', 'success');
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
@@ -126,10 +128,7 @@ export const Notifications = () => {
     return (
       <div className="text-center py-8">
         <p className="text-red-500 mb-4">{error}</p>
-        <button
-          onClick={fetchNotifications}
-          className="text-blue-500 hover:text-blue-600"
-        >
+        <button onClick={fetchNotifications} className="text-blue-500 hover:text-blue-600">
           重试
         </button>
       </div>
@@ -141,10 +140,7 @@ export const Notifications = () => {
       <div className="flex items-center justify-between px-4 py-2">
         <h2 className="text-xl font-bold">通知</h2>
         {notifications.some(n => !n.read) && (
-          <button
-            onClick={handleReadAll}
-            className="text-sm text-blue-500 hover:text-blue-600"
-          >
+          <button onClick={handleReadAll} className="text-sm text-blue-500 hover:text-blue-600">
             全部标记为已读
           </button>
         )}

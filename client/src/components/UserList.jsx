@@ -24,8 +24,12 @@ export const UserList = ({ userId, type }) => {
   const [followingMap, setFollowingMap] = useState({});
 
   // 使用无限滚动加载更多用户
-  const { loadMore, hasMore, loading: loadingMore } = useInfiniteScroll({
-    fetchData: async (page) => {
+  const {
+    loadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useInfiniteScroll({
+    fetchData: async page => {
       try {
         const response = await UserService.getUserList(userId, type, page);
         return response.users;
@@ -46,9 +50,7 @@ export const UserList = ({ userId, type }) => {
         const [usersData, followingData] = await Promise.all([
           UserService.getUserList(userId, type),
           currentUser
-            ? Promise.all(
-                users.map((user) => FollowService.isFollowing(user.id))
-              ).then((results) =>
+            ? Promise.all(users.map(user => FollowService.isFollowing(user.id))).then(results =>
                 results.reduce(
                   (acc, isFollowing, index) => ({
                     ...acc,
@@ -73,7 +75,7 @@ export const UserList = ({ userId, type }) => {
   }, [userId, type, currentUser]);
 
   // 关注/取消关注
-  const handleFollow = async (targetUserId) => {
+  const handleFollow = async targetUserId => {
     if (!currentUser) {
       router.push('/login');
       return;
@@ -82,11 +84,11 @@ export const UserList = ({ userId, type }) => {
     try {
       if (followingMap[targetUserId]) {
         await FollowService.unfollow(targetUserId);
-        setFollowingMap((prev) => ({ ...prev, [targetUserId]: false }));
+        setFollowingMap(prev => ({ ...prev, [targetUserId]: false }));
         showToast('已取消关注', 'success');
       } else {
         await FollowService.follow(targetUserId);
-        setFollowingMap((prev) => ({ ...prev, [targetUserId]: true }));
+        setFollowingMap(prev => ({ ...prev, [targetUserId]: true }));
         showToast('已关注', 'success');
       }
     } catch (error) {
@@ -116,7 +118,7 @@ export const UserList = ({ userId, type }) => {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg shadow">
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        {users.map((user) => (
+        {users.map(user => (
           <div key={user.id} className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -179,15 +181,11 @@ export const UserList = ({ userId, type }) => {
               disabled={loadingMore}
               className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
-              {loadingMore ? (
-                <LoadingSpinner size="sm" />
-              ) : (
-                '加载更多'
-              )}
+              {loadingMore ? <LoadingSpinner size="sm" /> : '加载更多'}
             </button>
           </div>
         )}
       </div>
     </div>
   );
-}; 
+};

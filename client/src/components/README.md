@@ -15,11 +15,13 @@ components/
 ## 组件开发规范
 
 1. 文件命名
+
    - 使用 PascalCase 命名组件文件
    - 使用 .jsx 扩展名
    - 组件名应与文件名一致
 
 2. 组件结构
+
    ```jsx
    /**
     * @component ComponentName
@@ -33,11 +35,7 @@ components/
    import styles from './ComponentName.module.css';
 
    const ComponentName = ({ propName }) => {
-     return (
-       <div className={styles.container}>
-         {/* 组件内容 */}
-       </div>
-     );
+     return <div className={styles.container}>{/* 组件内容 */}</div>;
    };
 
    ComponentName.propTypes = {
@@ -52,11 +50,13 @@ components/
    ```
 
 3. 样式规范
+
    - 使用 CSS Modules 或 Tailwind CSS
    - 遵循 BEM 命名规范
    - 使用 CSS 变量管理主题
 
 4. 性能优化
+
    - 使用 React.memo 优化渲染
    - 使用 useMemo 和 useCallback 优化计算
    - 使用虚拟列表处理长列表
@@ -69,12 +69,14 @@ components/
 ## 组件列表
 
 ### 认证组件
+
 - `LoginForm` - 登录表单
 - `RegisterForm` - 注册表单
 - `TwoFactorSetup` - 两步验证设置
 - `TwoFactorVerification` - 两步验证验证
 
 ### 通用组件
+
 - `Button` - 按钮组件
 - `Input` - 输入框组件
 - `Select` - 选择框组件
@@ -82,17 +84,20 @@ components/
 - `Toast` - 提示组件
 
 ### 布局组件
+
 - `Layout` - 主布局
 - `Navbar` - 导航栏
 - `Sidebar` - 侧边栏
 - `Footer` - 页脚
 
 ### 通知组件
+
 - `NotificationList` - 通知列表
 - `NotificationItem` - 通知项
 - `NotificationCenter` - 通知中心
 
 ### UI 组件
+
 - `Avatar` - 头像
 - `Badge` - 徽章
 - `Card` - 卡片
@@ -100,6 +105,7 @@ components/
 - `LoadingSpinner` - 加载动画
 
 ### 语音聊天组件
+
 - `VoiceChat` - 语音聊天
 - `VoiceChatControls` - 语音控制
-- `VoiceChatParticipants` - 参与者列表 
+- `VoiceChatParticipants` - 参与者列表

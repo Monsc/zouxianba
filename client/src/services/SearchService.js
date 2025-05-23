@@ -14,4 +14,4 @@ export class SearchService {
     });
     return response.data;
   }
-} 
+}

@@ -9,11 +9,11 @@ export const ToastProvider = ({ children }) => {
 
     const addToast = useCallback((message, type = 'success', duration = 3000) => {
       const id = Date.now();
-      setToasts((prevToasts) => [...prevToasts, { id, message, type, duration }]);
+      setToasts(prevToasts => [...prevToasts, { id, message, type, duration }]);
     }, []);
 
-    const removeToast = useCallback((id) => {
-      setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+    const removeToast = useCallback(id => {
+      setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
     }, []);
 
     const success = useCallback(
@@ -39,7 +39,7 @@ export const ToastProvider = ({ children }) => {
     return (
       <ToastContext.Provider value={{ success, error, warning, info }}>
         {children}
-        {toasts.map((toast) => (
+        {toasts.map(toast => (
           <Toast
             key={toast.id}
             message={toast.message}
@@ -67,4 +67,4 @@ export const useToast = () => {
 
 export default ToastProvider;
 
-export { ToastContext }; 
+export { ToastContext };

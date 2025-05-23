@@ -9,9 +9,13 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async data => {
     try {
       setIsLoading(true);
       await login(data.email, data.password);
@@ -28,12 +32,13 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            登录到走线吧
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">登录到走线吧</h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             或者{' '}
-            <Link href="/auth/register" className="font-medium text-primary hover:text-primary-dark">
+            <Link
+              href="/auth/register"
+              className="font-medium text-primary hover:text-primary-dark"
+            >
               注册新账号
             </Link>
           </p>
@@ -58,9 +63,7 @@ const LoginPage = () => {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="邮箱地址"
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
@@ -99,7 +102,10 @@ const LoginPage = () => {
             </div>
 
             <div className="text-sm">
-              <Link href="/auth/forgot-password" className="font-medium text-primary hover:text-primary-dark">
+              <Link
+                href="/auth/forgot-password"
+                className="font-medium text-primary hover:text-primary-dark"
+              >
                 忘记密码？
               </Link>
             </div>
@@ -153,4 +159,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage; 
+export default LoginPage;

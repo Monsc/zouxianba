@@ -29,10 +29,16 @@ export const Navbar = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Link to="/messages" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                <Link
+                  to="/messages"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                >
                   Messages
                 </Link>
-                <Link to="/notifications" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                <Link
+                  to="/notifications"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                >
                   Notifications
                 </Link>
                 <div className="relative">
@@ -84,4 +90,4 @@ export const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

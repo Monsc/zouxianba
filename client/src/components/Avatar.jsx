@@ -11,13 +11,9 @@ export const Avatar = ({ src, alt, size = 'md', className = '' }) => {
 
   return (
     <div className={`relative rounded-full overflow-hidden ${sizeClasses[size]} ${className}`}>
-      <LazyImage
-        src={src}
-        alt={alt}
-        className="w-full h-full object-cover"
-      />
+      <LazyImage src={src} alt={alt} className="w-full h-full object-cover" />
     </div>
   );
 };
 
-export default Avatar; 
+export default Avatar;
