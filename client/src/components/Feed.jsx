@@ -26,7 +26,7 @@ export const Feed = () => {
         setLoading(true);
         setError(null);
         console.log('[Feed] user:', user, 'username:', username, 'page:', page);
-        const data = await apiService.getPosts(username, page);
+        const data = await apiService.getPosts(page);
         console.log('[Feed] apiService.getPosts 响应:', data);
         if (page === 1) {
           setPosts(data.posts);
