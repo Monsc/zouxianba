@@ -13,15 +13,13 @@ import PerformanceMonitor from './components/common/PerformanceMonitor';
 import PWARegister from './components/common/PWARegister';
 import { checkEnvVariables, getEnvConfig } from './utils/envCheck';
 import { startupCheck, getStartupStatus, saveStartupStatus } from './utils/startupCheck';
-
-// 懒加载页面组件
-const Home = lazy(() => import('./pages/Home'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Profile = lazy(() => import('./pages/Profile'));
-const Settings = lazy(() => import('./pages/Settings'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-const Feed = lazy(() => import('./components/Feed'));
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import NotFound from './pages/NotFound';
+import Feed from './components/Feed';
 
 // 懒加载管理页面组件
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
