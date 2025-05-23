@@ -41,6 +41,8 @@ class ErrorBoundary extends React.Component {
               </p>
               <pre style={{ color: 'red', fontSize: 12, wordBreak: 'break-all' }}>
                 {this.state.error && this.state.error.toString()}
+                {'\n'}
+                {this.state.error && this.state.error.stack}
               </pre>
               <button
                 onClick={() => window.location.reload()}
