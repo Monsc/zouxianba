@@ -186,7 +186,7 @@ const HotPage = () => {
                       <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
 
                       {/* 图片网格 */}
-                      {post.images?.length > 0 && (
+                      {Array.isArray(post.images) && post.images.length > 0 && (
                         <div
                           className={`mt-4 grid gap-2 ${
                             post.images.length === 1
@@ -214,7 +214,7 @@ const HotPage = () => {
                       )}
 
                       {/* 标签 */}
-                      {post.tags?.length > 0 && (
+                      {Array.isArray(post.tags) && post.tags.length > 0 && (
                         <div className="mt-4 flex flex-wrap gap-2">
                           {post.tags.map(tag => (
                             <span

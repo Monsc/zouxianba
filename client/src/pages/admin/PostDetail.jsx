@@ -143,7 +143,7 @@ export default function PostDetail() {
             </div>
             <div className="prose max-w-none mb-4">{postData.content}</div>
             <div className="flex flex-wrap gap-2 mb-4">
-              {postData.tags.map(tag => (
+              {Array.isArray(postData.tags) && postData.tags.map(tag => (
                 <Badge key={tag} variant="secondary">
                   {tag}
                 </Badge>

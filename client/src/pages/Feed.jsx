@@ -67,6 +67,12 @@ export const Feed = () => {
     showToast('删除成功', 'success');
   };
 
+  // 自动调试日志
+  console.log('[Feed] posts结构', posts);
+  if (Array.isArray(posts) && posts.length > 0) {
+    console.log('[Feed] posts[0]结构', posts[0]);
+  }
+
   if (loading) {
     return <LoadingSpinner />;
   }

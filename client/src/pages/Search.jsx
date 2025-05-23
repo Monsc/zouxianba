@@ -231,7 +231,7 @@ const SearchPage = () => {
                         <p className="text-gray-900 whitespace-pre-wrap">{result.content}</p>
 
                         {/* 图片网格 */}
-                        {result.images?.length > 0 && (
+                        {Array.isArray(result.images) && result.images.length > 0 && (
                           <div
                             className={`mt-4 grid gap-2 ${
                               result.images.length === 1
@@ -259,7 +259,7 @@ const SearchPage = () => {
                         )}
 
                         {/* 标签 */}
-                        {result.tags?.length > 0 && (
+                        {Array.isArray(result.tags) && result.tags.length > 0 && (
                           <div className="mt-4 flex flex-wrap gap-2">
                             {result.tags.map(tag => (
                               <span
