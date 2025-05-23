@@ -27,19 +27,26 @@ export const Feed = () => {
         setError(null);
         console.log('[Feed] user:', user, 'username:', username, 'page:', page);
         const data = await apiService.getPosts(page);
-        console.log('[Feed] apiService.getPosts 响应:', data);
+        console.log('[Feed] apiService.getPosts 响应:', data, 'typeof:', typeof data, 'isArray:', Array.isArray(data));
         let postsArr = [];
         if (Array.isArray(data)) {
           postsArr = data;
         } else if (data && Array.isArray(data.posts)) {
           postsArr = data.posts;
         }
+        console.log('[Feed] postsArr:', postsArr, 'typeof:', typeof postsArr, 'isArray:', Array.isArray(postsArr));
         if (page === 1) {
           setPosts(postsArr);
+          console.log('[Feed] setPosts(postsArr) 赋值:', postsArr);
         } else {
-          setPosts(prev => [...prev, ...postsArr]);
+          setPosts(prev => {
+            const merged = [...prev, ...postsArr];
+            console.log('[Feed] setPosts 合并后:', merged);
+            return merged;
+          });
         }
         setHasMore(data && typeof data.hasMore === 'boolean' ? data.hasMore : false);
+        console.log('[Feed] setPosts后 posts:', postsArr);
       } catch (error) {
         console.error('[Feed] 加载 posts 出错:', error, error?.response);
         setError(error?.response?.data?.message || '加载失败，请稍后重试');
