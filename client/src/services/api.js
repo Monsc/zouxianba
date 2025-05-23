@@ -65,6 +65,8 @@ class ApiService {
         return response;
       },
       async (error) => {
+        // 新增详细日志
+        console.error('API Error:', error, error?.response, error?.message, error?.stack);
         if (axios.isCancel(error)) {
           return Promise.reject(error);
         }
