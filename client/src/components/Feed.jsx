@@ -20,7 +20,9 @@ export const Feed = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
+        console.log('[Feed] user:', user, 'username:', username, 'page:', page);
         const data = await apiService.getPosts(username, page);
+        console.log('[Feed] apiService.getPosts 响应:', data);
         if (page === 1) {
           setPosts(data.posts);
         } else {
@@ -29,6 +31,7 @@ export const Feed = () => {
         setHasMore(data.hasMore);
         setError(false);
       } catch (error) {
+        console.error('[Feed] 加载 posts 出错:', error, error?.response);
         if (!error) {
           setError(true);
           addToast('Failed to load posts', 'error');
@@ -99,6 +102,7 @@ export const Feed = () => {
 
   return (
     <div className="space-y-6">
+      {console.log('[Feed] 渲染 posts:', posts)}
       {user && !username && <CreatePost />}
       {Array.isArray(posts) && posts.map(post => (
         <PostCard

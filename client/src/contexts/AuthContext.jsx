@@ -12,6 +12,8 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     try {
+      const token = localStorage.getItem('token');
+      console.log('[AuthProvider] token:', token);
       checkAuth();
     } catch (e) {
       console.error('AuthProvider 初始化异常:', e, e?.message, e?.stack);
@@ -23,12 +25,16 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await apiService.get('/users/me');
+        const response = await apiService.get('/auth/me');
+        console.log('[AuthProvider] /auth/me response:', response);
         setUser(response.data);
+      } else {
+        setUser(null);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('[AuthProvider] /auth/me error:', error, error?.response);
       localStorage.removeItem('token');
+      setUser(null);
     } finally {
       setLoading(false);
     }
