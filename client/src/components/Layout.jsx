@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Bell, Home, MessageSquare, Search, Settings, User, LogOut } from 'lucide-react';
-import { CreatePostButton } from './CreatePostButton';
+import CreatePostButton from './CreatePostButton';
 
 export const Layout = ({ children }) => {
   const { user, logout } = useAuth();
