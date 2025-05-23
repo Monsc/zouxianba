@@ -168,7 +168,7 @@ export default function PostDetail() {
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">评论列表</h3>
             <div className="space-y-4">
-              {comments.map((comment) => (
+              {Array.isArray(comments) && comments.map((comment) => (
                 <div key={comment.id} className="flex space-x-4">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                     {comment.author.name[0]}

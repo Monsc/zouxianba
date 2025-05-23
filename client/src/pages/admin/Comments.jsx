@@ -127,7 +127,7 @@ export default function Comments() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {comments.map((comment) => (
+            {Array.isArray(comments) && comments.map((comment) => (
               <TableRow key={comment.id}>
                 <TableCell>
                   <div className="space-y-1">

@@ -185,7 +185,7 @@ function CommentSection({ postId }) {
 
       {/* 评论列表 */}
       <div className="space-y-4">
-        {comments.map(comment => renderComment(comment))}
+        {Array.isArray(comments) && comments.map(comment => renderComment(comment))}
       </div>
 
       {/* 加载更多 */}

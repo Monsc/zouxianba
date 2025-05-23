@@ -277,7 +277,7 @@ const PostDetailPage = () => {
 
             {/* 评论列表 */}
             <div className="space-y-4">
-              {post.comments.map(comment => (
+              {Array.isArray(post.comments) && post.comments.map(comment => (
                 <div key={comment._id} className="flex space-x-4">
                   <img
                     src={comment.author.avatar || '/default-avatar.png'}

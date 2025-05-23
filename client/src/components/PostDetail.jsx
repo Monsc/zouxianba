@@ -267,7 +267,7 @@ export const PostDetail = ({ postId }) => {
                 icon="comment"
               />
             ) : (
-              comments.map((comment) => (
+              Array.isArray(comments) && comments.map((comment) => (
                 <div key={comment.id} className="flex space-x-4">
                   <Avatar
                     src={comment.author.avatar}
