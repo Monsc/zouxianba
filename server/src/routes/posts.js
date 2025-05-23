@@ -229,6 +229,10 @@ router.get('/', optionalAuth, catchAsync(async (req, res) => {
     });
 
   const total = await Post.countDocuments({ visibility: 'public' });
+  // 自检日志
+  console.log('[API] /api/posts 返回 posts 数量:', posts.length);
+  console.log('[API] /api/posts 鉴权信息:', req.user ? '已登录' : '未登录');
+  console.log('[API] /api/posts 数据库查询结果:', posts.length > 0 ? '有数据' : '无数据');
   res.json({
     posts,
     hasMore: page * limit < total
