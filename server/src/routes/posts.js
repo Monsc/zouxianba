@@ -208,4 +208,27 @@ router.post('/:id/pin', auth, PostController.togglePin);
 // Get edit history
 router.get('/:id/history', auth, PostController.getEditHistory);
 
+// GET /api/posts - 获取所有公开帖子（兼容前端 /api/posts 请求）
+router.get('/', optionalAuth, catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  // 只返回公开帖子
+  const posts = await Post.find({ visibility: 'public' })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate('author', 'username handle avatar isVerified')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'author',
+        select: 'username handle avatar isVerified',
+      },
+    });
+
+  res.json(posts);
+}));
+
 module.exports = router; 
