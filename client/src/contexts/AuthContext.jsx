@@ -16,7 +16,9 @@ export const AuthProvider = ({ children }) => {
       console.log('[AuthProvider] token:', token);
       if (!token) {
         toast.error('登录已过期，请重新登录');
-        window.location.href = '/login';
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
         return;
       }
       checkAuth();
