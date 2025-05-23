@@ -3,10 +3,10 @@ import { useAuth } from '../contexts/AuthContext';
 import CreatePostBox from './CreatePostBox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import LoginForm from './LoginForm';
+import { Plus } from 'lucide-react';
 
 function CreatePostButton() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user } = useAuth();
 
@@ -15,59 +15,38 @@ function CreatePostButton() {
       setIsLoginModalOpen(true);
       return;
     }
-    setIsModalOpen(true);
-    setIsClosing(false);
-  };
-
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsModalOpen(false);
-      setIsClosing(false);
-    }, 220);
+    setIsPostModalOpen(true);
   };
 
   return (
     <>
+      {/* 发帖按钮 - 固定在右下角 */}
       <button
-        className="create-post-button fixed bottom-20 right-6 z-50 w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center shadow-xl hover:bg-primary-hover dark:bg-primary dark:hover:bg-blue-400 transition-all duration-200 text-3xl md:w-14 md:h-14 md:text-2xl"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-all duration-200 md:static md:w-full md:h-12 md:rounded-full md:mb-4"
         onClick={handleOpen}
-        aria-label="Create Post"
+        aria-label="发帖"
       >
-        <i className="icon-plus" />
+        <Plus className="w-6 h-6 md:w-5 md:h-5" />
+        <span className="hidden md:inline ml-2">发帖</span>
       </button>
 
-      {isModalOpen && (
-        <div
-          className="modal-overlay fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-fadeIn"
-          onClick={handleClose}
-        >
-          <div
-            className="modal bg-white dark:bg-[#192734] rounded-2xl shadow-2xl p-6 w-full max-w-lg relative animate-slideUp"
-            onClick={e => e.stopPropagation()}
-            aria-hidden={isClosing}
-          >
-            <div className="modal-header flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-primary">发帖</h2>
-              <button
-                className="close-button text-2xl text-gray-400 hover:text-primary transition-colors"
-                onClick={handleClose}
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
-            <CreatePostBox />
-          </div>
-        </div>
-      )}
+      {/* 发帖弹窗 */}
+      <Dialog open={isPostModalOpen} onOpenChange={setIsPostModalOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>发帖</DialogTitle>
+          </DialogHeader>
+          <CreatePostBox onSuccess={() => setIsPostModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
 
+      {/* 登录弹窗 */}
       <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>登录</DialogTitle>
           </DialogHeader>
-          <LoginForm />
+          <LoginForm onSuccess={() => setIsLoginModalOpen(false)} />
         </DialogContent>
       </Dialog>
     </>
