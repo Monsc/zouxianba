@@ -12,11 +12,23 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
+    if (error && error.stack) {
+      console.error('Error stack:', error.stack);
+    }
+    if (error && error.message) {
+      console.error('Error message:', error.message);
+    }
   }
 
   render() {
     if (this.state.hasError) {
-      console.log('ErrorBoundary render error:', this.state.error);
+      console.log('ErrorBoundary render error:', this.state.error, JSON.stringify(this.state.error));
+      if (this.state.error && this.state.error.stack) {
+        console.log('Error stack:', this.state.error.stack);
+      }
+      if (this.state.error && this.state.error.message) {
+        console.log('Error message:', this.state.error.message);
+      }
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
