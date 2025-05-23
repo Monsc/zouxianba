@@ -55,7 +55,19 @@ const PageTransition = ({ children }) => {
 };
 
 export const App = () => {
-  return <div>hello</div>;
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<div>home</div>} />
+            </Routes>
+          </Router>
+        </ToastProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  );
 };
 
 export default App;
