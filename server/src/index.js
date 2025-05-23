@@ -28,10 +28,8 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 app.use(cors({
-  origin: config.cors.origins,
-  credentials: true,
-  methods: config.cors.methods,
-  allowedHeaders: config.cors.allowedHeaders
+  origin: '*',
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
