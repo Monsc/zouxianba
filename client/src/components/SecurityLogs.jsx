@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../contexts/ToastContext';
-import { api } from '../services/api';
+import apiService from '../services/api';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,7 @@ const SecurityLogs = ({ open, onOpenChange }) => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/auth/me/security-logs');
+      const response = await apiService.get('/auth/me/security-logs');
       setLogs(response.data.logs.map(formatSecurityLog));
     } catch (error) {
       showToast('获取安全日志失败', 'error');

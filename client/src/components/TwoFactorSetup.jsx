@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../hooks/useToast';
-import { api } from '../services/api';
+import apiService from '../services/api';
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
   const fetchSetupData = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/auth/2fa/setup');
+      const response = await apiService.get('/auth/2fa/setup');
       setSetupData(response.data);
     } catch (error) {
       showToast('获取双因素认证设置失败', 'error');
@@ -45,7 +45,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
   const handleEnable2FA = async () => {
     try {
       setLoading(true);
-      const response = await api.post('/auth/2fa/enable');
+      const response = await apiService.post('/auth/2fa/enable');
       showToast('两步验证已启用', 'success');
       updateUser({ ...user, twoFactorEnabled: true });
     } catch (error) {
@@ -58,7 +58,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
   const handleDisable2FA = async () => {
     try {
       setLoading(true);
-      await api.post('/auth/2fa/disable', { code: verificationCode });
+      await apiService.post('/auth/2fa/disable', { code: verificationCode });
       showToast('两步验证已禁用', 'success');
       updateUser({ ...user, twoFactorEnabled: false });
       setVerificationCode('');
@@ -72,7 +72,7 @@ export const TwoFactorSetup = ({ open, onOpenChange }) => {
   const handleVerifyBackupCode = async () => {
     try {
       setLoading(true);
-      await api.post('/auth/2fa/verify-backup', {
+      await apiService.post('/auth/2fa/verify-backup', {
         code: backupCode
       });
       showToast('备用码验证成功', 'success');

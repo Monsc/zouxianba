@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/dialog';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { LogOut, Globe, Smartphone, Monitor } from 'lucide-react';
-import { api } from '../services/api';
+import apiService from '../services/api';
 
 export const ActiveSessions = () => {
   const { user } = useAuth();
@@ -20,7 +20,7 @@ export const ActiveSessions = () => {
   const fetchSessions = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/auth/sessions');
+      const response = await apiService.get('/auth/sessions');
       setSessions(response.data);
     } catch (error) {
       showToast('获取会话列表失败', 'error');
@@ -32,7 +32,7 @@ export const ActiveSessions = () => {
   const handleLogoutSession = async (sessionId) => {
     try {
       setLoading(true);
-      await api.post(`/auth/sessions/${sessionId}/logout`);
+      await apiService.post(`/auth/sessions/${sessionId}/logout`);
       showToast('会话已注销', 'success');
       fetchSessions();
     } catch (error) {
@@ -45,7 +45,7 @@ export const ActiveSessions = () => {
   const handleLogoutAllSessions = async () => {
     try {
       setLoading(true);
-      await api.post('/auth/sessions/logout-all');
+      await apiService.post('/auth/sessions/logout-all');
       showToast('所有会话已注销', 'success');
       fetchSessions();
     } catch (error) {
