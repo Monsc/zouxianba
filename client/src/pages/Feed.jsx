@@ -83,7 +83,7 @@ export const Feed = () => {
     );
   }
 
-  if (posts.length === 0) {
+  if (!Array.isArray(posts) || posts.length === 0) {
     return (
       <Toaster
         title="暂无内容"

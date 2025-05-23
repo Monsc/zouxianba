@@ -142,7 +142,7 @@ const TopicPage = () => {
         </div>
 
         <LoadingOverlay isLoading={loading}>
-          {posts.length === 0 ? (
+          {(!Array.isArray(posts) || posts.length === 0) ? (
             <EmptyState
               title="暂无相关帖子"
               description="快来发布第一条动态吧"

@@ -131,7 +131,7 @@ const HomePage = () => {
     <MainLayout>
       <div className="max-w-4xl mx-auto">
         <LoadingOverlay isLoading={loading}>
-          {posts.length === 0 ? (
+          {(!Array.isArray(posts) || posts.length === 0) ? (
             <EmptyState
               title="暂无动态"
               description="关注更多用户以查看他们的动态"

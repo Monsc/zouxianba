@@ -12,7 +12,7 @@ function PostList({ posts, loading, error }) {
     return <ErrorMessage message={error} />;
   }
 
-  if (posts.length === 0) {
+  if (!Array.isArray(posts) || posts.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500">No posts found.</p>
