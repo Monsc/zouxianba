@@ -57,11 +57,25 @@ const PageTransition = ({ children }) => {
 export const App = () => {
   return (
     <ThemeProvider>
-      <Router>
-        <AuthProvider>
-          <div>home</div>
-        </AuthProvider>
-      </Router>
+      <ErrorBoundary>
+        <Router>
+          <AuthProvider>
+            <ToastProvider>
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/feed" replace />} />
+                  <Route path="/feed" element={<Feed />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/profile/:username" element={<Profile />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ToastProvider>
+          </AuthProvider>
+        </Router>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 };
