@@ -100,7 +100,7 @@ export const Feed = () => {
   return (
     <div className="space-y-6">
       {user && !username && <CreatePost />}
-      {posts.map(post => (
+      {Array.isArray(posts) && posts.map(post => (
         <PostCard
           key={post._id}
           post={post}

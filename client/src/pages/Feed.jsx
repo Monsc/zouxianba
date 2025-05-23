@@ -109,7 +109,7 @@ export const Feed = () => {
       {user && <CreatePost onPostCreated={handlePostCreated} />}
       
       <div className="space-y-6 mt-6">
-        {posts.map((post) => (
+        {Array.isArray(posts) && posts.map((post) => (
           <ErrorBoundary key={post.id}>
             <Post
               post={post}
