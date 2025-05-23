@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { api } from '../services/api';
+import apiService from '../services/api';
 import {
   Dialog,
   DialogContent,
@@ -27,7 +27,7 @@ const TwoFactorVerification = ({ open, onOpenChange, tempToken }) => {
   const handleVerify = async () => {
     try {
       setLoading(true);
-      const response = await api.post('/auth/verify-2fa', {
+      const response = await apiService.post('/auth/verify-2fa', {
         tempToken,
         token: activeTab === 'totp' ? token : undefined,
         backupCode: activeTab === 'backup' ? backupCode : undefined
