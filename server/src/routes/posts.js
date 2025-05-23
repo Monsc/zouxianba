@@ -228,7 +228,11 @@ router.get('/', optionalAuth, catchAsync(async (req, res) => {
       },
     });
 
-  res.json(posts);
+  const total = await Post.countDocuments({ visibility: 'public' });
+  res.json({
+    posts,
+    hasMore: page * limit < total
+  });
 }));
 
 module.exports = router; 
