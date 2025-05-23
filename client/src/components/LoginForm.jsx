@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { api } from '../services/api';
+import apiService from '../services/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -24,7 +24,7 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await api.post('/auth/login', {
+      const response = await apiService.post('/auth/login', {
         email,
         password
       });
