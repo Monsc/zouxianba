@@ -57,7 +57,9 @@ const PageTransition = ({ children }) => {
 export const App = () => {
   return (
     <ThemeProvider>
-      <div>home</div>
+      <AuthProvider>
+        <div>home</div>
+      </AuthProvider>
     </ThemeProvider>
   );
 };
