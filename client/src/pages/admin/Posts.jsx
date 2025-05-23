@@ -62,9 +62,9 @@ export default function Posts() {
   };
 
   const handleStatusChange = (postId, newStatus) => {
-    setPosts(posts.map(post => 
+    setPosts(Array.isArray(posts) ? posts.map(post => 
       post.id === postId ? { ...post, status: newStatus } : post
-    ));
+    ) : posts);
   };
 
   const getStatusBadge = (status) => {

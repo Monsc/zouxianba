@@ -151,7 +151,7 @@ const HotPage = () => {
             />
           ) : (
             <div className="space-y-6">
-              {posts.map(post => (
+              {Array.isArray(posts) && posts.map(post => (
                 <div key={post._id} className="bg-white rounded-lg shadow-sm">
                   {/* 作者信息 */}
                   <div className="p-4 border-b">

@@ -143,7 +143,7 @@ export const Profile = () => {
       </div>
       <Feed username={username} />
       <div className="profile-posts">
-        {posts.map(post => (
+        {Array.isArray(posts) && posts.map(post => (
           <PostCard key={post._id} post={post} onLike={() => handleLike(post._id)} />
         ))}
       </div>
