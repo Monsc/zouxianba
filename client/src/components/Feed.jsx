@@ -28,13 +28,18 @@ export const Feed = () => {
         console.log('[Feed] user:', user, 'username:', username, 'page:', page);
         const data = await apiService.getPosts(page);
         console.log('[Feed] apiService.getPosts 响应:', data);
-        const postsArr = Array.isArray(data) ? data : data.posts;
+        let postsArr = [];
+        if (Array.isArray(data)) {
+          postsArr = data;
+        } else if (data && Array.isArray(data.posts)) {
+          postsArr = data.posts;
+        }
         if (page === 1) {
           setPosts(postsArr);
         } else {
           setPosts(prev => [...prev, ...postsArr]);
         }
-        setHasMore(data.hasMore !== undefined ? data.hasMore : false);
+        setHasMore(data && typeof data.hasMore === 'boolean' ? data.hasMore : false);
       } catch (error) {
         console.error('[Feed] 加载 posts 出错:', error, error?.response);
         setError(error?.response?.data?.message || '加载失败，请稍后重试');
