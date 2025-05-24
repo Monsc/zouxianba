@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
@@ -16,7 +16,7 @@ import { apiService } from '../services/api';
 import { MessageInput } from './MessageInput';
 
 export const MessageList = ({ conversationId }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
