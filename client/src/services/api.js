@@ -341,6 +341,12 @@ class ApiService {
     });
     return response.data;
   }
+
+  // 获取公开信息流
+  async getPublicFeed(page = 1, limit = 20) {
+    const response = await this.get('/posts/public-feed', { params: { page, limit } });
+    return response.data;
+  }
 }
 
 // 创建并导出单例实例

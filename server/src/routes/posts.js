@@ -239,4 +239,26 @@ router.get('/', optionalAuth, catchAsync(async (req, res) => {
   });
 }));
 
+// Get public feed (no auth required)
+router.get('/public-feed', catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  const posts = await Post.find({})
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate('author', 'username handle avatar isVerified')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'author',
+        select: 'username handle avatar isVerified',
+      },
+    });
+
+  res.json(posts);
+}));
+
 module.exports = router; 

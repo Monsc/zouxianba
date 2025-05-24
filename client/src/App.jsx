@@ -72,6 +72,7 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Navigate to="/feed" replace />} />
         <Route path="/feed" element={<AnimatedPage><MainLayout><Feed /></MainLayout></AnimatedPage>} />
+        <Route path="/explore" element={<AnimatedPage><MainLayout><Feed /></MainLayout></AnimatedPage>} />
         <Route path="/notifications" element={<AnimatedPage><MainLayout><Notifications /></MainLayout></AnimatedPage>} />
         <Route path="/messages" element={<AnimatedPage><MainLayout><Messages /></MainLayout></AnimatedPage>} />
         <Route path="/login" element={<AnimatedPage><MainLayout><Login /></MainLayout></AnimatedPage>} />
