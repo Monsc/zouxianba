@@ -106,8 +106,8 @@ export const NotificationList = () => {
           key={notification._id}
           to={getNotificationLink(notification)}
           className={cn(
-            'block p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors',
-            !notification.read && 'bg-blue-50 dark:bg-blue-900/10'
+            'block mb-3 bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4 transition-shadow hover:shadow-md hover:bg-blue-50/60 dark:hover:bg-blue-900/20',
+            !notification.read && 'ring-2 ring-blue-400/40'
           )}
         >
           <div className="flex items-start space-x-3">
@@ -115,7 +115,7 @@ export const NotificationList = () => {
               <NotificationIcon type={notification.type} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-900 dark:text-white">
+              <p className="text-[15px] text-gray-900 dark:text-white font-medium">
                 {getNotificationContent(notification)}
               </p>
               <p className="mt-1 text-xs text-gray-500">
