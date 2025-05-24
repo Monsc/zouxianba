@@ -83,22 +83,6 @@
   --transition-slow: 350ms ease;
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-color: #15202b;
-    --background-dark: #15202b;
-    --text-color: #fff;
-    --border-color: #38444d;
-    --gray-100: #22303c;
-    --gray-200: #38444d;
-    --gray-300: #8899a6;
-    --gray-400: #ffffff;
-    --gray-700: #8899a6;
-    --gray-800: #fff;
-  }
-}
-
 /* Reset */
 * {
   margin: 0;
@@ -108,16 +92,26 @@
 
 body {
   font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-  background: var(--background-color);
-  color: var(--text-color);
+  background: #15202b !important;
+  color: #fff !important;
   font-size: var(--font-size-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  transition:
-    background 0.2s,
-    color 0.2s;
+  transition: background 0.2s, color 0.2s;
+}
+
+.bg-background, .bg-white, .bg-gray-50, .bg-gray-100, .bg-gray-200, .bg-gray-300, .bg-gray-400, .bg-gray-500, .bg-gray-600, .bg-gray-700, .bg-gray-800, .bg-gray-900 {
+  background-color: #15202b !important;
+}
+
+.text-primary, .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-gray-400, .text-gray-300, .text-gray-200, .text-gray-100, .text-black {
+  color: #fff !important;
+}
+
+.border-border, .border-gray-200, .border-gray-300, .border-gray-400, .border-gray-500, .border-gray-600, .border-gray-700, .border-gray-800, .border-gray-900 {
+  border-color: #38444d !important;
 }
 
 /* Layout */
@@ -566,10 +560,6 @@ button:hover {
 }
 
 /* Utility classes */
-.text-primary {
-  color: var(--primary-color);
-}
-
 .text-secondary {
   color: var(--secondary-color);
 }
@@ -1382,13 +1372,6 @@ button:hover {
 
 .logout-button:hover {
   transform: translateX(4px);
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .bottom-nav {
-    background-color: rgba(21, 32, 43, 0.85);
-  }
 }
 
 /* 右侧栏样式 */

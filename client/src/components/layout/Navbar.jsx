@@ -28,7 +28,7 @@ const Navbar = () => {
       <div className="md:hidden flex items-center justify-between h-14 px-4 border-b">
         <Link to="/" className="flex items-center">
           <img src="/logo192.png" alt="走线吧" className="h-6 w-6 mr-2" />
-          <span className="text-lg font-bold text-primary">走线吧</span>
+          <span className="text-lg font-bold text-white">走线吧</span>
         </Link>
         <div className="flex items-center space-x-3">
           <Link to="/notifications" className="text-gray-600 hover:text-gray-900">
@@ -76,7 +76,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img src="/logo192.png" alt="走线吧" className="h-8 w-8 mr-2" />
-            <span className="text-xl font-bold text-primary">走线吧</span>
+            <span className="text-xl font-bold text-white">走线吧</span>
           </Link>
 
           {/* Search Bar */}
