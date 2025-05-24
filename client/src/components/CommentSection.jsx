@@ -79,38 +79,32 @@ function CommentSection({ postId }) {
     const maxLevel = 2; // 最大嵌套层级
 
     return (
-      <div key={comment._id} className={`${level > 0 ? 'ml-8' : ''}`}>
-        <div className="flex space-x-3 p-4 hover:bg-twitter-gray-50 dark:hover:bg-twitter-gray-800/50">
+      <div key={comment._id} className={`${level > 0 ? 'ml-8' : ''} bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4 mb-2 transition-shadow hover:shadow-md`}>
+        <div className="flex space-x-3">
           <LazyImage
             src={comment.author.avatar}
             alt={comment.author.username}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
-              <span className="font-bold">{comment.author.username}</span>
-              <span className="text-twitter-gray-500">
-                {formatDistanceToNow(new Date(comment.createdAt), {
-                  addSuffix: true,
-                  locale: zhCN,
-                })}
-              </span>
+              <span className="font-bold text-gray-900 dark:text-white">{comment.author.username}</span>
+              <span className="text-gray-500 text-xs">{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, locale: zhCN })}</span>
             </div>
-            <p className="mt-1">{comment.content}</p>
+            <p className="mt-1 text-[15px] text-gray-900 dark:text-white">{comment.content}</p>
             <div className="mt-2 flex items-center space-x-4">
               <button
                 onClick={() => setReplyTo(comment)}
-                className="text-twitter-gray-500 hover:text-twitter-blue"
+                className="text-gray-500 hover:text-blue-500 rounded-full px-2 py-1 transition-colors"
               >
                 回复
               </button>
-              <button className="text-twitter-gray-500 hover:text-twitter-red">
+              <button className="text-gray-500 hover:text-red-500 rounded-full px-2 py-1 transition-colors">
                 ❤️ {comment.likes}
               </button>
             </div>
           </div>
         </div>
-
         {/* 嵌套回复 */}
         {level < maxLevel && replies.length > 0 && (
           <div className="mt-2">{replies.map(reply => renderComment(reply, level + 1))}</div>
@@ -141,24 +135,22 @@ function CommentSection({ postId }) {
       {/* 评论输入框 */}
       <form onSubmit={handleSubmit} className="mb-4">
         <div className="flex space-x-3">
-          <LazyImage src={user?.avatar} alt={user?.username} className="w-10 h-10 rounded-full" />
+          <LazyImage src={user?.avatar} alt={user?.username} className="w-10 h-10 rounded-full object-cover" />
           <div className="flex-1">
             <textarea
               value={newComment}
               onChange={e => setNewComment(e.target.value)}
               placeholder={replyTo ? `回复 @${replyTo.author.username}` : '添加评论...'}
-              className="w-full p-3 bg-transparent border border-twitter-gray-200 dark:border-twitter-gray-800 rounded-xl focus:ring-2 focus:ring-twitter-blue focus:border-transparent resize-none"
+              className="w-full p-3 bg-transparent border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-[15px]"
               rows="2"
             />
             {replyTo && (
               <div className="mt-2 flex items-center space-x-2">
-                <span className="text-sm text-twitter-gray-500">
-                  回复 @{replyTo.author.username}
-                </span>
+                <span className="text-sm text-gray-500">回复 @{replyTo.author.username}</span>
                 <button
                   type="button"
                   onClick={() => setReplyTo(null)}
-                  className="text-twitter-blue hover:underline text-sm"
+                  className="text-blue-500 hover:underline text-sm"
                 >
                   取消
                 </button>
@@ -168,7 +160,7 @@ function CommentSection({ postId }) {
               <button
                 type="submit"
                 disabled={!newComment.trim()}
-                className="px-4 py-2 bg-twitter-blue text-white rounded-full hover:bg-twitter-blue/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 发布
               </button>
