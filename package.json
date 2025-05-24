@@ -12,7 +12,8 @@
     "test": "cd server && pnpm test && cd ../client && pnpm test",
     "lint": "cd server && pnpm lint && cd ../client && pnpm lint",
     "format": "cd server && pnpm format && cd ../client && pnpm format",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "auto-build": "powershell -File ./scripts/build.ps1"
   },
   "keywords": [],
   "author": "",

@@ -3,6 +3,12 @@ export default {
     'tailwindcss/nesting': {},
     tailwindcss: {},
     autoprefixer: {},
-    ...(process.env.NODE_ENV === 'production' ? { cssnano: {} } : {})
+    cssnano: process.env.NODE_ENV === 'production' ? {
+      preset: ['default', {
+        discardComments: {
+          removeAll: true,
+        },
+      }],
+    } : false
   }
 } 
