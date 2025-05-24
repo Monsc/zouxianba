@@ -83,15 +83,14 @@ export function CreatePost({ onPostCreated }) {
   };
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-800 p-4">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4 mb-4 transition-shadow hover:shadow-md border-b border-gray-200 dark:border-gray-800">
       <form onSubmit={handleSubmit}>
         <div className="flex space-x-3">
           <img
             src={user?.avatar}
             alt={user?.username}
-            className="w-12 h-12 rounded-full"
+            className="w-12 h-12 rounded-full object-cover"
           />
-
           <div className="flex-1">
             <textarea
               ref={textareaRef}
@@ -101,7 +100,7 @@ export function CreatePost({ onPostCreated }) {
                 handleTextareaResize();
               }}
               placeholder="有什么新鲜事？"
-              className="w-full resize-none border-none focus:ring-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              className="w-full resize-none border-none focus:ring-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-xl text-[15px] py-2 px-3 min-h-[48px]"
               rows={1}
             />
 
@@ -141,7 +140,7 @@ export function CreatePost({ onPostCreated }) {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition-colors"
+                  className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition-transform duration-100 hover:scale-110"
                   disabled={selectedImages.length >= 4}
                 >
                   <Image className="w-5 h-5" />
@@ -150,7 +149,7 @@ export function CreatePost({ onPostCreated }) {
                 <button
                   type="button"
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition-colors"
+                  className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition-transform duration-100 hover:scale-110"
                 >
                   <Smile className="w-5 h-5" />
                 </button>
@@ -178,7 +177,7 @@ export function CreatePost({ onPostCreated }) {
       </form>
 
       {showEmojiPicker && (
-        <div className="absolute left-4 mt-2">
+        <div className="absolute left-4 mt-2 z-50">
           <div className="relative">
             <EmojiPicker onEmojiClick={handleEmojiClick} />
           </div>
