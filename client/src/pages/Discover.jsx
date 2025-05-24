@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getRecommendedUsers, getTrendingTopics } from '../services/api';
+import { apiService } from '../services/api';
 import { FollowService } from '../services/FollowService';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -19,8 +19,8 @@ function Discover() {
     try {
       setIsLoading(true);
       const [recommendedUsers, trendingTopics] = await Promise.all([
-        getRecommendedUsers(),
-        getTrendingTopics(),
+        apiService.getRecommendedUsers(),
+        apiService.getTrendingTopics(),
       ]);
       setUsers(recommendedUsers);
       setTopics(trendingTopics);

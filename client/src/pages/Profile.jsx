@@ -9,6 +9,8 @@ import { Feed } from '../components/Feed';
 import { PostCard } from '../components/PostCard';
 import ReportModal from '../components/ReportModal';
 import MainLayout from '../components/layout/MainLayout';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Edit, Mail, UserPlus, UserCheck, MoreHorizontal, MapPin, Link as LinkIcon, Calendar } from 'lucide-react';
 
 export const Profile = () => {
   const { username } = useParams();
@@ -18,6 +20,7 @@ export const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [activeTab, setActiveTab] = useState('posts');
   const [posts, setPosts] = useState([]);
   const [showReport, setShowReport] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
@@ -97,7 +100,7 @@ export const Profile = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="flex justify-center items-center min-h-[400px]">加载中...</div>;
   }
 
   if (!profile) {
@@ -106,62 +109,81 @@ export const Profile = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.username}</h1>
-              <p className="text-gray-600 dark:text-gray-400">@{profile.handle}</p>
-            </div>
-            {currentUser && currentUser.username !== username && (
-              <Button onClick={handleFollow} variant={isFollowing ? 'secondary' : 'primary'}>
-                {isFollowing ? 'Unfollow' : 'Follow'}
+      <div className="max-w-2xl mx-auto bg-white dark:bg-background rounded-xl shadow overflow-hidden">
+        {/* 封面图 */}
+        <div className="h-48 bg-gray-200 dark:bg-gray-800 relative">
+          {profile.cover && <img src={profile.cover} alt="封面" className="w-full h-full object-cover" />}
+          {/* 头像悬浮 */}
+          <div className="absolute left-6 -bottom-12 z-10">
+            <img
+              src={profile.avatar}
+              alt={profile.username}
+              className="w-24 h-24 rounded-full border-4 border-white dark:border-background object-cover shadow-lg"
+            />
+          </div>
+          {/* 右上角按钮 */}
+          <div className="absolute right-6 top-6 flex gap-2 z-10">
+            {currentUser && currentUser.username === username ? (
+              <Button size="sm" variant="outline" onClick={() => navigate('/settings/profile')}>
+                <Edit className="w-4 h-4 mr-1" /> 编辑资料
               </Button>
+            ) : currentUser && (
+              <>
+                <Button size="sm" variant={isFollowing ? 'secondary' : 'primary'} onClick={handleFollow}>
+                  {isFollowing ? <UserCheck className="w-4 h-4 mr-1" /> : <UserPlus className="w-4 h-4 mr-1" />}
+                  {isFollowing ? '已关注' : '关注'}
+                </Button>
+                <Button size="sm" variant="outline">
+                  <Mail className="w-4 h-4 mr-1" /> 私信
+                </Button>
+                <Button size="icon" variant="ghost"><MoreHorizontal className="w-4 h-4" /></Button>
+              </>
             )}
           </div>
-          <div className="mt-4 flex space-x-4">
-            <div>
-              <span className="font-bold text-gray-900 dark:text-white">
-                {profile.followersCount}
-              </span>{' '}
-              <span className="text-gray-600 dark:text-gray-400">Followers</span>
-            </div>
-            <div>
-              <span className="font-bold text-gray-900 dark:text-white">
-                {profile.followingCount}
-              </span>{' '}
-              <span className="text-gray-600 dark:text-gray-400">Following</span>
-            </div>
-          </div>
-          {profile.bio && <p className="mt-4 text-gray-600 dark:text-gray-400">{profile.bio}</p>}
         </div>
-        <Feed username={username} />
-        <div className="profile-posts">
-          {Array.isArray(posts) &&
-            posts.map(post => (
-              <PostCard key={post._id} post={post} onLike={() => handleLike(post._id)} />
-            ))}
-        </div>
-        {!currentUser && (
-          <div className="flex gap-2 mt-2">
-            <button className="btn btn-secondary" onClick={() => setShowReport(true)}>
-              举报
-            </button>
-            <button
-              className={`btn ${isBlocked ? 'btn-error' : 'btn-secondary'}`}
-              onClick={handleBlock}
-            >
-              {isBlocked ? '取消屏蔽' : '屏蔽'}
-            </button>
+        {/* 个人信息区 */}
+        <div className="pt-16 px-6 pb-4">
+          <h1 className="text-2xl font-bold">{profile.username}</h1>
+          <div className="text-muted-foreground">@{profile.handle}</div>
+          {profile.bio && <p className="mt-2 text-base text-muted-foreground">{profile.bio}</p>}
+          <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
+            {profile.location && (
+              <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" />{profile.location}</span>
+            )}
+            {profile.website && (
+              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:underline">
+                <LinkIcon className="w-4 h-4 mr-1" />{profile.website}
+              </a>
+            )}
+            {profile.createdAt && (
+              <span className="flex items-center"><Calendar className="w-4 h-4 mr-1" />加入于 {new Date(profile.createdAt).toLocaleDateString()}</span>
+            )}
           </div>
-        )}
-        {showReport && (
-          <ReportModal
-            type="user"
-            targetId={profile._id}
-            onClose={() => setShowReport(false)}
-          />
-        )}
+          {/* 关注/粉丝/推文数 */}
+          <div className="flex gap-6 mt-4 text-sm">
+            <div className="cursor-pointer hover:underline"><span className="font-bold">{profile.followersCount}</span> 粉丝</div>
+            <div className="cursor-pointer hover:underline"><span className="font-bold">{profile.followingCount}</span> 关注</div>
+            <div className="cursor-pointer hover:underline"><span className="font-bold">{profile.postsCount ?? profile.posts?.length ?? 0}</span> 推文</div>
+          </div>
+        </div>
+        {/* Tab切换 */}
+        <div className="border-b border-border px-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-4 w-full">
+              <TabsTrigger value="posts">推文</TabsTrigger>
+              <TabsTrigger value="replies">回复</TabsTrigger>
+              <TabsTrigger value="media">媒体</TabsTrigger>
+              <TabsTrigger value="likes">喜欢</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        {/* Tab内容 */}
+        <div className="px-6 py-4">
+          {activeTab === 'posts' && <Feed username={username} />}
+          {activeTab === 'replies' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
+          {activeTab === 'media' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
+          {activeTab === 'likes' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
+        </div>
       </div>
     </MainLayout>
   );

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getTrendingTopics } from '../services/api';
+import { apiService } from '../services/api';
 import PostList from '../components/PostList';
 import { PostCard } from '../components/PostCard';
-import apiService from '../services/apiService';
 
 const TopicPage = () => {
   const { tag } = useParams();
@@ -18,7 +17,7 @@ const TopicPage = () => {
     const fetchTopicData = async () => {
       try {
         setLoading(true);
-        const topics = await getTrendingTopics();
+        const topics = await apiService.getTrendingTopics();
         const currentTopic = topics.find(t => t.tag === tag);
         if (currentTopic) {
           setTopic(currentTopic);

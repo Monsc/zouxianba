@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -22,6 +22,8 @@ import NotFound from './pages/NotFound';
 import Feed from './pages/Feed';
 import Notifications from './pages/notifications/index';
 import Messages from './pages/Messages';
+import { AnimatePresence, motion } from 'framer-motion';
+import MainLayout from './components/layout/MainLayout';
 
 // 懒加载管理页面组件
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
@@ -47,9 +49,36 @@ const ProtectedAdminRoute = ({ children }) => {
   return <AdminLayout>{children}</AdminLayout>;
 };
 
-// 页面过渡组件
-const PageTransition = ({ children }) => {
-  return <div className="animate-fade-in">{children}</div>;
+// 页面切换动画包装
+const AnimatedPage = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -24 }}
+    transition={{ duration: 0.32, ease: 'easeInOut' }}
+    className="min-h-screen"
+  >
+    {children}
+  </motion.div>
+);
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Navigate to="/feed" replace />} />
+        <Route path="/feed" element={<AnimatedPage><MainLayout><Feed /></MainLayout></AnimatedPage>} />
+        <Route path="/notifications" element={<AnimatedPage><MainLayout><Notifications /></MainLayout></AnimatedPage>} />
+        <Route path="/messages" element={<AnimatedPage><MainLayout><Messages /></MainLayout></AnimatedPage>} />
+        <Route path="/login" element={<AnimatedPage><MainLayout><Login /></MainLayout></AnimatedPage>} />
+        <Route path="/register" element={<AnimatedPage><MainLayout><Register /></MainLayout></AnimatedPage>} />
+        <Route path="/profile/:username" element={<AnimatedPage><MainLayout><Profile /></MainLayout></AnimatedPage>} />
+        <Route path="/settings" element={<AnimatedPage><MainLayout><Settings /></MainLayout></AnimatedPage>} />
+        <Route path="*" element={<AnimatedPage><MainLayout><NotFound /></MainLayout></AnimatedPage>} />
+      </Routes>
+    </AnimatePresence>
+  );
 };
 
 export const App = () => {
@@ -60,17 +89,7 @@ export const App = () => {
           <AuthProvider>
             <ToastProvider>
               <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  <Route path="/" element={<Navigate to="/feed" replace />} />
-                  <Route path="/feed" element={<Feed />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/profile/:username" element={<Profile />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <AnimatedRoutes />
               </Suspense>
             </ToastProvider>
           </AuthProvider>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getTrendingTopics } from '../services/api';
+import { apiService } from '../services/api';
 
 function HashtagList() {
   const [topics, setTopics] = useState([]);
@@ -9,7 +9,7 @@ function HashtagList() {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const data = await getTrendingTopics();
+        const data = await apiService.getTrendingTopics();
         setTopics(data);
       } catch (error) {
         console.error('获取热门话题失败:', error);

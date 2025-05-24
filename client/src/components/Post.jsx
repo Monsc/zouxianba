@@ -3,16 +3,22 @@ import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { LazyImage } from './LazyImage';
 import { Avatar } from './Avatar';
-import { Button } from './Button';
-import { Icon } from './Icon';
+import { Button } from './ui/button';
+import { Heart, MessageCircle, Share2, Trash2, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../hooks/useToast';
 import { PostService } from '@/services/PostService';
 import { cn } from '@/lib/utils';
 import { ShareDialog } from './ShareDialog';
 import { ShareService } from '@/services/ShareService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import LoginForm from './LoginForm';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 export const Post = ({ post, onDelete }) => {
   const { user } = useAuth();
@@ -76,10 +82,12 @@ export const Post = ({ post, onDelete }) => {
   const renderMedia = () => {
     if (post.video) {
       return (
-        <video className="w-full rounded-lg" controls poster={post.images?.[0]}>
-          <source src={post.video} type="video/mp4" />
-          您的浏览器不支持视频播放
-        </video>
+        <div className="mt-3 rounded-2xl overflow-hidden">
+          <video className="w-full" controls poster={post.images?.[0]}>
+            <source src={post.video} type="video/mp4" />
+            您的浏览器不支持视频播放
+          </video>
+        </div>
       );
     }
 
@@ -87,7 +95,7 @@ export const Post = ({ post, onDelete }) => {
       return (
         <div
           className={cn(
-            'grid gap-2',
+            'mt-3 grid gap-2 rounded-2xl overflow-hidden',
             post.images.length === 1
               ? 'grid-cols-1'
               : post.images.length === 2
@@ -103,7 +111,7 @@ export const Post = ({ post, onDelete }) => {
               src={image}
               alt={`图片 ${index + 1}`}
               className={cn(
-                'rounded-lg object-cover',
+                'w-full h-full object-cover',
                 post.images.length === 3 && index === 0 ? 'row-span-2' : ''
               )}
             />
@@ -117,7 +125,7 @@ export const Post = ({ post, onDelete }) => {
 
   return (
     <>
-      <article className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <article className="p-4 hover:bg-accent/50 transition-colors border-b border-border">
         <div className="flex items-start space-x-3">
           <Avatar
             src={post.author.avatar}
@@ -127,31 +135,41 @@ export const Post = ({ post, onDelete }) => {
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <div className="flex items-center space-x-2">
+                <h3 className="font-bold hover:underline cursor-pointer">
                   {post.author.username}
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground">@{post.author.handle}</span>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-muted-foreground hover:underline cursor-pointer">
                   {formatDistanceToNow(new Date(post.createdAt), {
                     addSuffix: true,
                     locale: zhCN,
                   })}
-                </p>
+                </span>
               </div>
               {user?.id === post.author.id && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="text-gray-500 hover:text-red-500"
-                >
-                  <Icon name="Trash" className="w-4 h-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      删除
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
 
-            <div className="mt-2 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+            <div className="mt-2 text-[15px] whitespace-pre-wrap">
               {post.content}
             </div>
 
@@ -160,7 +178,7 @@ export const Post = ({ post, onDelete }) => {
                 {post.tags.map(tag => (
                   <span
                     key={tag}
-                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                    className="text-primary hover:underline cursor-pointer"
                   >
                     #{tag}
                   </span>
@@ -170,44 +188,54 @@ export const Post = ({ post, onDelete }) => {
 
             {renderMedia()}
 
-            <div className="mt-4 flex items-center space-x-4">
+            <div className="mt-3 flex items-center justify-between max-w-md">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleLike}
                 className={cn(
-                  'flex items-center space-x-1',
-                  isLiked ? 'text-red-500' : 'text-gray-500'
+                  'flex items-center space-x-1 rounded-full',
+                  isLiked ? 'text-red-500 hover:text-red-500 hover:bg-red-500/10' : 'text-muted-foreground hover:text-red-500 hover:bg-red-500/10'
                 )}
               >
-                <Icon name={isLiked ? 'heart-filled' : 'heart'} className="w-4 h-4" />
+                <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
                 <span>{likes}</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleShare}
-                className="flex items-center space-x-1 text-gray-500"
+                className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
               >
-                <Icon name="Share2" className="w-4 h-4" />
+                <MessageCircle className="h-4 w-4" />
+                <span>{post.comments?.length || 0}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShare}
+                className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+              >
+                <Share2 className="h-4 w-4" />
                 <span>{shares}</span>
               </Button>
-              <ShareDialog
-                open={isShareDialogOpen}
-                onClose={() => setIsShareDialogOpen(false)}
-                post={post}
-                onShareSuccess={handleShareSuccess}
-              />
             </div>
           </div>
         </div>
       </article>
+
+      <ShareDialog
+        open={isShareDialogOpen}
+        onClose={() => setIsShareDialogOpen(false)}
+        post={post}
+        onShareSuccess={handleShareSuccess}
+      />
+
       <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>登录</DialogTitle>
+            <DialogTitle>登录以继续</DialogTitle>
           </DialogHeader>
-          <LoginForm />
+          <LoginForm onSuccess={() => setIsLoginModalOpen(false)} />
         </DialogContent>
       </Dialog>
     </>

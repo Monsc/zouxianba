@@ -7,10 +7,16 @@ import MainLayout from '@/components/layout/MainLayout';
 import Button from '@/components/common/Button';
 import LoadingOverlay from '@/components/common/LoadingOverlay';
 import EmptyState from '@/components/common/EmptyState';
-import ErrorState from '@/components/common/ErrorState';
-import Pagination from '@/components/common/Pagination';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Bell, AtSign, Info, UserPlus, Heart, MessageCircle, Trash2, Check } from 'lucide-react';
+
+const tabTypes = [
+  { value: 'all', label: '全部', icon: Bell },
+  { value: 'mention', label: '提及', icon: AtSign },
+  { value: 'system', label: '系统', icon: Info },
+];
 
 const NotificationsPage = () => {
   const navigate = useNavigate();
@@ -18,9 +24,8 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [activeTab, setActiveTab] = useState('all');
 
   // 获取通知列表
   const fetchNotifications = async () => {
@@ -29,12 +34,10 @@ const NotificationsPage = () => {
       setError(null);
       const response = await api.get('/notifications', {
         params: {
-          page: currentPage,
-          limit: 20,
+          type: activeTab === 'all' ? undefined : activeTab,
         },
       });
       setNotifications(response.data.notifications);
-      setTotalPages(response.data.totalPages);
       setUnreadCount(response.data.unreadCount);
     } catch (err) {
       setError(err.message || '获取通知失败');
@@ -48,7 +51,8 @@ const NotificationsPage = () => {
     if (user) {
       fetchNotifications();
     }
-  }, [user, currentPage]);
+    // eslint-disable-next-line
+  }, [user, activeTab]);
 
   // 标记通知为已读
   const markAsRead = async notificationId => {
@@ -62,6 +66,17 @@ const NotificationsPage = () => {
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       toast.error('操作失败，请重试');
+    }
+  };
+
+  // 删除通知
+  const deleteNotification = async notificationId => {
+    try {
+      await api.delete(`/notifications/${notificationId}`);
+      setNotifications(notifications.filter(n => n._id !== notificationId));
+      toast.success('通知已删除');
+    } catch (err) {
+      toast.error('删除失败，请重试');
     }
   };
 
@@ -87,8 +102,7 @@ const NotificationsPage = () => {
     if (!notification.read) {
       markAsRead(notification._id);
     }
-
-    // 根据通知类型跳转到相应页面
+    // 跳转逻辑
     switch (notification.type) {
       case 'follow':
         navigate(`/user/${notification.sender.username}`);
@@ -105,76 +119,33 @@ const NotificationsPage = () => {
     }
   };
 
-  // 渲染通知内容
-  const renderNotificationContent = notification => {
-    switch (notification.type) {
-      case 'follow':
-        return (
-          <div className="flex items-center space-x-2">
-            <img
-              src={notification.sender.avatar}
-              alt={notification.sender.username}
-              className="w-8 h-8 rounded-full"
-            />
-            <span>
-              <span className="font-medium">{notification.sender.username}</span>
-              {' 关注了你'}
-            </span>
-          </div>
-        );
-      case 'like':
-        return (
-          <div className="flex items-center space-x-2">
-            <img
-              src={notification.sender.avatar}
-              alt={notification.sender.username}
-              className="w-8 h-8 rounded-full"
-            />
-            <span>
-              <span className="font-medium">{notification.sender.username}</span>
-              {' 赞了你的帖子'}
-            </span>
-          </div>
-        );
-      case 'comment':
-        return (
-          <div className="flex items-center space-x-2">
-            <img
-              src={notification.sender.avatar}
-              alt={notification.sender.username}
-              className="w-8 h-8 rounded-full"
-            />
-            <span>
-              <span className="font-medium">{notification.sender.username}</span>
-              {' 评论了你的帖子：'}
-              <span className="text-gray-600">{notification.comment.content}</span>
-            </span>
-          </div>
-        );
-      case 'mention':
-        return (
-          <div className="flex items-center space-x-2">
-            <img
-              src={notification.sender.avatar}
-              alt={notification.sender.username}
-              className="w-8 h-8 rounded-full"
-            />
-            <span>
-              <span className="font-medium">{notification.sender.username}</span>
-              {' 在评论中提到了你：'}
-              <span className="text-gray-600">{notification.comment.content}</span>
-            </span>
-          </div>
-        );
-      default:
-        return null;
+  // 渲染通知内容和图标
+  const renderNotification = notification => {
+    let icon = <Bell className="w-5 h-5 text-primary" />;
+    let content = null;
+    if (notification.type === 'follow') {
+      icon = <UserPlus className="w-5 h-5 text-primary" />;
+      content = <><span className="font-bold">{notification.sender.username}</span> 关注了你</>;
+    } else if (notification.type === 'like') {
+      icon = <Heart className="w-5 h-5 text-rose-500" />;
+      content = <><span className="font-bold">{notification.sender.username}</span> 赞了你的帖子</>;
+    } else if (notification.type === 'comment') {
+      icon = <MessageCircle className="w-5 h-5 text-blue-500" />;
+      content = <><span className="font-bold">{notification.sender.username}</span> 评论了你的帖子：<span className="text-muted-foreground">{notification.comment.content}</span></>;
+    } else if (notification.type === 'mention') {
+      icon = <AtSign className="w-5 h-5 text-violet-500" />;
+      content = <><span className="font-bold">{notification.sender.username}</span> 在评论中提到了你：<span className="text-muted-foreground">{notification.comment.content}</span></>;
+    } else if (notification.type === 'system') {
+      icon = <Info className="w-5 h-5 text-gray-500" />;
+      content = <span>{notification.content}</span>;
     }
+    return { icon, content };
   };
 
   if (!user) {
     return (
       <MainLayout>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-2xl mx-auto py-16">
           <EmptyState
             title="请先登录"
             description="登录后查看你的通知"
@@ -187,74 +158,61 @@ const NotificationsPage = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto">
-        {/* 标题和操作栏 */}
-        <div className="mb-6 bg-white rounded-lg shadow-sm">
-          <div className="p-4 border-b">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900">
-                通知中心
-                {unreadCount > 0 && (
-                  <span className="ml-2 px-2 py-1 text-sm bg-red-100 text-red-600 rounded-full">
-                    {unreadCount} 条未读
-                  </span>
-                )}
-              </h1>
-              {unreadCount > 0 && (
-                <Button variant="secondary" size="sm" onClick={markAllAsRead}>
-                  全部标记为已读
-                </Button>
-              )}
-            </div>
-          </div>
+      <div className="max-w-2xl mx-auto py-8">
+        {/* 顶部 Tabs 和操作栏 */}
+        <div className="flex items-center justify-between mb-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-3 w-full">
+              {tabTypes.map(tab => (
+                <TabsTrigger key={tab.value} value={tab.value} className="flex items-center gap-2">
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                  {tab.value === 'all' && unreadCount > 0 && (
+                    <span className="ml-1 px-2 py-0.5 text-xs bg-red-100 text-red-600 rounded-full">
+                      {unreadCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <Button variant="ghost" size="sm" onClick={markAllAsRead} className="ml-4">
+            <Check className="w-4 h-4 mr-1" /> 全部已读
+          </Button>
         </div>
-
         <LoadingOverlay isLoading={loading}>
-          {error ? (
-            <ErrorState
-              title="获取通知失败"
-              description={error}
-              action={<Button onClick={fetchNotifications}>重试</Button>}
-            />
-          ) : notifications.length === 0 ? (
-            <EmptyState
-              title="暂无通知"
-              description="当有人关注你、点赞或评论你的帖子时，你会收到通知"
-            />
+          {notifications.length === 0 ? (
+            <EmptyState title="暂无通知" description="你还没有收到任何通知" />
           ) : (
-            <div className="space-y-2">
-              {notifications.map(notification => (
-                <div
-                  key={notification._id}
-                  className={`bg-white rounded-lg shadow-sm cursor-pointer transition-colors ${
-                    notification.read ? 'hover:bg-gray-50' : 'bg-blue-50 hover:bg-blue-100'
-                  }`}
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <div className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">{renderNotificationContent(notification)}</div>
-                      <div className="ml-4 text-sm text-gray-500">
-                        {formatDistanceToNow(new Date(notification.createdAt), {
-                          addSuffix: true,
-                          locale: zhCN,
-                        })}
+            <div className="space-y-3">
+              {notifications.map(notification => {
+                const { icon, content } = renderNotification(notification);
+                return (
+                  <div
+                    key={notification._id}
+                    className={`flex items-start gap-3 p-4 rounded-xl shadow-sm bg-white dark:bg-accent/30 transition-colors cursor-pointer hover:bg-accent/50 relative ${!notification.read ? 'border-l-4 border-primary' : 'opacity-70'}`}
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <div className="flex-shrink-0 mt-1">{icon}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-base">{content}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: zhCN })}
                       </div>
                     </div>
+                    <div className="flex flex-col gap-2 items-end ml-2">
+                      {!notification.read && (
+                        <Button variant="ghost" size="icon" onClick={e => { e.stopPropagation(); markAsRead(notification._id); }} title="标记为已读">
+                          <Check className="w-4 h-4" />
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="icon" onClick={e => { e.stopPropagation(); deleteNotification(notification._id); }} title="删除">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
-
-              {/* 分页 */}
-              {totalPages > 1 && (
-                <div className="mt-6">
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                  />
-                </div>
-              )}
+                );
+              })}
             </div>
           )}
         </LoadingOverlay>

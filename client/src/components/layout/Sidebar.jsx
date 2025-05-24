@@ -1,30 +1,33 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  HomeIcon,
-  FireIcon,
-  UserGroupIcon,
-  BookmarkIcon,
-  HashtagIcon,
-  BellIcon,
-  MailIcon,
-  UserIcon,
-  CogIcon,
-} from '@heroicons/react/outline';
+  Home,
+  TrendingUp,
+  Users,
+  Bell,
+  Mail,
+  Bookmark,
+  User,
+  Settings,
+  Hash,
+  Plus,
+} from 'lucide-react';
+import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 const Sidebar = () => {
   const location = useLocation();
   const pathname = location.pathname;
 
   const navItems = [
-    { name: '首页', href: '/', icon: HomeIcon },
-    { name: '热门', href: '/hot', icon: FireIcon },
-    { name: '关注', href: '/following', icon: UserGroupIcon },
-    { name: '通知', href: '/notifications', icon: BellIcon },
-    { name: '消息', href: '/messages', icon: MailIcon },
-    { name: '收藏', href: '/bookmarks', icon: BookmarkIcon },
-    { name: '个人主页', href: '/profile', icon: UserIcon },
-    { name: '设置', href: '/settings', icon: CogIcon },
+    { name: '首页', href: '/', icon: Home },
+    { name: '热门', href: '/hot', icon: TrendingUp },
+    { name: '关注', href: '/following', icon: Users },
+    { name: '通知', href: '/notifications', icon: Bell },
+    { name: '消息', href: '/messages', icon: Mail },
+    { name: '收藏', href: '/bookmarks', icon: Bookmark },
+    { name: '个人主页', href: '/profile', icon: User },
+    { name: '设置', href: '/settings', icon: Settings },
   ];
 
   const trendingTopics = [
@@ -35,9 +38,16 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 space-y-8">
+    <div className="flex flex-col h-full px-4 py-6">
+      {/* Logo */}
+      <div className="mb-6">
+        <Link to="/" className="text-2xl font-bold text-primary">
+          走线吧
+        </Link>
+      </div>
+
       {/* Navigation */}
-      <nav>
+      <nav className="flex-1">
         <ul className="space-y-2">
           {navItems.map(item => {
             const Icon = item.icon;
@@ -46,12 +56,15 @@ const Sidebar = () => {
               <li key={item.name}>
                 <Link
                   to={item.href}
-                  className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
-                    isActive ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={cn(
+                    'flex items-center space-x-4 px-4 py-3 rounded-full transition-colors',
+                    isActive
+                      ? 'font-bold text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
                 >
                   <Icon className="h-5 w-5" />
-                  <span>{item.name}</span>
+                  <span className="text-lg">{item.name}</span>
                 </Link>
               </li>
             );
@@ -59,21 +72,30 @@ const Sidebar = () => {
         </ul>
       </nav>
 
+      {/* Post Button */}
+      <Button
+        size="lg"
+        className="w-full rounded-full mt-4 mb-6 font-bold"
+      >
+        <Plus className="h-5 w-5 mr-2" />
+        发帖
+      </Button>
+
       {/* Trending Topics */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">热门话题</h3>
+      <div className="bg-accent/50 rounded-2xl p-4">
+        <h3 className="text-lg font-bold mb-4">热门话题</h3>
         <ul className="space-y-3">
           {trendingTopics.map(topic => (
             <li key={topic.name}>
               <Link
                 to={`/topic/${topic.name}`}
-                className="flex items-center justify-between text-gray-700 hover:text-primary"
+                className="flex items-center justify-between text-muted-foreground hover:text-foreground"
               >
                 <div className="flex items-center space-x-2">
-                  <HashtagIcon className="h-4 w-4" />
+                  <Hash className="h-4 w-4" />
                   <span>{topic.name}</span>
                 </div>
-                <span className="text-sm text-gray-500">{topic.count}</span>
+                <span className="text-sm">{topic.count}</span>
               </Link>
             </li>
           ))}
@@ -81,21 +103,21 @@ const Sidebar = () => {
       </div>
 
       {/* Footer */}
-      <div className="text-sm text-gray-500">
-        <p>© 2024 走线吧</p>
-        <div className="mt-2 space-x-2">
-          <Link to="/about" className="hover:text-gray-700">
+      <div className="mt-6 text-sm text-muted-foreground">
+        <div className="flex flex-wrap gap-2">
+          <Link to="/about" className="hover:underline">
             关于我们
           </Link>
-          <Link to="/privacy" className="hover:text-gray-700">
+          <Link to="/privacy" className="hover:underline">
             隐私政策
           </Link>
-          <Link to="/terms" className="hover:text-gray-700">
+          <Link to="/terms" className="hover:underline">
             使用条款
           </Link>
         </div>
+        <p className="mt-2">© 2024 走线吧</p>
       </div>
-    </aside>
+    </div>
   );
 };
 

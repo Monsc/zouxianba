@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { Avatar } from './Avatar';
-import { Button } from './Button';
-import { Icon } from './Icon';
+import { Button } from './ui/button';
+import { Heart, MessageCircle, Reply, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { CommentService } from '@/services/CommentService';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 export const Comment = ({ comment, onDelete, onReply }) => {
   const { user } = useAuth();
@@ -62,52 +68,62 @@ export const Comment = ({ comment, onDelete, onReply }) => {
   };
 
   return (
-    <div className="flex space-x-3">
+    <div className="flex space-x-3 p-4 hover:bg-accent/50 transition-colors border-b border-border">
       <Avatar
         src={comment.author.avatar}
         alt={comment.author.username}
-        size="sm"
+        size="md"
         className="flex-shrink-0"
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <div>
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div className="flex items-center space-x-2">
+            <h4 className="font-bold hover:underline cursor-pointer">
               {comment.author.username}
             </h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-muted-foreground">@{comment.author.handle}</span>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-muted-foreground hover:underline cursor-pointer">
               {formatDistanceToNow(new Date(comment.createdAt), {
                 addSuffix: true,
                 locale: zhCN,
               })}
-            </p>
+            </span>
           </div>
           {user?.id === comment.author.id && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="text-gray-500 hover:text-red-500"
-            >
-              <Icon name="Trash" className="w-4 h-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  删除
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
 
-        <div className="mt-1 text-sm text-gray-900 dark:text-gray-100">{comment.content}</div>
+        <div className="mt-1 text-[15px]">{comment.content}</div>
 
-        <div className="mt-2 flex items-center space-x-4">
+        <div className="mt-3 flex items-center justify-between max-w-md">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLike}
             className={cn(
-              'flex items-center space-x-1',
-              isLiked ? 'text-red-500' : 'text-gray-500'
+              'flex items-center space-x-1 rounded-full',
+              isLiked ? 'text-red-500 hover:text-red-500 hover:bg-red-500/10' : 'text-muted-foreground hover:text-red-500 hover:bg-red-500/10'
             )}
           >
-            <Icon name={isLiked ? 'heart-filled' : 'heart'} className="w-4 h-4" />
+            <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
             <span>{likes}</span>
           </Button>
 
@@ -115,15 +131,19 @@ export const Comment = ({ comment, onDelete, onReply }) => {
             variant="ghost"
             size="sm"
             onClick={handleReply}
-            className="flex items-center space-x-1 text-gray-500"
+            className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
           >
-            <Icon name="reply" className="w-4 h-4" />
+            <Reply className="h-4 w-4" />
             <span>回复</span>
           </Button>
 
           {comment.replies > 0 && (
-            <Button variant="ghost" size="sm" className="flex items-center space-x-1 text-gray-500">
-              <Icon name="message" className="w-4 h-4" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+            >
+              <MessageCircle className="h-4 w-4" />
               <span>{comment.replies} 条回复</span>
             </Button>
           )}

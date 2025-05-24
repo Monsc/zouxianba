@@ -1,32 +1,39 @@
 import React from 'react';
 import { useToast } from '../../contexts/ToastContext';
+import { CheckCircle, XCircle, Info, X } from 'lucide-react';
 
 export const Toaster = () => {
   const { toasts, removeToast } = useToast();
 
+  const getIcon = type => {
+    if (type === 'success') return <CheckCircle className="w-5 h-5 text-green-400 mr-2" />;
+    if (type === 'error') return <XCircle className="w-5 h-5 text-red-400 mr-2" />;
+    return <Info className="w-5 h-5 text-blue-400 mr-2" />;
+  };
+
   return (
-    <div className="fixed bottom-0 right-0 p-4 space-y-4 z-50">
+    <div className="fixed top-6 right-6 z-50 flex flex-col items-end space-y-4">
       {Array.isArray(toasts) &&
         toasts.map(toast => (
           <div
             key={toast.id}
-            className={`p-4 rounded-lg shadow-lg transform transition-all duration-300 ${
+            className={`flex items-center max-w-xs p-4 rounded-2xl shadow-xl bg-white dark:bg-background border border-border text-base font-medium animate-fade-in-up transition-all duration-300 ${
               toast.type === 'success'
-                ? 'bg-green-500'
+                ? 'border-green-400'
                 : toast.type === 'error'
-                  ? 'bg-red-500'
-                  : 'bg-blue-500'
-            } text-white`}
+                  ? 'border-red-400'
+                  : 'border-blue-400'
+            }`}
           >
-            <div className="flex items-center justify-between">
-              <p>{toast.message}</p>
-              <button
-                onClick={() => removeToast(toast.id)}
-                className="ml-4 text-white hover:text-gray-200"
-              >
-                ×
-              </button>
-            </div>
+            {getIcon(toast.type)}
+            <span className="flex-1 text-gray-900 dark:text-gray-100">{toast.message}</span>
+            <button
+              onClick={() => removeToast(toast.id)}
+              className="ml-3 rounded-full p-1 hover:bg-accent transition"
+              aria-label="关闭"
+            >
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
           </div>
         ))}
     </div>

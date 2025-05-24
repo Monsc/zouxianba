@@ -4,14 +4,50 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="ZouXianBa - A social media platform" />
+    <meta name="theme-color" content="#1da1f2" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#1da1f2" />
+    <meta name="description" content="走线吧 ZouXianBa - 极致推特化社交平台" />
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
-    <title>ZouXianBa</title>
+    <title>走线吧 ZouXianBa</title>
+    <style>
+      body.loading-splash {
+        background: #1da1f2;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+      }
+      .splash-logo {
+        width: 96px;
+        height: 96px;
+        border-radius: 24px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="loading-splash">
+    <div id="splash">
+      <div class="splash-logo">
+        <img src="/logo192.png" alt="ZouXianBa" style="width: 72px; height: 72px;" />
+      </div>
+    </div>
+    <div id="root" style="display:none;"></div>
+    <script type="module">
+      // 启动后隐藏 splash，显示主应用
+      window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          document.getElementById('splash').style.display = 'none';
+          document.getElementById('root').style.display = '';
+          document.body.classList.remove('loading-splash');
+        }, 600);
+      });
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html> 
