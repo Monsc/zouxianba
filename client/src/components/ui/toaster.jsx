@@ -17,12 +17,12 @@ export const Toaster = () => {
         toasts.map(toast => (
           <div
             key={toast.id}
-            className={`flex items-center max-w-xs p-4 rounded-2xl shadow-xl bg-white dark:bg-background border border-border text-base font-medium animate-fade-in-up transition-all duration-300 ${
+            className={`flex items-center max-w-xs p-4 rounded-2xl shadow-xl bg-white dark:bg-gray-800 border border-[#1da1f2] text-base font-medium animate-fade-in-up transition-all duration-300 ${
               toast.type === 'success'
                 ? 'border-green-400'
                 : toast.type === 'error'
                   ? 'border-red-400'
-                  : 'border-blue-400'
+                  : 'border-[#1da1f2]'
             }`}
           >
             {getIcon(toast.type)}

@@ -28,8 +28,8 @@ export const Sidebar = () => {
         <Link to={`/profile/${user?.username}`} className="flex items-center space-x-3">
           <Avatar src={user?.avatar} alt={user?.username} />
           <div>
-            <h3 className="font-medium">{user?.username}</h3>
-            <p className="text-sm text-gray-500">@{user?.handle}</p>
+            <h3 className="font-medium text-[#1da1f2]">{user?.username}</h3>
+            <p className="text-sm text-[#1da1f2]/60">@{user?.handle}</p>
           </div>
         </Link>
       </div>
@@ -40,11 +40,11 @@ export const Sidebar = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
-                isActive(item.path)
-                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
+              className={`flex items-center space-x-3 px-4 py-2 rounded-full transition-colors text-base font-medium
+                ${isActive(item.path)
+                  ? 'bg-[#1da1f2]/10 text-[#1da1f2] font-bold shadow'
+                  : 'text-[#1da1f2]/80 hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8]'}
+              `}
             >
               <span>{item.icon}</span>
               <span>{item.label}</span>
@@ -53,7 +53,7 @@ export const Sidebar = () => {
       </nav>
 
       <div className="p-4">
-        <button className="w-full bg-blue-600 text-white rounded-full py-2 hover:bg-blue-700 transition-colors">
+        <button className="w-full bg-[#1da1f2] text-white rounded-full py-2 hover:bg-[#1a8cd8] transition-colors font-bold shadow-lg">
           Post
         </button>
       </div>

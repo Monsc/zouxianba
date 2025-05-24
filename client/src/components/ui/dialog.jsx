@@ -29,7 +29,7 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-6 border bg-background p-8 shadow-2xl duration-200',
+        'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-6 border border-[#1da1f2]/20 bg-white dark:bg-gray-800 p-8 shadow-2xl duration-200',
         'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
         'data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
@@ -43,8 +43,8 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-full opacity-80 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none bg-accent/60 p-2">
-        <X className="h-6 w-6" />
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-full opacity-80 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#1da1f2] focus:ring-offset-2 disabled:pointer-events-none bg-[#1da1f2]/10 p-2">
+        <X className="h-6 w-6 text-[#1da1f2]" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -95,7 +95,7 @@ export const AlertDialogContent = ({ children }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" />
-      <div className="relative z-50 w-full max-w-lg p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <div className="relative z-50 w-full max-w-lg p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-[#1da1f2]/20">
         {children}
       </div>
     </div>
@@ -132,7 +132,7 @@ export const AlertDialogCancel = ({ children, ...props }) => {
 export const AlertDialogAction = ({ children, ...props }) => {
   return (
     <button
-      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      className="px-4 py-2 text-sm font-medium text-white bg-[#1da1f2] border border-transparent rounded-full hover:bg-[#1a8cd8] focus:outline-none focus:ring-2 focus:ring-[#1da1f2] focus:ring-offset-2 transition-colors"
       {...props}
     >
       {children}

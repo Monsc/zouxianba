@@ -67,14 +67,14 @@ const PullToRefresh = ({ onRefresh, children, threshold = 100, resistance = 2.5 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute top-0 left-0 right-0 flex justify-center items-center bg-gray-50 dark:bg-gray-900"
+            className="absolute top-0 left-0 right-0 flex justify-center items-center bg-[#1da1f2]/10 dark:bg-[#1a8cd8]/10"
             style={{ height: `${pullDistance}px` }}
           >
             <motion.div
               animate={{ rotate: isRefreshing ? 360 : 0 }}
               transition={{ duration: 1, repeat: isRefreshing ? Infinity : 0 }}
             >
-              <RefreshCw className="w-6 h-6 text-gray-500" />
+              <RefreshCw className="w-6 h-6 text-[#1da1f2] dark:text-[#1a8cd8]" />
             </motion.div>
           </motion.div>
         )}

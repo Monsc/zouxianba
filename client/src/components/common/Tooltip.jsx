@@ -49,11 +49,11 @@ const Tooltip = ({ content, children, position = 'top', delay = 200, className =
       {children}
       {isVisible && (
         <div
-          className={`absolute z-50 px-2 py-1 text-sm text-white bg-gray-900 rounded shadow-lg ${positions[position]} ${className}`}
+          className={`absolute z-50 px-3 py-1.5 text-sm text-white bg-[#1da1f2] dark:bg-[#1a8cd8] rounded-2xl shadow-xl border border-[#1da1f2]/30 ${positions[position]} ${className}`}
           role="tooltip"
         >
           {content}
-          <div className={`absolute w-2 h-2 bg-gray-900 ${arrows[position]}`} />
+          <div className={`absolute w-2 h-2 bg-[#1da1f2] dark:bg-[#1a8cd8] ${arrows[position]}`} />
         </div>
       )}
     </div>

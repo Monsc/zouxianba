@@ -35,11 +35,11 @@ const Pagination = ({
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`relative inline-flex items-center px-4 py-2 text-sm font-medium ${
-            currentPage === page
-              ? 'z-10 bg-primary text-white'
-              : 'bg-white text-gray-500 hover:bg-gray-50'
-          } border border-gray-300`}
+          className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-full transition-colors duration-150
+            ${currentPage === page
+              ? 'z-10 bg-[#1da1f2] text-white shadow-lg'
+              : 'bg-white dark:bg-gray-900/80 text-[#1da1f2] border border-[#1da1f2]/30 hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8]'}
+          `}
         >
           {page}
         </button>
@@ -53,7 +53,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
-          className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-[#1da1f2] bg-white dark:bg-gray-900/80 border border-[#1da1f2]/30 rounded-full hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <span className="sr-only">首页</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@ const Pagination = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-[#1da1f2] bg-white dark:bg-gray-900/80 border border-[#1da1f2]/30 rounded-full hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <span className="sr-only">上一页</span>
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@ const Pagination = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-[#1da1f2] bg-white dark:bg-gray-900/80 border border-[#1da1f2]/30 rounded-full hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <span className="sr-only">下一页</span>
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages}
-          className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-[#1da1f2] bg-white dark:bg-gray-900/80 border border-[#1da1f2]/30 rounded-full hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <span className="sr-only">末页</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

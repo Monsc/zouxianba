@@ -20,9 +20,9 @@ const Navigation = () => {
           key={item.to}
           to={item.to}
           className={({ isActive }) =>
-            `flex items-center space-x-4 px-4 py-3 rounded-full transition-colors ${
-              isActive ? 'bg-twitter-blue text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`
+            `flex items-center space-x-4 px-4 py-3 rounded-full transition-colors text-base font-medium
+              ${isActive ? 'bg-[#1da1f2]/10 text-[#1da1f2] font-bold shadow' : 'text-[#1da1f2]/80 hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8]'}
+            `
           }
         >
           <motion.span whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="text-xl">
@@ -35,7 +35,7 @@ const Navigation = () => {
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full mt-4 bg-twitter-blue text-white rounded-full py-3 font-bold hover:bg-twitter-blue-dark transition-colors"
+        className="w-full mt-4 bg-[#1da1f2] text-white rounded-full py-3 font-bold hover:bg-[#1a8cd8] transition-colors shadow-lg"
       >
         发推
       </motion.button>

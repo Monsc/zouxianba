@@ -7,13 +7,12 @@ const Button = React.forwardRef(
       'inline-flex items-center justify-center text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50';
 
     const variants = {
-      default: 'bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 rounded-full',
-      destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 rounded-full',
-      outline:
-        'border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground rounded-full',
-      secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 rounded-full',
-      ghost: 'hover:bg-accent hover:text-accent-foreground rounded-full',
-      link: 'text-primary underline-offset-4 hover:underline',
+      default: 'bg-[#1da1f2] text-white shadow-lg hover:bg-[#1a8cd8] active:scale-95 focus:ring-2 focus:ring-[#1da1f2] rounded-full',
+      destructive: 'bg-red-500 text-white shadow-lg hover:bg-red-600 active:scale-95 focus:ring-2 focus:ring-red-500 rounded-full',
+      outline: 'border border-[#1da1f2] bg-transparent text-[#1da1f2] shadow-lg hover:bg-[#1da1f2]/10 active:scale-95 focus:ring-2 focus:ring-[#1da1f2] rounded-full',
+      secondary: 'bg-gray-200 text-gray-800 shadow-lg hover:bg-gray-300 active:scale-95 focus:ring-2 focus:ring-gray-400 rounded-full',
+      ghost: 'hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] active:scale-95 focus:ring-2 focus:ring-[#1da1f2] rounded-full',
+      link: 'text-[#1da1f2] underline-offset-4 hover:underline',
     };
 
     const sizes = {

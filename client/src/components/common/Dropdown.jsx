@@ -26,7 +26,7 @@ const Dropdown = ({ trigger, items, align = 'right', className = '' }) => {
 
       {isOpen && (
         <div
-          className={`absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none ${alignments[align]} ${className}`}
+          className={`absolute z-10 mt-2 w-48 rounded-2xl shadow-xl bg-white dark:bg-gray-800 border border-[#1da1f2]/20 focus:outline-none ${alignments[align]} ${className}`}
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
@@ -41,9 +41,11 @@ const Dropdown = ({ trigger, items, align = 'right', className = '' }) => {
                     item.onClick?.();
                     setIsOpen(false);
                   }}
-                  className={`${
-                    item.danger ? 'text-red-700 hover:bg-red-50' : 'text-gray-700 hover:bg-gray-50'
-                  } group flex items-center w-full px-4 py-2 text-sm`}
+                  className={`group flex items-center w-full px-4 py-2 text-sm rounded-xl transition-colors
+                    ${item.danger
+                      ? 'text-red-700 hover:bg-red-50 dark:hover:bg-red-900'
+                      : 'text-gray-700 dark:text-gray-100 hover:bg-[#1da1f2]/10 hover:text-[#1da1f2] dark:hover:bg-[#1a8cd8]/10 dark:hover:text-[#1a8cd8]'}
+                  `}
                   role="menuitem"
                   tabIndex="-1"
                 >

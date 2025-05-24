@@ -42,15 +42,15 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', showClose = true
         </span>
 
         <div
-          className={`inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle ${sizes[size]} w-full`}
+          className={`inline-block align-bottom bg-white dark:bg-gray-900 rounded-2xl text-left overflow-hidden shadow-xl border border-[#1da1f2]/20 transform transition-all sm:my-8 sm:align-middle ${sizes[size]} w-full`}
         >
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-start justify-between">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">{title}</h3>
+              <h3 className="text-lg font-medium leading-6 text-[#1da1f2]">{title}</h3>
               {showClose && (
                 <button
                   type="button"
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                  className="text-[#1da1f2] hover:text-[#1a8cd8] focus:outline-none rounded-full p-1 transition-colors"
                   onClick={onClose}
                 >
                   <span className="sr-only">关闭</span>

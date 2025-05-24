@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 export const Skeleton = React.forwardRef(
   ({ className, variant = 'rect', ...props }, ref) => {
-    const base = 'animate-pulse bg-muted/60';
+    const base = 'animate-pulse bg-[#1da1f2]/10 dark:bg-[#1a8cd8]/10';
     const variants = {
       rect: 'rounded-2xl',
       card: 'rounded-2xl',
