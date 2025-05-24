@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import api from '@/services/api';
-import { toast } from 'react-hot-toast';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { apiService } from '../../services/api';
+import { useUserStore } from '../../store';
 import MainLayout from '@/components/layout/MainLayout';
 import Button from '@/components/common/Button';
 import Tag from '@/components/common/Tag';
@@ -11,185 +10,95 @@ import EmptyState from '@/components/common/EmptyState';
 import ErrorState from '@/components/common/ErrorState';
 import Pagination from '@/components/common/Pagination';
 
-const UserProfile = () => {
+const UserProfilePage = () => {
+  const { username } = useParams();
   const navigate = useNavigate();
-  const { username } = navigate.location.pathname.split('/').pop();
-  const { user: currentUser } = useAuth();
-  const [user, setUser] = useState(null);
+  const { user: currentUser } = useUserStore();
+  const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
 
-  // 获取用户信息和帖子列表
-  const fetchUserData = async () => {
-    try {
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
-      const [userData, postsData] = await Promise.all([
-        api.get(`/users/${username}`),
-        api.get(`/users/${username}/posts?page=${currentPage}&limit=10`),
-      ]);
-
-      setUser(userData.data);
-      setPosts(postsData.data.posts);
-      setTotalPages(postsData.data.totalPages);
-      setIsFollowing(userData.data.isFollowing);
-      setFollowersCount(userData.data.followersCount);
-      setFollowingCount(userData.data.followingCount);
-    } catch (err) {
-      setError(err.message || '加载用户信息失败');
-      toast.error('加载用户信息失败');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 关注/取消关注用户
-  const handleFollow = async () => {
-    try {
-      if (isFollowing) {
-        await api.delete(`/users/${user._id}/follow`);
-        setFollowersCount(prev => prev - 1);
-      } else {
-        await api.post(`/users/${user._id}/follow`);
-        setFollowersCount(prev => prev + 1);
+      try {
+        const userData = await apiService.getUserProfile(username);
+        const userPosts = await apiService.getUserPosts(userData._id);
+        setProfile(userData);
+        setPosts(userPosts.posts || []);
+        setTotalPages(userPosts.totalPages);
+        setIsFollowing(userData.isFollowing);
+        setFollowersCount(userData.followersCount);
+        setFollowingCount(userData.followingCount);
+      } catch (err) {
+        setError('用户不存在或加载失败');
+      } finally {
+        setLoading(false);
       }
-      setIsFollowing(!isFollowing);
-      toast.success(isFollowing ? '已取消关注' : '关注成功');
-    } catch (err) {
-      toast.error('操作失败，请重试');
-    }
-  };
+    };
+    fetchData();
+  }, [username]);
 
-  // 页面加载时获取数据
-  React.useEffect(() => {
-    if (username) {
-      fetchUserData();
-    }
-  }, [username, currentPage]);
-
-  if (loading) {
-    return (
-      <MainLayout>
-        <LoadingOverlay isLoading={true} />
-      </MainLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <MainLayout>
-        <ErrorState
-          title="加载失败"
-          description={error}
-          action={<Button onClick={() => navigate(-1)}>重试</Button>}
-        />
-      </MainLayout>
-    );
-  }
-
-  if (!user) {
-    return (
-      <MainLayout>
-        <EmptyState
-          title="用户不存在"
-          description="该用户可能已被删除或不存在"
-          action={<Button onClick={() => navigate('/')}>返回首页</Button>}
-        />
-      </MainLayout>
-    );
-  }
+  if (loading) return <div className="text-center py-10">加载中...</div>;
+  if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
+  if (!profile) return null;
 
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto">
-        {/* 用户信息卡片 */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-start space-x-6">
-            {/* 头像 */}
-            <div className="relative">
-              <img
-                src={user.avatar || '/default-avatar.png'}
-                alt={user.username}
-                className="w-24 h-24 rounded-full object-cover"
-              />
-              {user.isVerified && (
-                <span className="absolute bottom-0 right-0 bg-blue-500 text-white p-1 rounded-full">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-              )}
-            </div>
-
-            {/* 用户信息 */}
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 mb-6">
+          <div className="flex items-center space-x-4">
+            <img src={profile.avatar || '/default-avatar.png'} alt="avatar" className="w-20 h-20 rounded-full object-cover border-2" />
             <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{user.username}</h1>
-                  <p className="text-gray-500">@{user.username}</p>
-                </div>
-                {currentUser && currentUser._id !== user._id && (
-                  <Button variant={isFollowing ? 'secondary' : 'primary'} onClick={handleFollow}>
-                    {isFollowing ? '取消关注' : '关注'}
-                  </Button>
-                )}
+              <h2 className="text-xl font-bold">{profile.name || profile.username}</h2>
+              <p className="text-gray-500">@{profile.username}</p>
+              {profile.bio && <p className="mt-2 text-gray-700 dark:text-gray-300">{profile.bio}</p>}
+              <div className="flex space-x-4 mt-2 text-sm text-gray-500">
+                <span>关注 <Link to={`/user/${profile.username}/following`} className="hover:underline">{profile.followingCount || 0}</Link></span>
+                <span>粉丝 <Link to={`/user/${profile.username}/followers`} className="hover:underline">{profile.followersCount || 0}</Link></span>
               </div>
-
-              {/* 用户统计 */}
-              <div className="flex space-x-6 mt-4">
-                <div className="text-center">
-                  <div className="text-xl font-semibold">{posts.length}</div>
-                  <div className="text-sm text-gray-500">动态</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-semibold">{followersCount}</div>
-                  <div className="text-sm text-gray-500">粉丝</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-semibold">{followingCount}</div>
-                  <div className="text-sm text-gray-500">关注</div>
-                </div>
-              </div>
-
-              {/* 用户简介 */}
-              {user.bio && <p className="mt-4 text-gray-600">{user.bio}</p>}
-
-              {/* 用户标签 */}
-              {user.tags && user.tags.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {user.tags.map(tag => (
-                    <Tag key={tag} variant="primary">
-                      {tag}
-                    </Tag>
-                  ))}
-                </div>
-              )}
             </div>
+            {currentUser && currentUser.username === profile.username && (
+              <button
+                className="px-4 py-2 rounded bg-blue-500 text-white font-semibold"
+                onClick={() => navigate('/edit-profile')}
+              >
+                编辑资料
+              </button>
+            )}
           </div>
         </div>
-
-        {/* 用户动态列表 */}
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+          <h3 className="text-lg font-bold mb-4">动态</h3>
+          {posts.length === 0 ? (
+            <div className="text-gray-500">暂无动态</div>
+          ) : (
+            posts.map(post => (
+              <div key={post._id} className="border-b py-4">
+                <div className="font-semibold">{post.content}</div>
+                <div className="text-xs text-gray-400 mt-1">{new Date(post.createdAt).toLocaleString()}</div>
+              </div>
+            ))
+          )}
+        </div>
         <div className="space-y-6">
           {posts.length > 0 ? (
             posts.map(post => (
               <div key={post._id} className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center space-x-3 mb-4">
                   <img
-                    src={user.avatar || '/default-avatar.png'}
-                    alt={user.username}
+                    src={profile.avatar || '/default-avatar.png'}
+                    alt={profile.username}
                     className="w-10 h-10 rounded-full"
                   />
                   <div>
-                    <div className="font-medium">{user.username}</div>
+                    <div className="font-medium">{profile.username}</div>
                     <div className="text-sm text-gray-500">
                       {new Date(post.createdAt).toLocaleDateString()}
                     </div>
@@ -249,8 +158,6 @@ const UserProfile = () => {
             <EmptyState title="暂无动态" description="该用户还没有发布任何动态" />
           )}
         </div>
-
-        {/* 分页 */}
         {totalPages > 1 && (
           <div className="mt-6">
             <Pagination
@@ -265,4 +172,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default UserProfilePage;

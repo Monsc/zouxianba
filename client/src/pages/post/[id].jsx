@@ -11,6 +11,7 @@ import ErrorState from '@/components/common/ErrorState';
 import ImagePreview from '@/components/common/ImagePreview';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { Link } from 'react-router-dom';
 
 const PostDetailPage = () => {
   const router = useRouter();
@@ -21,13 +22,18 @@ const PostDetailPage = () => {
   const [error, setError] = useState(null);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [comments, setComments] = useState([]);
 
   // 获取帖子详情
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/posts/${id}`);
-      setPost(response.data);
+      const [postData, commentsData] = await Promise.all([
+        api.get(`/posts/${id}`),
+        api.get(`/posts/${id}/comments`)
+      ]);
+      setPost(postData.data);
+      setComments(commentsData.data || []);
     } catch (err) {
       setError(err.message || '加载帖子失败');
       toast.error('加载帖子失败');
@@ -39,11 +45,10 @@ const PostDetailPage = () => {
   // 处理点赞/取消点赞
   const handleLike = async () => {
     try {
-      await api.post(`/posts/${id}/like`);
+      const res = await api.post(`/posts/${id}/like`);
       setPost(prev => ({
         ...prev,
-        isLiked: !prev.isLiked,
-        likesCount: prev.isLiked ? prev.likesCount - 1 : prev.likesCount + 1,
+        ...res,
       }));
       toast.success(post.isLiked ? '已取消点赞' : '点赞成功');
     } catch (err) {
@@ -58,12 +63,8 @@ const PostDetailPage = () => {
 
     try {
       setSubmitting(true);
-      const response = await api.post(`/posts/${id}/comments`, { content: comment });
-      setPost(prev => ({
-        ...prev,
-        comments: [response.data, ...prev.comments],
-        commentsCount: prev.commentsCount + 1,
-      }));
+      const res = await api.post(`/posts/${id}/comments`, { content: comment });
+      setComments([...comments, res.data]);
       setComment('');
       toast.success('评论成功');
     } catch (err) {
@@ -77,11 +78,7 @@ const PostDetailPage = () => {
   const handleDeleteComment = async commentId => {
     try {
       await api.delete(`/posts/${id}/comments/${commentId}`);
-      setPost(prev => ({
-        ...prev,
-        comments: prev.comments.filter(c => c._id !== commentId),
-        commentsCount: prev.commentsCount - 1,
-      }));
+      setComments(prev => prev.filter(c => c._id !== commentId));
       toast.success('评论已删除');
     } catch (err) {
       toast.error('删除失败，请重试');
@@ -240,7 +237,7 @@ const PostDetailPage = () => {
                     d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                   />
                 </svg>
-                <span>{post.commentsCount}</span>
+                <span>{comments.length}</span>
               </div>
               <button className="flex items-center space-x-1">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,8 +272,10 @@ const PostDetailPage = () => {
 
             {/* 评论列表 */}
             <div className="space-y-4">
-              {Array.isArray(post.comments) &&
-                post.comments.map(comment => (
+              {comments.length === 0 ? (
+                <div className="text-gray-500">暂无评论</div>
+              ) : (
+                comments.map(comment => (
                   <div key={comment._id} className="flex space-x-4">
                     <img
                       src={comment.author.avatar || '/default-avatar.png'}
@@ -335,7 +334,8 @@ const PostDetailPage = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                ))
+              )}
             </div>
           </div>
         </div>

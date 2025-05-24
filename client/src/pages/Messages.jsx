@@ -1,103 +1,170 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import MainLayout from '../components/layout/MainLayout';
 import { Plus, Mail, User, MoreHorizontal } from 'lucide-react';
 
-function Messages() {
+const Messages = () => {
   const { user } = useAuth();
   const [conversations, setConversations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadConversations();
+    const fetchConversations = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get('/messages/conversations');
+        setConversations(res || []);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConversations();
   }, []);
 
-  const loadConversations = async () => {
+  useEffect(() => {
+    if (selectedConversation) {
+      const fetchMessages = async () => {
+        const res = await api.get(`/messages/conversations/${selectedConversation._id}/messages`);
+        setMessages(res || []);
+        scrollToBottom();
+      };
+      fetchMessages();
+    }
+  }, [selectedConversation]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedConversation) return;
+
     try {
-      setIsLoading(true);
-      setError(null);
-      const response = await api.get('/messages/conversations');
-      setConversations(response.data.conversations || []);
-    } catch (err) {
-      setError('加载会话列表失败');
-    } finally {
-      setIsLoading(false);
+      const res = await api.post(`/messages/conversations/${selectedConversation._id}/messages`, { content: newMessage });
+      setMessages([...messages, res]);
+      setNewMessage('');
+      scrollToBottom();
+    } catch (error) {
+      console.error('发送消息失败:', error);
     }
   };
 
   if (!user) return <div className="loading-spinner" />;
-  if (isLoading) return <div className="loading-spinner" />;
-  if (error) return <div className="error-message">{error}</div>;
+  if (loading) return <div className="loading-spinner" />;
 
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto flex flex-col md:flex-row h-[80vh] bg-white dark:bg-background rounded-xl shadow overflow-hidden relative">
-        {/* 左侧会话列表 */}
-        <aside className="w-full md:w-80 border-r border-border bg-accent/30 flex flex-col relative">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-            <h1 className="text-xl font-bold">私信</h1>
-            <button
-              className="p-2 rounded-full hover:bg-accent transition"
-              title="新建会话"
-              onClick={() => navigate('/messages/new')}
-            >
-              <Plus className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
-            {conversations.length === 0 ? (
-              <div className="text-muted-foreground text-center py-8">暂无消息</div>
+      <div className="max-w-4xl mx-auto p-4">
+        <h2 className="text-2xl font-bold mb-6">消息</h2>
+        <div className="flex h-[600px] bg-white dark:bg-gray-900 rounded-lg shadow">
+          {/* 会话列表 */}
+          <div className="w-1/3 border-r">
+            {loading ? (
+              <div className="p-4 text-center">加载中...</div>
+            ) : conversations.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">暂无会话</div>
             ) : (
-              conversations.map(conv => (
-                <Link
-                  key={conv._id}
-                  to={`/chat/${conv.user._id}`}
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/50 transition group relative"
+              conversations.map(conversation => (
+                <div
+                  key={conversation._id}
+                  className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                    selectedConversation?._id === conversation._id ? 'bg-gray-50 dark:bg-gray-800' : ''
+                  }`}
+                  onClick={() => setSelectedConversation(conversation)}
                 >
-                  <img
-                    src={conv.user.avatar || '/default-avatar.png'}
-                    alt={conv.user.username}
-                    className="w-12 h-12 rounded-full object-cover border border-border"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium truncate group-hover:underline">{conv.user.username}</h3>
-                      {conv.lastMessage?.createdAt && (
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(conv.lastMessage.createdAt).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-muted-foreground truncate text-sm">
-                        {conv.lastMessage?.contentType === 'image'
-                          ? '图片消息'
-                          : conv.lastMessage?.content}
-                      </p>
-                      {conv.unreadCount > 0 && (
-                        <span className="ml-2 inline-block w-2 h-2 rounded-full bg-primary" />
-                      )}
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={conversation.participant.avatar || '/default-avatar.png'}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div>
+                      <div className="font-semibold">{conversation.participant.name || conversation.participant.username}</div>
+                      <div className="text-sm text-gray-500 truncate">{conversation.lastMessage?.content || '暂无消息'}</div>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))
             )}
           </div>
-        </aside>
-        {/* 右侧聊天窗口占位（后续可自动跳转/嵌入） */}
-        <section className="hidden md:flex flex-1 items-center justify-center text-muted-foreground">
-          <div className="flex flex-col items-center gap-4">
-            <Mail className="w-12 h-12" />
-            <div className="text-lg font-semibold">选择一个会话开始聊天</div>
+
+          {/* 聊天区域 */}
+          <div className="flex-1 flex flex-col">
+            {selectedConversation ? (
+              <>
+                {/* 聊天头部 */}
+                <div className="p-4 border-b">
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={selectedConversation.participant.avatar || '/default-avatar.png'}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div>
+                      <div className="font-semibold">{selectedConversation.participant.name || selectedConversation.participant.username}</div>
+                      <div className="text-sm text-gray-500">在线</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 消息列表 */}
+                <div className="flex-1 overflow-y-auto p-4">
+                  {messages.map(message => (
+                    <div
+                      key={message._id}
+                      className={`flex ${message.isSender ? 'justify-end' : 'justify-start'} mb-4`}
+                    >
+                      <div
+                        className={`max-w-[70%] rounded-lg p-3 ${
+                          message.isSender
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-100 dark:bg-gray-800'
+                        }`}
+                      >
+                        {message.content}
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* 发送消息 */}
+                <form onSubmit={handleSendMessage} className="p-4 border-t">
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder="输入消息..."
+                      className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                      发送
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-gray-500">
+                选择一个会话开始聊天
+              </div>
+            )}
           </div>
-        </section>
+        </div>
       </div>
     </MainLayout>
   );
-}
+};
 
 export default Messages;
