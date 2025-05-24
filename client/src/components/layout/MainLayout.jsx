@@ -69,7 +69,7 @@ export default function MainLayout({ children }) {
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
           <Link to="/" className="text-blue-500 font-bold text-xl">
-            Twitter
+            走线吧
           </Link>
           <div className="w-6" />
         </div>
