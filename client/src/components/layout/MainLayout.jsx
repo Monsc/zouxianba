@@ -27,7 +27,7 @@ const navItems = [
   { icon: Settings, label: '设置', path: '/settings' },
 ];
 
-export function MainLayout({ children }) {
+export default function MainLayout({ children }) {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
