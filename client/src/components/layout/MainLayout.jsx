@@ -104,7 +104,7 @@ export default function MainLayout({ children }) {
 
       {/* 主内容区域 */}
       <div className="md:ml-64 pt-16 md:pt-0">
-        <main className="max-w-2xl mx-auto min-h-screen">
+        <main className="max-w-[600px] mx-auto min-h-screen">
           {children}
         </main>
       </div>

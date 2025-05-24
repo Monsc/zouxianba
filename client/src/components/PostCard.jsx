@@ -131,156 +131,32 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
   };
 
   return (
-    <div
-      className="bg-white dark:bg-gray-900 rounded-lg shadow p-4"
-      role="article"
-      tabIndex={0}
-      aria-label={`${post.author.username} 的帖子`}
-    >
-      <div className="flex items-start space-x-4">
-        <Link
-          to={`/profile/${post.author.username}`}
-          className="flex-shrink-0"
-          onClick={handleAuthorClick}
-        >
-          <img
-            src={post.author.avatar}
-            alt={post.author.username}
-            className="w-12 h-12 rounded-full"
-            loading="lazy"
-          />
-        </Link>
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <Link
-                to={`/profile/${post.author.username}`}
-                className="font-bold text-gray-900 dark:text-white hover:underline"
-                onClick={handleAuthorClick}
-              >
-                {post.author.username}
-              </Link>
-              <span className="text-gray-500 dark:text-gray-400 ml-2">@{post.author.handle}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-gray-500 dark:text-gray-400 text-sm">
-                {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: zhCN })}
-              </span>
-              {user && (user._id === post.author._id || user.isAdmin) && (
-                <div className="relative" ref={menuRef}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowMenu(!showMenu)}
-                    aria-label="更多选项"
-                  >
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                  {showMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10">
-                      <button
-                        onClick={handleDelete}
-                        className="w-full px-4 py-2 text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        删除
-                      </button>
-                      <button
-                        onClick={() => setShowReport(true)}
-                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        举报
-                      </button>
-                    </div>
-                  )}
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4 mb-4 transition-shadow hover:shadow-md cursor-pointer" onClick={handlePostClick}>
+      <div className="flex items-start space-x-3">
+        <img src={post.author.avatar} alt={post.author.username} className="w-12 h-12 rounded-full object-cover" onClick={handleAuthorClick} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center space-x-2">
+            <span className="font-bold text-gray-900 dark:text-white hover:underline" onClick={handleAuthorClick}>{post.author.username}</span>
+            <span className="text-gray-500 dark:text-gray-400 text-sm">@{post.author.handle}</span>
+            <span className="text-gray-400 text-xs">· {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: zhCN })}</span>
+          </div>
+          <div className="mt-2 text-[15px] whitespace-pre-wrap text-gray-900 dark:text-white">{post.content}</div>
+          {renderMedia()}
+          <div className="mt-3 flex items-center justify-between max-w-md">
+            <Button variant="ghost" size="sm" onClick={() => setShowComments(true)} className="flex items-center space-x-1 text-gray-500 hover:text-blue-500 rounded-full" aria-label="评论"><MessageCircle className="h-5 w-5" /><span>{post.comments?.length || 0}</span></Button>
+            <Button variant="ghost" size="sm" onClick={handleRepost} className={`flex items-center space-x-1 ${isReposted ? 'text-green-500' : 'text-gray-500 hover:text-green-500'} rounded-full`}><Repeat2 className="h-5 w-5" /><span>{repostCount}</span></Button>
+            <Button variant="ghost" size="sm" onClick={handleLike} className={`flex items-center space-x-1 ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'} rounded-full`}><Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} /><span>{likes}</span></Button>
+            <Button variant="ghost" size="sm" onClick={handleShare} className="flex items-center space-x-1 text-gray-500 hover:text-blue-500 rounded-full"><Share2 className="h-5 w-5" /></Button>
+            <div className="relative" ref={menuRef}>
+              <Button variant="ghost" size="sm" onClick={e => { e.stopPropagation(); setShowMenu(!showMenu); }} aria-label="更多选项" className="text-gray-500 hover:text-blue-500 rounded-full"><MoreHorizontal className="h-5 w-5" /></Button>
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10">
+                  <button onClick={handleDelete} className="w-full px-4 py-2 text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700">删除</button>
+                  <button onClick={() => setShowReport(true)} className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">举报</button>
                 </div>
               )}
             </div>
           </div>
-          <div className="mt-2 text-[15px] whitespace-pre-wrap">
-            {post.content}
-          </div>
-
-          {Array.isArray(post.tags) && post.tags.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {post.tags.map(tag => (
-                <span
-                  key={tag}
-                  className="text-primary hover:underline cursor-pointer"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {renderMedia()}
-
-          <div className="mt-3 flex items-center justify-between max-w-md">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowComments(true)}
-              className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
-              aria-label="评论"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span>{post.comments?.length || 0}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleRepost}
-              className={`flex items-center space-x-1 ${
-                isReposted
-                  ? 'text-green-500'
-                  : 'text-gray-500 hover:text-green-500 dark:text-gray-400 dark:hover:text-green-400'
-              }`}
-            >
-              <Repeat2 className="h-4 w-4" />
-              <span>{repostCount}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLike}
-              className={`flex items-center space-x-1 ${
-                isLiked
-                  ? 'text-red-500'
-                  : 'text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400'
-              }`}
-            >
-              <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
-              <span>{likes}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleShare}
-              className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
-              aria-label="分享"
-            >
-              <Share2 className="h-4 w-4" />
-              <span>{shares}</span>
-            </Button>
-          </div>
-
-          {showComments && (
-            <div className="mt-4">
-              <form onSubmit={handleSubmitComment} className="flex space-x-2">
-                <input
-                  type="text"
-                  value={commentContent}
-                  onChange={e => setCommentContent(e.target.value)}
-                  placeholder="添加评论..."
-                  className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label="评论输入框"
-                />
-                <Button type="submit" disabled={!commentContent.trim()}>
-                  发送
-                </Button>
-              </form>
-            </div>
-          )}
         </div>
       </div>
 
