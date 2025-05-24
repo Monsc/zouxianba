@@ -3,7 +3,7 @@ require('dotenv').config();
 module.exports = {
   // 服务器配置
   server: {
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || 5001,
     env: process.env.NODE_ENV || 'development'
   },
 
@@ -73,13 +73,13 @@ module.exports = {
 
   // 邮件配置
   email: {
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT) || 587,
     secure: process.env.EMAIL_SECURE === 'true',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+    from: process.env.EMAIL_FROM || 'noreply@example.com',
+    fromName: process.env.EMAIL_FROM_NAME || 'ZouXianBa'
   },
 
   // 第三方服务配置

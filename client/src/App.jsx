@@ -6,7 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/layouts/AdminLayout';
 import Toaster from './components/ui/toaster';
-import { LoadingSpinner } from './components/LoadingSpinner';
+import LoadingSpinner from './components/LoadingSpinner';
 import { notificationService } from './services/notification';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import PerformanceMonitor from './components/common/PerformanceMonitor';
@@ -19,9 +19,9 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
-import Feed from './components/Feed';
-import Notifications from './components/Notifications';
-import Messages from './components/Messages';
+import Feed from './pages/Feed';
+import Notifications from './pages/notifications/index';
+import Messages from './pages/Messages';
 
 // 懒加载管理页面组件
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));

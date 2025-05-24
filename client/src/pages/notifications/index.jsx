@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/services/api';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import api from '@/services/api';
 import { toast } from 'react-hot-toast';
 import MainLayout from '@/components/layout/MainLayout';
 import Button from '@/components/common/Button';
@@ -13,7 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 const NotificationsPage = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -91,14 +91,14 @@ const NotificationsPage = () => {
     // 根据通知类型跳转到相应页面
     switch (notification.type) {
       case 'follow':
-        router.push(`/user/${notification.sender.username}`);
+        navigate(`/user/${notification.sender.username}`);
         break;
       case 'like':
       case 'comment':
-        router.push(`/post/${notification.post._id}`);
+        navigate(`/post/${notification.post._id}`);
         break;
       case 'mention':
-        router.push(`/post/${notification.post._id}#comment-${notification.comment._id}`);
+        navigate(`/post/${notification.post._id}#comment-${notification.comment._id}`);
         break;
       default:
         break;
@@ -178,7 +178,7 @@ const NotificationsPage = () => {
           <EmptyState
             title="请先登录"
             description="登录后查看你的通知"
-            action={<Button onClick={() => router.push('/login')}>去登录</Button>}
+            action={<Button onClick={() => navigate('/login')}>去登录</Button>}
           />
         </div>
       </MainLayout>

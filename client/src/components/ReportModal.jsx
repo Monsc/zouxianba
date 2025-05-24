@@ -92,7 +92,7 @@ function ReportModal({ type, targetId, onClose }) {
                 required
               >
                 <option value="">请选择举报类型</option>
-                {categories[type].map(cat => (
+                {(Array.isArray(categories[type]) ? categories[type] : []).map(cat => (
                   <option key={cat.value} value={cat.value}>
                     {cat.label}
                   </option>

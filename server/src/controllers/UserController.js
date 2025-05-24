@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { AppError } = require('../middleware/error');
+const AppError = require('../utils/AppError');
 const { uploadToCloudflare } = require('../utils/cloudflare');
 
 class UserController {

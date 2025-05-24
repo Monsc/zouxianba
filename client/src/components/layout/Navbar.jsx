@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useAuth } from '@/hooks/useAuth';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import { SearchIcon, BellIcon, UserCircleIcon } from '@heroicons/react/outline';
 import CreatePostButton from '../CreatePostButton';
 
 const Navbar = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -14,13 +13,13 @@ const Navbar = () => {
   const handleSearch = e => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
   const handleLogout = async () => {
     await logout();
-    router.push('/auth/login');
+    navigate('/auth/login');
   };
 
   return (
@@ -28,7 +27,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <span className="text-xl font-bold text-primary">走线吧</span>
           </Link>
 
@@ -48,7 +47,7 @@ const Navbar = () => {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
-            <Link href="/notifications" className="text-gray-600 hover:text-gray-900">
+            <Link to="/notifications" className="text-gray-600 hover:text-gray-900">
               <BellIcon className="h-6 w-6" />
             </Link>
 
@@ -67,13 +66,13 @@ const Navbar = () => {
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
                   <Link
-                    href={`/profile/${user?.username}`}
+                    to={`/profile/${user?.username}`}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     个人主页
                   </Link>
                   <Link
-                    href="/settings"
+                    to="/settings"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     设置

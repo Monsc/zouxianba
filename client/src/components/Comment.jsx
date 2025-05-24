@@ -90,7 +90,7 @@ export const Comment = ({ comment, onDelete, onReply }) => {
               disabled={isDeleting}
               className="text-gray-500 hover:text-red-500"
             >
-              <Icon name="trash" className="w-4 h-4" />
+              <Icon name="Trash" className="w-4 h-4" />
             </Button>
           )}
         </div>

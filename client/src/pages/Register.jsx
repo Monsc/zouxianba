@@ -13,7 +13,7 @@ export const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
-  const { addToast } = useToast();
+  const { success, error } = useToast();
   const navigate = useNavigate();
 
   const handleChange = e => {
@@ -29,7 +29,7 @@ export const Register = () => {
     setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      addToast('Passwords do not match', 'error');
+      error('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -40,10 +40,10 @@ export const Register = () => {
         email: formData.email,
         password: formData.password,
       });
-      addToast('Registration successful!', 'success');
+      success('Registration successful!');
       navigate('/login');
     } catch (error) {
-      addToast(error.message || 'Registration failed', 'error');
+      error(error.message || 'Registration failed');
     } finally {
       setLoading(false);
     }

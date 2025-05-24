@@ -7,6 +7,7 @@ import { CancelToken } from 'axios';
 import { useUserStore } from '../store';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+console.log('API_BASE_URL from services:', API_BASE_URL);
 const API_SECRET = import.meta.env.VITE_API_SECRET;
 
 // 生成请求签名

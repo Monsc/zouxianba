@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/services/api';
+import api from '@/services/api';
 import { toast } from 'react-hot-toast';
 import MainLayout from '@/components/layout/MainLayout';
 import Button from '@/components/common/Button';

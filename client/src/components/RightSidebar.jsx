@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getRecommendedUsers, getTrendingTopics, followUser, unfollowUser } from '../services/api';
+import { apiService } from '../services/api';
+import { FollowService } from '../services/FollowService';
 
 function RightSidebar() {
   const [users, setUsers] = useState([]);
@@ -17,8 +18,8 @@ function RightSidebar() {
     try {
       setIsLoading(true);
       const [recommendedUsers, trendingTopics] = await Promise.all([
-        getRecommendedUsers(),
-        getTrendingTopics(),
+        apiService.getRecommendedUsers(),
+        apiService.getTrendingTopics(),
       ]);
       setUsers(recommendedUsers);
       setTopics(trendingTopics);
@@ -83,9 +84,9 @@ function RightSidebar() {
                   e.stopPropagation();
                   try {
                     if (user.isFollowing) {
-                      await unfollowUser(user._id);
+                      await FollowService.unfollowUser(user._id);
                     } else {
-                      await followUser(user._id);
+                      await FollowService.followUser(user._id);
                     }
                     setUsers(prev =>
                       prev.map(u =>

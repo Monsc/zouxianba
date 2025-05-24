@@ -19,6 +19,7 @@ const errorHandler = (err, req, res, next) => {
 
   // Log unexpected errors
   console.error('Error:', err);
+  console.error('Error Stack:', err.stack);
 
   // Send generic error for unexpected errors
   return res.status(500).json({

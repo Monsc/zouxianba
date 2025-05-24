@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getTrendingTopics } from '../services/api';
 import PostList from '../components/PostList';
 import { PostCard } from '../components/PostCard';
+import apiService from '../services/apiService';
 
 const TopicPage = () => {
   const { tag } = useParams();
@@ -10,6 +11,8 @@ const TopicPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchTopicData = async () => {
@@ -36,6 +39,27 @@ const TopicPage = () => {
       fetchTopicData();
     }
   }, [tag]);
+
+  const fetchHashtagPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.get(`/api/posts/hashtag/${tag}?page=${page}`);
+      const { posts, hasMore } = response.data;
+      
+      if (page === 1) {
+        setPosts(posts);
+      } else {
+        setPosts(prev => [...prev, ...posts]);
+      }
+      
+      setHasMore(hasMore);
+      setLoading(false);
+    } catch (error) {
+      console.error('获取话题帖子失败:', error);
+      setError('获取话题帖子失败，请稍后重试');
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (

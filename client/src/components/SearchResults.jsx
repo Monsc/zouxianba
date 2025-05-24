@@ -223,7 +223,7 @@ export const SearchResults = () => {
                       )}
                       <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center">
-                          <Icon name="heart" className="w-4 h-4 mr-1" />
+                          <Icon name="Heart" className="w-4 h-4 mr-1" />
                           <span>{result.likeCount}</span>
                         </div>
                         <div className="flex items-center">

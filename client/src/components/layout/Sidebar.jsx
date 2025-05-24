@@ -1,6 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { Link, useLocation } from 'react-router-dom';
 import {
   HomeIcon,
   FireIcon,
@@ -10,12 +9,12 @@ import {
   BellIcon,
   MailIcon,
   UserIcon,
-  SettingsIcon,
+  CogIcon,
 } from '@heroicons/react/outline';
 
 const Sidebar = () => {
-  const router = useRouter();
-  const { pathname } = router;
+  const location = useLocation();
+  const pathname = location.pathname;
 
   const navItems = [
     { name: '首页', href: '/', icon: HomeIcon },
@@ -25,7 +24,7 @@ const Sidebar = () => {
     { name: '消息', href: '/messages', icon: MailIcon },
     { name: '收藏', href: '/bookmarks', icon: BookmarkIcon },
     { name: '个人主页', href: '/profile', icon: UserIcon },
-    { name: '设置', href: '/settings', icon: SettingsIcon },
+    { name: '设置', href: '/settings', icon: CogIcon },
   ];
 
   const trendingTopics = [
@@ -46,7 +45,7 @@ const Sidebar = () => {
             return (
               <li key={item.name}>
                 <Link
-                  href={item.href}
+                  to={item.href}
                   className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
                   }`}
@@ -67,7 +66,7 @@ const Sidebar = () => {
           {trendingTopics.map(topic => (
             <li key={topic.name}>
               <Link
-                href={`/topic/${topic.name}`}
+                to={`/topic/${topic.name}`}
                 className="flex items-center justify-between text-gray-700 hover:text-primary"
               >
                 <div className="flex items-center space-x-2">
@@ -85,13 +84,13 @@ const Sidebar = () => {
       <div className="text-sm text-gray-500">
         <p>© 2024 走线吧</p>
         <div className="mt-2 space-x-2">
-          <Link href="/about" className="hover:text-gray-700">
+          <Link to="/about" className="hover:text-gray-700">
             关于我们
           </Link>
-          <Link href="/privacy" className="hover:text-gray-700">
+          <Link to="/privacy" className="hover:text-gray-700">
             隐私政策
           </Link>
-          <Link href="/terms" className="hover:text-gray-700">
+          <Link to="/terms" className="hover:text-gray-700">
             使用条款
           </Link>
         </div>

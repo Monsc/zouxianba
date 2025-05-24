@@ -5,8 +5,8 @@ import { LazyImage } from './LazyImage';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
 import { Icon } from './Icon';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { PostService } from '@/services/PostService';
 import { cn } from '@/lib/utils';
 import { ShareDialog } from './ShareDialog';
@@ -146,7 +146,7 @@ export const Post = ({ post, onDelete }) => {
                   disabled={isDeleting}
                   className="text-gray-500 hover:text-red-500"
                 >
-                  <Icon name="trash" className="w-4 h-4" />
+                  <Icon name="Trash" className="w-4 h-4" />
                 </Button>
               )}
             </div>
@@ -189,7 +189,7 @@ export const Post = ({ post, onDelete }) => {
                 onClick={handleShare}
                 className="flex items-center space-x-1 text-gray-500"
               >
-                <Icon name="share" className="w-4 h-4" />
+                <Icon name="Share2" className="w-4 h-4" />
                 <span>{shares}</span>
               </Button>
               <ShareDialog

@@ -8,11 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import LoginForm from './LoginForm';
 import CreatePostButton from './CreatePostButton';
 import { Loader2 } from 'lucide-react';
+import MainLayout from './layout/MainLayout';
 
 export const Feed = () => {
   const { username } = useParams();
   const { user } = useAuth();
-  const { addToast } = useToast();
+  const { error: toastError, success } = useToast();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -64,7 +65,7 @@ export const Feed = () => {
       } catch (error) {
         console.error('[Feed] 加载 posts 出错:', error, error?.response);
         setError(error?.response?.data?.message || '加载失败，请稍后重试');
-        addToast(error?.response?.data?.message || '加载失败，请稍后重试', 'error');
+        toastError(error?.response?.data?.message || '加载失败，请稍后重试');
       } finally {
         setLoading(false);
       }
@@ -95,7 +96,7 @@ export const Feed = () => {
         )
       );
     } catch (error) {
-      addToast('点赞失败，请稍后重试', 'error');
+      toastError('点赞失败，请稍后重试');
     }
   };
 
@@ -118,7 +119,7 @@ export const Feed = () => {
         )
       );
     } catch (error) {
-      addToast('评论失败，请稍后重试', 'error');
+      toastError('评论失败，请稍后重试');
     }
   };
 
@@ -126,9 +127,9 @@ export const Feed = () => {
     try {
       await apiService.deletePost(postId);
       setPosts(posts.filter(post => post._id !== postId));
-      addToast('删除成功', 'success');
+      success('删除成功');
     } catch (error) {
-      addToast('删除失败，请稍后重试', 'error');
+      toastError('删除失败，请稍后重试');
     }
   };
 
@@ -152,51 +153,51 @@ export const Feed = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* 发帖按钮 - 仅顶部显示 */}
-      <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 p-4">
-        <CreatePostButton />
-      </div>
-
-      {/* 内容列表 */}
-      {Array.isArray(posts) && posts.length > 0 ? (
-        <>
-          {posts.map(post => (
-            <PostCard
-              key={post._id}
-              post={post}
-              onLike={() => handleLike(post._id)}
-              onComment={handleComment}
-              onDelete={() => handleDelete(post._id)}
-            />
-          ))}
-          {hasMore && (
-            <div className="text-center py-4">
-              <button
-                onClick={handleLoadMore}
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                加载更多
-              </button>
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">暂无内容</p>
+    <MainLayout>
+      <div className="space-y-6">
+        {/* 发帖按钮 - 仅顶部显示 */}
+        <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 p-4">
+          <CreatePostButton />
         </div>
-      )}
-
-      {/* 登录弹窗 */}
-      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>登录</DialogTitle>
-          </DialogHeader>
-          <LoginForm />
-        </DialogContent>
-      </Dialog>
-    </div>
+        {/* 内容列表 */}
+        {Array.isArray(posts) && posts.length > 0 ? (
+          <>
+            {posts.map(post => (
+              <PostCard
+                key={post._id}
+                post={post}
+                onLike={() => handleLike(post._id)}
+                onComment={handleComment}
+                onDelete={() => handleDelete(post._id)}
+              />
+            ))}
+            {hasMore && (
+              <div className="text-center py-4">
+                <button
+                  onClick={handleLoadMore}
+                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  加载更多
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 mb-4">暂无内容</p>
+          </div>
+        )}
+        {/* 登录弹窗 */}
+        <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>登录</DialogTitle>
+            </DialogHeader>
+            <LoginForm />
+          </DialogContent>
+        </Dialog>
+      </div>
+    </MainLayout>
   );
 };
 

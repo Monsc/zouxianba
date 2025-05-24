@@ -37,7 +37,13 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
       >
         <i className="icon-bell" />
       </button>
-      <ReportModal open={showReport} onClose={() => setShowReport(false)} targetPost={post._id} />
+      {showReport && (
+        <ReportModal
+          type="content"
+          targetId={post._id}
+          onClose={() => setShowReport(false)}
+        />
+      )}
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
         <div className="flex items-start space-x-4">
           <Link to={`/profile/${post.author.username}`}>

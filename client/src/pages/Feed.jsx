@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Post } from '@/components/Post';
 import { CreatePost } from '@/components/CreatePost';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { PostService } from '@/services/PostService';
 import { LazyImage } from '@/components/LazyImage';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { Toaster } from '../components/ui/toaster';
 import { useToast } from '@/hooks/useToast';
 
@@ -25,7 +25,7 @@ export const Feed = () => {
   } = useInfiniteScroll({
     fetchData: async page => {
       try {
-        const response = await PostService.getFeed(page);
+        const response = await PostService.getPosts(page);
         return response.posts;
       } catch (error) {
         showToast('加载更多内容失败', 'error');
@@ -41,7 +41,7 @@ export const Feed = () => {
     const fetchInitialPosts = async () => {
       try {
         setLoading(true);
-        const response = await PostService.getFeed(1);
+        const response = await PostService.getPosts(1);
         setPosts(response.posts);
         setError(null);
       } catch (error) {
@@ -141,3 +141,5 @@ export const Feed = () => {
     </div>
   );
 };
+
+export default Feed;

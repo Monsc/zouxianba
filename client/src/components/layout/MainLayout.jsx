@@ -1,28 +1,26 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import RightSidebar from '../RightSidebar';
 import MobileNav from '../MobileNav';
 
 const MainLayout = ({ children }) => {
-  const router = useRouter();
-  const isAuthPage = router.pathname.startsWith('/auth');
-
-  if (isAuthPage) {
-    return <div className="min-h-screen bg-gray-50">{children}</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex gap-8">
-          <Sidebar />
-          <main className="flex-1">{children}</main>
-          <RightSidebar />
-        </div>
-      </div>
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+      {/* 左侧栏 */}
+      <aside className="hidden md:flex flex-col w-64 p-4 border-r border-gray-200 dark:border-gray-800">
+        <Sidebar />
+      </aside>
+      {/* 主内容 */}
+      <main className="flex-1 max-w-2xl mx-auto w-full p-4">{children}</main>
+      {/* 右侧栏 */}
+      <aside className="hidden xl:block w-80 p-4 border-l border-gray-200 dark:border-gray-800">
+        <RightSidebar />
+      </aside>
+      {/* 移动端发帖按钮 */}
+      <button className="fixed bottom-4 right-4 md:hidden btn btn-primary rounded-full shadow-lg z-50">
+        +
+      </button>
       <MobileNav />
     </div>
   );

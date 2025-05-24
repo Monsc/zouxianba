@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getRecommendedUsers, getTrendingTopics, followUser, unfollowUser } from '../services/api';
+import { getRecommendedUsers, getTrendingTopics } from '../services/api';
+import { FollowService } from '../services/FollowService';
 import { useAuth } from '../contexts/AuthContext';
 
 function Discover() {
@@ -76,9 +77,9 @@ function Discover() {
                   if (!user._id) return;
                   try {
                     if (user.isFollowing) {
-                      await unfollowUser(user._id);
+                      await FollowService.unfollowUser(user._id);
                     } else {
-                      await followUser(user._id);
+                      await FollowService.followUser(user._id);
                     }
                     setUsers(prev =>
                       prev.map(u =>

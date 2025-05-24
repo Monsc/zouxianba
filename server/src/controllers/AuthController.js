@@ -6,9 +6,11 @@ const { generateVerificationCode } = require('../utils/verification');
 const { rateLimit } = require('../middleware/rateLimit');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const { AppError } = require('../utils/AppError');
+const AppError = require('../utils/AppError');
 const bcrypt = require('bcryptjs');
 const { uploadToCloudflare } = require('../utils/cloudflare');
+const crypto = require('crypto');
+const { sendEmail } = require('../utils/email');
 
 class AuthController {
   // 发送验证码
@@ -42,6 +44,7 @@ class AuthController {
   async register(req, res, next) {
     try {
       const { username, email, password } = req.body;
+      console.log('注册请求数据:', { username, email, password });
 
       // 检查用户是否已存在
       const existingUser = await User.findOne({ email });
@@ -53,10 +56,13 @@ class AuthController {
       const user = new User({
         username,
         email,
-        password
+        password,
+        name: username,
+        handle: username
       });
 
       await user.save();
+      console.log('用户创建成功:', user);
 
       // 生成 JWT token
       const token = jwt.sign(
@@ -78,6 +84,7 @@ class AuthController {
         }
       });
     } catch (error) {
+      console.error('注册失败:', error);
       next(error);
     }
   }
@@ -90,13 +97,13 @@ class AuthController {
       // 查找用户
       const user = await User.findOne({ email }).select('+password');
       if (!user) {
-        throw new AppError('邮箱或密码错误', 401);
+        throw new AppError('该邮箱未注册', 401);
       }
 
       // 验证密码
       const isPasswordValid = await user.comparePassword(password);
       if (!isPasswordValid) {
-        throw new AppError('邮箱或密码错误', 401);
+        throw new AppError('密码错误', 401);
       }
 
       // 生成 JWT token
@@ -134,10 +141,24 @@ class AuthController {
       }
 
       // 生成重置令牌
-      const resetToken = user.createPasswordResetToken();
-      await user.save({ validateBeforeSave: false });
-
-      // TODO: 发送重置密码邮件
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpiry = Date.now() + 3600000; // 1小时后过期
+      
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = resetTokenExpiry;
+      await user.save();
+      
+      const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      await sendEmail({
+        to: user.email,
+        subject: '密码重置',
+        text: `请点击以下链接重置密码：${resetUrl}\n\n如果您没有请求重置密码，请忽略此邮件。`,
+        html: `
+          <p>请点击以下链接重置密码：</p>
+          <p><a href="${resetUrl}">${resetUrl}</a></p>
+          <p>如果您没有请求重置密码，请忽略此邮件。</p>
+        `
+      });
 
       res.json({
         status: 'success',

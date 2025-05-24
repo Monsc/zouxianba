@@ -1,6 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
-const { AppError } = require('../middleware/errorHandler');
+const AppError = require('../utils/AppError');
 const { sendNotification } = require('../utils/notification');
 
 class PostController {
@@ -9,7 +9,7 @@ class PostController {
     try {
       const { content, images, visibility, tags } = req.body;
       const post = await Post.create({
-        author: req.user._id,
+        author: req.user.id,
         content,
         images,
         visibility,

@@ -8,7 +8,6 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Shield, Loader2 } from 'lucide-react';
-import TwoFactorVerification from './TwoFactorVerification';
 
 const LoginForm = ({ onSuccess }) => {
   const { login } = useAuth();
@@ -115,13 +114,6 @@ const LoginForm = ({ onSuccess }) => {
           )}
         </Button>
       </form>
-
-      <TwoFactorVerification
-        open={show2FA}
-        onOpenChange={setShow2FA}
-        tempToken={tempToken}
-        onSuccess={handle2FASuccess}
-      />
     </div>
   );
 };

@@ -94,7 +94,7 @@ export const NotificationItem = ({ notification, onDelete, onMarkAsRead }) => {
               onClick={() => onDelete(notification.id)}
               className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
             >
-              <Icon name="trash" className="w-4 h-4" />
+              <Icon name="Trash" className="w-4 h-4" />
             </Button>
           </div>
         </div>

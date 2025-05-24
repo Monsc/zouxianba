@@ -45,13 +45,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
+  const login = async ({ email, password }) => {
     try {
       const response = await apiService.post('/auth/login', { email, password });
       const { accessToken, user } = response.data;
       localStorage.setItem('token', accessToken);
       setUser(user);
-      window.location.href = '/feed';
+      navigate('/feed', { replace: true });
       return user;
     } catch (error) {
       throw new Error(error.response?.data?.message || '登录失败');

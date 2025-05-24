@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getPost, getComments, createComment, likePost } from '../services/api';
 import { PostCard } from '../components/PostCard';
 import ReportModal from '../components/ReportModal';
+import MainLayout from '../components/layout/MainLayout';
 
 function PostDetail() {
   const { postId } = useParams();
@@ -132,101 +133,100 @@ function PostDetail() {
   }
 
   return (
-    <div className="post-detail-page">
-      <PostCard post={post} onLike={handleLike} />
-
-      <div className="comments-section">
-        <h2 className="comments-title">Comments</h2>
-
-        <form onSubmit={handleCommentSubmit} className="comment-form">
-          <div className="comment-input-container">
-            <img
-              src={currentUser?.avatar || '/default-avatar.png'}
-              alt={currentUser?.username}
-              className="avatar"
-            />
-            <textarea
-              ref={textareaRef}
-              className="comment-input"
-              placeholder="Write a comment..."
-              value={newComment}
-              onChange={e => setNewComment(e.target.value)}
-              maxLength={280}
-              onFocus={handleCommentFocus}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={!newComment.trim()}>
-            Comment
-          </button>
-        </form>
-
-        <div className="comments-list">
-          {visibleComments.map(comment => (
-            <div key={comment._id} className="comment-card relative">
-              <button
-                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors z-10"
-                onClick={() => setReportCommentId(comment._id)}
-                aria-label="举报评论"
-              >
-                <i className="icon-bell" />
-              </button>
-              <ReportModal
-                open={reportCommentId === comment._id}
-                onClose={() => setReportCommentId(null)}
-                targetComment={comment._id}
+    <MainLayout>
+      <div className="post-detail-page">
+        <PostCard post={post} onLike={handleLike} />
+        <div className="comments-section">
+          <h2 className="comments-title">Comments</h2>
+          <form onSubmit={handleCommentSubmit} className="comment-form">
+            <div className="comment-input-container">
+              <img
+                src={currentUser?.avatar || '/default-avatar.png'}
+                alt={currentUser?.username}
+                className="avatar"
               />
-              <div className="comment-header">
-                <img
-                  src={comment.author.avatar}
-                  alt={comment.author.username}
-                  className="avatar"
-                  onClick={() => navigate(`/profile/${comment.author._id}`)}
-                />
-                <div className="comment-meta">
-                  <div className="comment-author">
-                    <span className="username">{comment.author.username}</span>
-                    <span className="handle">@{comment.author.handle}</span>
+              <textarea
+                ref={textareaRef}
+                className="comment-input"
+                placeholder="Write a comment..."
+                value={newComment}
+                onChange={e => setNewComment(e.target.value)}
+                maxLength={280}
+                onFocus={handleCommentFocus}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={!newComment.trim()}>
+              Comment
+            </button>
+          </form>
+          <div className="comments-list">
+            {visibleComments.map(comment => (
+              <div key={comment._id} className="comment-card relative">
+                <button
+                  className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors z-10"
+                  onClick={() => setReportCommentId(comment._id)}
+                  aria-label="举报评论"
+                >
+                  <i className="icon-bell" />
+                </button>
+                {reportCommentId === comment._id && (
+                  <ReportModal
+                    type="content"
+                    targetId={comment._id}
+                    onClose={() => setReportCommentId(null)}
+                  />
+                )}
+                <div className="comment-header">
+                  <img
+                    src={comment.author.avatar}
+                    alt={comment.author.username}
+                    className="avatar"
+                    onClick={() => navigate(`/profile/${comment.author._id}`)}
+                  />
+                  <div className="comment-meta">
+                    <div className="comment-author">
+                      <span className="username">{comment.author.username}</span>
+                      <span className="handle">@{comment.author.handle}</span>
+                    </div>
+                    <span className="comment-time">
+                      {new Date(comment.createdAt).toLocaleDateString()}
+                    </span>
                   </div>
-                  <span className="comment-time">
-                    {new Date(comment.createdAt).toLocaleDateString()}
-                  </span>
+                </div>
+                <div className="comment-content">
+                  <p>{comment.content}</p>
+                  {comment.media && comment.media.length > 0 && (
+                    <div className="comment-media">
+                      {comment.media.map((url, index) => (
+                        <img
+                          key={index}
+                          src={url}
+                          alt={`Media ${index + 1}`}
+                          className="comment-image"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="comment-actions">
+                  <button
+                    className={`action-button ${comment.liked ? 'liked' : ''}`}
+                    onClick={() => handleCommentLike(comment._id)}
+                  >
+                    <i className="icon-heart" />
+                    <span>{comment.likes}</span>
+                  </button>
+                  <button className="action-button">
+                    <i className="icon-reply" />
+                    <span>Reply</span>
+                  </button>
                 </div>
               </div>
-
-              <div className="comment-content">
-                <p>{comment.content}</p>
-                {comment.media && comment.media.length > 0 && (
-                  <div className="comment-media">
-                    {comment.media.map((url, index) => (
-                      <img
-                        key={index}
-                        src={url}
-                        alt={`Media ${index + 1}`}
-                        className="comment-image"
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="comment-actions">
-                <button
-                  className={`action-button ${comment.liked ? 'liked' : ''}`}
-                  onClick={() => handleCommentLike(comment._id)}
-                >
-                  <i className="icon-heart" />
-                  <span>{comment.likes}</span>
-                </button>
-                <button className="action-button">
-                  <i className="icon-reply" />
-                  <span>Reply</span>
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }
 
