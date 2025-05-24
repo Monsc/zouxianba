@@ -20,14 +20,14 @@ function CreatePostButton() {
 
   return (
     <>
-      {/* 发帖按钮 - 固定在右下角 */}
+      {/* 桌面端右下角悬浮发帖按钮，移动端隐藏 */}
       <button
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-all duration-200 md:static md:w-full md:h-12 md:rounded-full md:mb-4"
+        className="hidden md:fixed md:bottom-8 md:right-8 md:z-50 md:w-16 md:h-16 md:rounded-full md:bg-primary md:text-white md:flex md:items-center md:justify-center md:shadow-lg md:hover:bg-primary/90 transition-all duration-200"
         onClick={handleOpen}
         aria-label="发帖"
       >
-        <Plus className="w-6 h-6 md:w-5 md:h-5" />
-        <span className="hidden md:inline ml-2">发帖</span>
+        <Plus className="w-7 h-7" />
+        <span className="hidden xl:inline ml-2 text-lg font-bold">发帖</span>
       </button>
 
       {/* 发帖弹窗 */}

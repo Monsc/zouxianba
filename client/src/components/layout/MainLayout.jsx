@@ -3,6 +3,7 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import RightSidebar from '../RightSidebar';
 import MobileNav from '../MobileNav';
+import CreatePostButton from '../CreatePostButton';
 import { Plus } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -19,6 +20,8 @@ const MainLayout = ({ children }) => {
         <main className="max-w-2xl mx-auto min-h-screen px-0 md:px-4 border-x border-border">
           {children}
         </main>
+        {/* 桌面端右下角悬浮发帖按钮 */}
+        <CreatePostButton />
       </div>
 
       {/* 右侧栏 - 仅大屏显示 */}
