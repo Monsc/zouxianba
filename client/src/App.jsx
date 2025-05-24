@@ -22,8 +22,11 @@ import NotFound from './pages/NotFound';
 import Feed from './pages/Feed';
 import Notifications from './pages/notifications/index';
 import Messages from './pages/Messages';
+import Search from './pages/Search';
 import { AnimatePresence, motion } from 'framer-motion';
 import MainLayout from './components/layout/MainLayout';
+import BottomNav from './components/layout/BottomNav';
+import Navbar from './components/layout/Navbar';
 
 // 懒加载管理页面组件
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));

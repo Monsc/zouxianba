@@ -7,10 +7,10 @@ export const Home = () => {
   const { user } = useAuth();
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <>
       {user && <CreatePost />}
       <Feed />
-    </div>
+    </>
   );
 };
 

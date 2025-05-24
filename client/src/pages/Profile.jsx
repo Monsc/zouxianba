@@ -109,7 +109,7 @@ export const Profile = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-2xl mx-auto bg-white dark:bg-background rounded-xl shadow overflow-hidden">
+      <>
         {/* 封面图 */}
         <div className="h-48 bg-gray-200 dark:bg-gray-800 relative">
           {profile.cover && <img src={profile.cover} alt="封面" className="w-full h-full object-cover" />}
@@ -143,30 +143,27 @@ export const Profile = () => {
         </div>
         {/* 个人信息区 */}
         <div className="pt-16 px-6 pb-4">
-          <h1 className="text-2xl font-bold">{profile.username}</h1>
-          <div className="text-muted-foreground">@{profile.handle}</div>
-          {profile.bio && <p className="mt-2 text-base text-muted-foreground">{profile.bio}</p>}
-          <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
-            {profile.location && (
-              <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" />{profile.location}</span>
-            )}
-            {profile.website && (
-              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:underline">
-                <LinkIcon className="w-4 h-4 mr-1" />{profile.website}
-              </a>
-            )}
-            {profile.createdAt && (
-              <span className="flex items-center"><Calendar className="w-4 h-4 mr-1" />加入于 {new Date(profile.createdAt).toLocaleDateString()}</span>
-            )}
-          </div>
-          {/* 关注/粉丝/推文数 */}
-          <div className="flex gap-6 mt-4 text-sm">
-            <div className="cursor-pointer hover:underline"><span className="font-bold">{profile.followersCount}</span> 粉丝</div>
-            <div className="cursor-pointer hover:underline"><span className="font-bold">{profile.followingCount}</span> 关注</div>
-            <div className="cursor-pointer hover:underline"><span className="font-bold">{profile.postsCount ?? profile.posts?.length ?? 0}</span> 推文</div>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profile.name}</span>
+                {profile.isVerified && <span className="text-blue-500">✔</span>}
+              </div>
+              <div className="text-gray-500">@{profile.username}</div>
+              <div className="text-gray-500 text-sm mt-1 flex items-center gap-2">
+                {profile.bio && <span>{profile.bio}</span>}
+                {profile.location && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{profile.location}</span>}
+                {profile.website && <span className="flex items-center gap-1"><LinkIcon className="w-4 h-4" />{profile.website}</span>}
+                {profile.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />加入于 {new Date(profile.createdAt).toLocaleDateString()}</span>}
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <span>关注 <span className="font-bold">{profile.followingCount}</span></span>
+              <span>粉丝 <span className="font-bold">{profile.followerCount}</span></span>
+            </div>
           </div>
         </div>
-        {/* Tab切换 */}
+        {/* Tab栏和内容 */}
         <div className="border-b border-border px-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-4 w-full">
@@ -184,7 +181,7 @@ export const Profile = () => {
           {activeTab === 'media' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
           {activeTab === 'likes' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
         </div>
-      </div>
+      </>
     </MainLayout>
   );
 };

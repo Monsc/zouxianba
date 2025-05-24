@@ -24,12 +24,59 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white shadow-sm">
-      <div className="container mx-auto px-4">
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between h-14 px-4 border-b">
+        <Link to="/" className="flex items-center">
+          <img src="/logo192.png" alt="走线吧" className="h-6 w-6 mr-2" />
+          <span className="text-lg font-bold text-primary">走线吧</span>
+        </Link>
+        <div className="flex items-center space-x-3">
+          <Link to="/notifications" className="text-gray-600 hover:text-gray-900">
+            <BellIcon className="h-6 w-6" />
+          </Link>
+          <div className="relative">
+            <button
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className="flex items-center text-gray-600 hover:text-gray-900"
+            >
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.username} className="h-6 w-6 rounded-full" />
+              ) : (
+                <UserCircleIcon className="h-6 w-6" />
+              )}
+            </button>
+            {isUserMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                <Link
+                  to={`/profile/${user?.username}`}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  个人主页
+                </Link>
+                <Link
+                  to="/settings"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  设置
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  退出登录
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* Desktop Layout */}
+      <div className="hidden md:block container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img src="/logo192.png" alt="走线吧" className="h-8 w-8 mr-2" />
-            <span className="text-xl font-bold text-primary hidden md:inline">走线吧</span>
+            <span className="text-xl font-bold text-primary">走线吧</span>
           </Link>
 
           {/* Search Bar */}
