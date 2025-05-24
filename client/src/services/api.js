@@ -72,20 +72,26 @@ class ApiService {
           return Promise.reject(error);
         }
 
-        // 处理 401 错误
-        if (error.response?.status === 401) {
+        // 只对需要登录的接口做跳转
+        const url = error.config?.url || '';
+        const needAuth = [
+          '/auth/me',
+          '/posts/feed',
+          '/notifications',
+          '/messages',
+          '/users/me',
+          '/bookmarks',
+          '/settings',
+          // 可根据实际情况补充
+        ].some(path => url.includes(path));
+
+        if (error.response?.status === 401 && needAuth) {
           useUserStore.getState().clearUser();
           window.location.href = '/login';
           return Promise.reject(error);
         }
 
-        // 处理 429 错误（请求过多）
-        if (error.response?.status === 429) {
-          const retryAfter = error.response.headers['retry-after'];
-          await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-          return this.api(error.config);
-        }
-
+        // 其他401（如公开API）不跳转
         return Promise.reject(error);
       }
     );
