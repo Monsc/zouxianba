@@ -5,6 +5,7 @@ const { authMiddleware, checkRole } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
 const { upload } = require('../../middlewares/upload');
 
+// 具体路由应放在参数路由之前
 // 用户注册
 router.post('/register',
   validate({
@@ -80,6 +81,67 @@ router.patch('/me',
   }
 );
 
+// 搜索用户
+router.get('/search',
+  authMiddleware,
+  validate({
+    query: {
+      q: { type: 'string', required: true },
+      page: { type: 'number', optional: true, min: 1 },
+      limit: { type: 'number', optional: true, min: 1, max: 50 },
+    },
+  }),
+  async (req, res, next) => {
+    try {
+      const { q: query, page = 1, limit = 20 } = req.query;
+      const users = await userService.searchUsers(query, page, limit);
+      res.json(users);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 管理员接口：获取所有用户
+router.get('/',
+  authMiddleware,
+  checkRole('admin'),
+  validate({
+    query: {
+      page: { type: 'number', optional: true, min: 1 },
+      limit: { type: 'number', optional: true, min: 1, max: 50 },
+    },
+  }),
+  async (req, res, next) => {
+    try {
+      const { page = 1, limit = 20 } = req.query;
+      const users = await userService.getAllUsers(page, limit);
+      res.json(users);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 管理员接口：更新用户状态
+router.patch('/:userId/status',
+  authMiddleware,
+  checkRole('admin'),
+  validate({
+    body: {
+      status: { type: 'string', required: true, enum: ['active', 'inactive', 'banned'] },
+    },
+  }),
+  async (req, res, next) => {
+    try {
+      const user = await userService.updateUserStatus(req.params.userId, req.body.status);
+      res.json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // 关注用户
 router.post('/:userId/follow',
   authMiddleware,
@@ -140,67 +202,6 @@ router.get('/:userId/followers',
       const { page = 1, limit = 20 } = req.query;
       const followers = await userService.getFollowers(req.params.userId, page, limit);
       res.json(followers);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-// 搜索用户
-router.get('/search',
-  authMiddleware,
-  validate({
-    query: {
-      q: { type: 'string', required: true },
-      page: { type: 'number', optional: true, min: 1 },
-      limit: { type: 'number', optional: true, min: 1, max: 50 },
-    },
-  }),
-  async (req, res, next) => {
-    try {
-      const { q: query, page = 1, limit = 20 } = req.query;
-      const users = await userService.searchUsers(query, page, limit);
-      res.json(users);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-// 管理员接口：获取所有用户
-router.get('/',
-  authMiddleware,
-  checkRole('admin'),
-  validate({
-    query: {
-      page: { type: 'number', optional: true, min: 1 },
-      limit: { type: 'number', optional: true, min: 1, max: 50 },
-    },
-  }),
-  async (req, res, next) => {
-    try {
-      const { page = 1, limit = 20 } = req.query;
-      const users = await userService.getAllUsers(page, limit);
-      res.json(users);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-// 管理员接口：更新用户状态
-router.patch('/:userId/status',
-  authMiddleware,
-  checkRole('admin'),
-  validate({
-    body: {
-      status: { type: 'string', required: true, enum: ['active', 'inactive', 'banned'] },
-    },
-  }),
-  async (req, res, next) => {
-    try {
-      const user = await userService.updateUserStatus(req.params.userId, req.body.status);
-      res.json(user);
     } catch (error) {
       next(error);
     }
