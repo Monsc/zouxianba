@@ -150,7 +150,7 @@ function CreatePostBox() {
 
           <button
             type="submit"
-            className="btn btn-primary px-6 py-2 rounded-full font-bold text-white bg-primary hover:bg-primary-hover dark:bg-primary dark:hover:bg-blue-400 shadow-lg transition-all disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="px-6 py-2 rounded-full font-bold text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-60"
             disabled={isLoading || (!content.trim() && images.length === 0)}
           >
             {isLoading ? '发布中...' : '发布'}
