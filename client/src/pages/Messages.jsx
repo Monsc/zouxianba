@@ -59,78 +59,55 @@ export default function Messages() {
   const renderConversationList = () => (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-          消息
-        </h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-4">消息</h1>
         <div className="relative">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="搜索用户..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-[15px]"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         </div>
       </div>
-
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto p-2">
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
           </div>
         ) : filteredConversations.length > 0 ? (
           filteredConversations.map((conversation) => {
-            const otherUser = conversation.participants.find(
-              (p) => p._id !== user?._id
-            );
+            const otherUser = conversation.participants.find((p) => p._id !== user?._id);
             return (
               <button
                 key={conversation._id}
                 onClick={() => navigate(`/messages/${conversation._id}`)}
-                className={`w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${
-                  conversationId === conversation._id
-                    ? 'bg-gray-50 dark:bg-gray-800/50'
-                    : ''
-                }`}
+                className={`w-full mb-2 bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-3 flex items-center space-x-3 transition-shadow hover:shadow-md hover:bg-blue-50/60 dark:hover:bg-blue-900/20 ${conversationId === conversation._id ? 'ring-2 ring-blue-400/40' : ''}`}
               >
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={otherUser.avatar}
-                    alt={otherUser.username}
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-900 dark:text-white truncate">
-                        {otherUser.username}
-                      </h3>
-                      {conversation.lastMessage && (
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                          {formatDistanceToNow(
-                            new Date(conversation.lastMessage.createdAt),
-                            {
-                              addSuffix: true,
-                              locale: zhCN,
-                            }
-                          )}
-                        </span>
-                      )}
-                    </div>
+                <img
+                  src={otherUser.avatar}
+                  alt={otherUser.username}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium text-gray-900 dark:text-white truncate">{otherUser.username}</h3>
                     {conversation.lastMessage && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                        {conversation.lastMessage.content}
-                      </p>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: true, locale: zhCN })}
+                      </span>
                     )}
                   </div>
+                  {conversation.lastMessage && (
+                    <p className="text-[15px] text-gray-500 dark:text-gray-400 truncate mt-1">{conversation.lastMessage.content}</p>
+                  )}
                 </div>
               </button>
             );
           })
         ) : (
-          <div className="text-center py-8 text-gray-500">
-            暂无对话
-          </div>
+          <div className="text-center py-8 text-gray-500">暂无对话</div>
         )}
       </div>
     </div>
