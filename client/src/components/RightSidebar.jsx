@@ -4,6 +4,36 @@ import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import { FollowService } from '../services/FollowService';
 
+const mockUsers = [
+  {
+    _id: 'u1',
+    avatar: 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png',
+    username: 'Elon Musk',
+    handle: 'elonmusk',
+    isFollowing: false,
+  },
+  {
+    _id: 'u2',
+    avatar: '',
+    username: 'jack',
+    handle: 'jack',
+    isFollowing: true,
+  },
+  {
+    _id: 'u3',
+    avatar: '',
+    username: 'Cat Girl',
+    handle: 'catgirl',
+    isFollowing: false,
+  },
+];
+const mockTopics = [
+  { tag: 'SpaceX', count: 1234 },
+  { tag: 'AI', count: 888 },
+  { tag: 'OpenSource', count: 456 },
+  { tag: '可爱', count: 321 },
+];
+
 function RightSidebar() {
   const [users, setUsers] = useState([]);
   const [topics, setTopics] = useState([]);
@@ -21,9 +51,12 @@ function RightSidebar() {
         apiService.getRecommendedUsers(),
         apiService.getTrendingTopics(),
       ]);
-      setUsers(recommendedUsers);
-      setTopics(trendingTopics);
+      setUsers(Array.isArray(recommendedUsers) && recommendedUsers.length > 0 ? recommendedUsers : mockUsers);
+      setTopics(Array.isArray(trendingTopics) && trendingTopics.length > 0 ? trendingTopics : mockTopics);
     } catch (error) {
+      // 接口异常时兜底显示 mock 数据
+      setUsers(mockUsers);
+      setTopics(mockTopics);
       console.error('Error loading sidebar content:', error);
     } finally {
       setIsLoading(false);
@@ -39,7 +72,7 @@ function RightSidebar() {
   }
 
   return (
-    <aside className="sidebar-right hidden xl:flex flex-col w-80 p-4 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-[#192734]">
+    <aside className="sidebar-right hidden xl:flex flex-col w-80 p-4 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-[#192734] space-y-6">
       {/* 搜索框 */}
       <div className="search-box mb-6">
         <div className="relative">
@@ -54,20 +87,20 @@ function RightSidebar() {
       </div>
 
       {/* 推荐用户 */}
-      <div className="recommended-users mb-8">
+      <div className="bg-gray-50 dark:bg-[#22303c] rounded-2xl shadow p-4 mb-4">
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">推荐关注</h2>
         <div className="space-y-4">
           {users.map(user => (
             <div
               key={user._id}
-              className="user-card flex items-center justify-between p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              className="user-card flex items-center justify-between p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer gap-3"
               onClick={() => navigate(`/profile/${user._id}`)}
             >
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-3">
                 <img
                   src={user.avatar || '/default-avatar.png'}
                   alt={user.username}
-                  className="w-10 h-10 rounded-full"
+                  className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-gray-700"
                 />
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white">{user.username}</div>
@@ -75,7 +108,7 @@ function RightSidebar() {
                 </div>
               </div>
               <button
-                className={`px-4 py-1 rounded-full text-sm font-bold transition-colors ${
+                className={`px-4 py-1 rounded-full text-sm font-bold transition-colors shadow-sm border-none focus:outline-none focus:ring-2 focus:ring-primary/50 ${
                   user.isFollowing
                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                     : 'bg-primary text-white hover:bg-primary-hover'
@@ -93,9 +126,7 @@ function RightSidebar() {
                         u._id === user._id ? { ...u, isFollowing: !u.isFollowing } : u
                       )
                     );
-                  } catch (err) {
-                    // 可选：弹出错误提示
-                  }
+                  } catch (err) {}
                 }}
               >
                 {user.isFollowing ? '已关注' : '关注'}
@@ -106,19 +137,17 @@ function RightSidebar() {
       </div>
 
       {/* 热门话题 */}
-      <div className="trending-topics">
+      <div className="bg-gray-50 dark:bg-[#22303c] rounded-2xl shadow p-4">
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">热门话题</h2>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {topics.map(topic => (
             <div
               key={topic.tag}
-              className="topic-card p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              className="topic-card p-3 rounded-xl bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors cursor-pointer flex flex-col gap-1"
               onClick={() => navigate(`/search?q=${encodeURIComponent(topic.tag)}`)}
             >
-              <div className="flex flex-col">
-                <span className="topic-label">#{topic.tag}</span>
-                <span className="topic-count">{topic.count} 条帖子</span>
-              </div>
+              <span className="topic-label text-primary font-bold">#{topic.tag}</span>
+              <span className="topic-count text-xs text-gray-500 dark:text-gray-400">{topic.count} 条帖子</span>
             </div>
           ))}
         </div>

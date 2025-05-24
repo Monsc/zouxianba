@@ -27,11 +27,8 @@ function MobileNav({ unreadNotifications = 0, unreadMessages = 0 }) {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center flex-1 h-full relative transition-colors ${
-                  isActive(item.path)
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-primary'
-                }`}
+                className={`flex flex-col items-center justify-center flex-1 h-full relative transition-colors text-gray-900 dark:text-white` +
+                  (isActive(item.path) ? ' text-primary' : ' text-muted-foreground hover:text-primary')}
               >
                 <span className="relative">
                   <Icon className="w-6 h-6" />
@@ -48,11 +45,8 @@ function MobileNav({ unreadNotifications = 0, unreadMessages = 0 }) {
           {/* 个人中心 */}
           <Link
             to={user ? `/profile/${user._id}` : '/login'}
-            className={`flex flex-col items-center justify-center flex-1 h-full ${
-              isActive(`/profile/${user?._id}`)
-                ? 'text-primary'
-                : 'text-muted-foreground hover:text-primary'
-            }`}
+            className={`flex flex-col items-center justify-center flex-1 h-full text-gray-900 dark:text-white` +
+              (isActive(`/profile/${user?._id}`) ? ' text-primary' : ' text-muted-foreground hover:text-primary')}
           >
             <span className="relative">
               <User className="w-6 h-6" />

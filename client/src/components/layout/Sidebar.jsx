@@ -72,36 +72,6 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      {/* Post Button */}
-      <Button
-        size="lg"
-        className="w-full rounded-full mt-4 mb-6 font-bold"
-      >
-        <Plus className="h-5 w-5 mr-2" />
-        发帖
-      </Button>
-
-      {/* Trending Topics */}
-      <div className="bg-accent/50 rounded-2xl p-4">
-        <h3 className="text-lg font-bold mb-4">热门话题</h3>
-        <ul className="space-y-3">
-          {trendingTopics.map(topic => (
-            <li key={topic.name}>
-              <Link
-                to={`/topic/${topic.name}`}
-                className="flex items-center justify-between text-muted-foreground hover:text-foreground"
-              >
-                <div className="flex items-center space-x-2">
-                  <Hash className="h-4 w-4" />
-                  <span>{topic.name}</span>
-                </div>
-                <span className="text-sm">{topic.count}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
       {/* Footer */}
       <div className="mt-6 text-sm text-muted-foreground">
         <div className="flex flex-wrap gap-2">

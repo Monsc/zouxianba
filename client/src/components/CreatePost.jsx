@@ -127,15 +127,15 @@ export const CreatePost = ({ onPostCreated }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <div className="flex space-x-3">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-[#15202b] rounded-2xl shadow-xl p-5 mb-4 border border-gray-100 dark:border-gray-800 transition-all">
+      <div className="flex items-start gap-3">
         <Avatar src={user?.avatar} alt={user?.username || ''} size="md" className="flex-shrink-0" />
         <div className="flex-1">
           <textarea
             value={content}
             onChange={handleContentChange}
             placeholder="分享你的想法..."
-            className="w-full h-24 p-2 border border-gray-200 dark:border-gray-700 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-900 dark:text-gray-100"
+            className="w-full h-20 md:h-24 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#192734] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-base transition-all shadow-sm"
           />
 
           {previewUrls.length > 0 && (
@@ -208,8 +208,12 @@ export const CreatePost = ({ onPostCreated }) => {
                 <span>视频</span>
               </Button>
             </div>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? <Icon name="loader" className="w-4 h-4 animate-spin" /> : '发布'}
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="rounded-full bg-primary text-white px-6 py-2 font-bold shadow hover:bg-primary/90 transition-all"
+            >
+              {isSubmitting ? '发布中...' : '发布'}
             </Button>
           </div>
         </div>
