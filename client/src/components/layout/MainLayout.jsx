@@ -83,22 +83,37 @@ export default function MainLayout({ children }) {
       >
         <div className="flex flex-col h-full p-4">
           <div className="flex-1 space-y-2">
-            {navItems.map((item) => (
-              <div key={item.path}>{renderNavItem(item)}</div>
-            ))}
-          </div>
-
-          {user && (
-            <div className="mt-auto">
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-4 p-3 w-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-              >
+            <nav className="flex flex-col space-y-4">
+              <Link to="/" className="flex items-center space-x-2 text-gray-700 hover:text-[#1da1f2]">
+                <Home className="w-6 h-6" />
+                <span>首页</span>
+              </Link>
+              <Link to="/search" className="flex items-center space-x-2 text-gray-700 hover:text-[#1da1f2]">
+                <Search className="w-6 h-6" />
+                <span>搜索</span>
+              </Link>
+              <Link to="/notifications" className="flex items-center space-x-2 text-gray-700 hover:text-[#1da1f2]">
+                <Bell className="w-6 h-6" />
+                <span>通知</span>
+              </Link>
+              <Link to="/messages" className="flex items-center space-x-2 text-gray-700 hover:text-[#1da1f2]">
+                <Mail className="w-6 h-6" />
+                <span>消息</span>
+              </Link>
+              <Link to="/profile" className="flex items-center space-x-2 text-gray-700 hover:text-[#1da1f2]">
+                <User className="w-6 h-6" />
+                <span>个人</span>
+              </Link>
+              <Link to="/settings" className="flex items-center space-x-2 text-gray-700 hover:text-[#1da1f2]">
+                <Settings className="w-6 h-6" />
+                <span>设置</span>
+              </Link>
+              <button onClick={handleLogout} className="flex items-center space-x-2 text-gray-700 hover:text-[#1da1f2]">
                 <LogOut className="w-6 h-6" />
-                <span className="hidden md:block">退出登录</span>
+                <span>退出</span>
               </button>
-            </div>
-          )}
+            </nav>
+          </div>
         </div>
       </div>
 
