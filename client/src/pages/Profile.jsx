@@ -78,7 +78,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-[600px] mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-sm mb-8 overflow-hidden">
       {/* 封面图 */}
       <div className="h-48 bg-gray-200 dark:bg-gray-800 relative">
         {profile.coverImage && (
@@ -88,84 +88,70 @@ export default function Profile() {
             className="w-full h-full object-cover"
           />
         )}
+        {/* 头像浮动在封面下方 */}
+        <div className="absolute left-6 -bottom-16 z-10">
+          <img
+            src={profile.avatar}
+            alt={profile.username}
+            className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900 object-cover shadow-lg"
+          />
+        </div>
       </div>
 
       {/* 个人信息 */}
-      <div className="px-4">
-        <div className="flex justify-between items-start -mt-16 mb-4">
-          <div className="flex items-end space-x-4">
-            <img
-              src={profile.avatar}
-              alt={profile.username}
-              className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900"
-            />
-            <div className="mb-4">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {profile.username}
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400">
-                @{profile.handle}
-              </p>
-            </div>
+      <div className="pt-20 px-6 pb-6">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.username}</h1>
+            <p className="text-gray-500 dark:text-gray-400">@{profile.handle}</p>
           </div>
-
           <div className="flex space-x-2">
             {currentUser && currentUser._id !== profile._id ? (
               <Button
                 variant={profile.isFollowing ? 'outline' : 'default'}
                 onClick={handleFollow}
+                className="rounded-full px-5 py-2 font-bold text-sm transition-colors hover:bg-blue-600 hover:text-white"
               >
                 {profile.isFollowing ? (
                   <>
-                    <UserMinus className="w-4 h-4 mr-2" />
-                    取消关注
+                    <UserMinus className="w-4 h-4 mr-2" />取消关注
                   </>
                 ) : (
                   <>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    关注
+                    <UserPlus className="w-4 h-4 mr-2" />关注
                   </>
                 )}
               </Button>
             ) : currentUser && currentUser._id === profile._id ? (
               <Link to="/settings">
-                <Button variant="outline">
-                  <Settings className="w-4 h-4 mr-2" />
-                  编辑资料
+                <Button variant="outline" className="rounded-full px-5 py-2 font-bold text-sm">
+                  <Settings className="w-4 h-4 mr-2" />编辑资料
                 </Button>
               </Link>
             ) : null}
           </div>
         </div>
-
         {profile.bio && (
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
-            {profile.bio}
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 mb-4 text-[15px]">{profile.bio}</p>
         )}
-
         {/* 统计信息 */}
-        <div className="flex space-x-4 mb-4">
+        <div className="flex space-x-4 mb-4 text-sm">
           <Link
             to={`/profile/${profile.username}/following`}
             className="text-gray-700 dark:text-gray-300 hover:underline"
           >
-            <span className="font-bold">{profile.followingCount}</span>{' '}
-            关注
+            <span className="font-bold">{profile.followingCount}</span> 关注
           </Link>
           <Link
             to={`/profile/${profile.username}/followers`}
             className="text-gray-700 dark:text-gray-300 hover:underline"
           >
-            <span className="font-bold">{profile.followersCount}</span>{' '}
-            粉丝
+            <span className="font-bold">{profile.followersCount}</span> 粉丝
           </Link>
           <span className="text-gray-700 dark:text-gray-300">
-            <span className="font-bold">{profile.postsCount}</span>{' '}
-            帖子
+            <span className="font-bold">{profile.postsCount}</span> 帖子
           </span>
         </div>
-
         {/* 标签页 */}
         <div className="border-b border-gray-200 dark:border-gray-800">
           <div className="flex space-x-8">
@@ -204,13 +190,15 @@ export default function Profile() {
             </button>
           </div>
         </div>
-      </div>
-
-      {/* 内容列表 */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-800">
-        {posts.map(post => (
-          <PostCard key={post._id} post={post} />
-        ))}
+        {/* 内容区 */}
+        <div className="mt-6">
+          {activeTab === 'posts' && (
+            <div className="space-y-4">
+              {posts.length > 0 ? posts.map(post => <PostCard key={post._id} post={post} />) : <div className="text-center text-gray-500">暂无帖子</div>}
+            </div>
+          )}
+          {/* 其他标签页内容可后续补充 */}
+        </div>
       </div>
     </div>
   );
