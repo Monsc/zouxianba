@@ -28,7 +28,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-xl font-bold text-primary">走线吧</span>
+            <img src="/logo192.png" alt="走线吧" className="h-8 w-8 mr-2" />
+            <span className="text-xl font-bold text-primary hidden md:inline">走线吧</span>
           </Link>
 
           {/* Search Bar */}

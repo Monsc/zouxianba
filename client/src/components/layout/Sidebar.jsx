@@ -40,9 +40,10 @@ const Sidebar = () => {
   return (
     <div className="flex flex-col h-full px-4 py-6">
       {/* Logo */}
-      <div className="mb-6">
-        <Link to="/" className="text-2xl font-bold text-primary">
-          走线吧
+      <div className="mb-6 flex items-center">
+        <Link to="/" className="flex items-center space-x-2">
+          <img src="/logo192.png" alt="走线吧" className="h-8 w-8" />
+          <span className="text-2xl font-bold text-primary hidden md:inline">走线吧</span>
         </Link>
       </div>
 
