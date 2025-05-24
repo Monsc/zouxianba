@@ -1,223 +1,189 @@
 import React, { useState, useRef } from 'react';
-import { Button } from '../components/ui/button';
-import { Icon } from './Icon';
-import { Avatar } from './Avatar';
 import { useAuth } from '../contexts/AuthContext';
+import { apiService } from '../services/api';
 import { useToast } from '../hooks/useToast';
-import { PostService } from '../services/PostService';
-import { cn } from '../lib/utils';
+import { Image, X, Smile } from 'lucide-react';
+import EmojiPicker from 'emoji-picker-react';
 
-export const CreatePost = ({ onPostCreated }) => {
+export function CreatePost({ onPostCreated }) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [content, setContent] = useState('');
-  const [images, setImages] = useState([]);
-  const [video, setVideo] = useState(null);
-  const [tags, setTags] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewUrls, setPreviewUrls] = useState([]);
   const fileInputRef = useRef(null);
-  const videoInputRef = useRef(null);
+  const textareaRef = useRef(null);
 
-  const handleContentChange = e => {
-    setContent(e.target.value);
-    // 提取标签
-    const tagMatches = e.target.value.match(/#[\w\u4e00-\u9fa5]+/g);
-    if (tagMatches) {
-      setTags(tagMatches.map(tag => tag.slice(1)));
-    }
-  };
-
-  const handleImageSelect = e => {
-    const files = Array.from(e.target.files || []);
-    if (files.length + images.length > 9) {
-      showToast('最多只能上传 9 张图片', 'warning');
-      return;
-    }
-
-    const validFiles = files.filter(file => {
-      if (!file.type.startsWith('image/')) {
-        showToast('只能上传图片文件', 'error');
-        return false;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('图片大小不能超过 5MB', 'error');
-        return false;
-      }
-      return true;
-    });
-
-    setImages(prev => [...prev, ...validFiles]);
-
-    // 生成预览 URL
-    validFiles.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrls(prev => [...prev, reader.result]);
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleVideoSelect = e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('video/')) {
-      showToast('只能上传视频文件', 'error');
-      return;
-    }
-
-    if (file.size > 50 * 1024 * 1024) {
-      showToast('视频大小不能超过 50MB', 'error');
-      return;
-    }
-
-    setVideo(file);
-    setImages([]);
-    setPreviewUrls([]);
-  };
-
-  const removeImage = index => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const removeVideo = () => {
-    setVideo(null);
-    if (videoInputRef.current) {
-      videoInputRef.current.value = '';
-    }
-  };
-
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim() && images.length === 0 && !video) {
-      showToast('请输入内容或上传媒体文件', 'warning');
-      return;
-    }
+    if ((!content.trim() && selectedImages.length === 0) || isSubmitting) return;
 
     try {
       setIsSubmitting(true);
       const formData = new FormData();
       formData.append('content', content);
-      images.forEach(image => formData.append('images', image));
-      if (video) formData.append('video', video);
-      tags.forEach(tag => formData.append('tags', tag));
+      selectedImages.forEach((image) => {
+        formData.append('media', image);
+      });
 
-      const response = await PostService.createPost(formData);
-      onPostCreated(response.post);
-      resetForm();
+      await apiService.createPost(formData);
+      setContent('');
+      setSelectedImages([]);
+      onPostCreated?.();
       showToast('发布成功', 'success');
     } catch (error) {
-      showToast('发布失败，请重试', 'error');
+      showToast('发布失败', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const resetForm = () => {
-    setContent('');
-    setImages([]);
-    setVideo(null);
-    setTags([]);
-    setPreviewUrls([]);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    if (videoInputRef.current) videoInputRef.current.value = '';
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const validFiles = files.filter((file) => {
+      if (!file.type.startsWith('image/')) {
+        showToast('请选择图片文件', 'error');
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('图片大小不能超过5MB', 'error');
+        return false;
+      }
+      return true;
+    });
+
+    if (selectedImages.length + validFiles.length > 4) {
+      showToast('最多只能上传4张图片', 'error');
+      return;
+    }
+
+    setSelectedImages((prev) => [...prev, ...validFiles]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleEmojiClick = (emojiData) => {
+    setContent((prev) => prev + emojiData.emoji);
+    setShowEmojiPicker(false);
+    textareaRef.current?.focus();
+  };
+
+  const handleTextareaResize = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white dark:bg-[#15202b] rounded-2xl shadow-xl p-5 mb-4 border border-gray-100 dark:border-gray-800 transition-all">
-      <div className="flex items-start gap-3">
-        <Avatar src={user?.avatar} alt={user?.username || ''} size="md" className="flex-shrink-0" />
-        <div className="flex-1">
-          <textarea
-            value={content}
-            onChange={handleContentChange}
-            placeholder="分享你的想法..."
-            className="w-full h-20 md:h-24 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#192734] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-base transition-all shadow-sm"
+    <div className="border-b border-gray-200 dark:border-gray-800 p-4">
+      <form onSubmit={handleSubmit}>
+        <div className="flex space-x-3">
+          <img
+            src={user?.avatar}
+            alt={user?.username}
+            className="w-12 h-12 rounded-full"
           />
 
-          {previewUrls.length > 0 && (
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {previewUrls.map((url, index) => (
-                <div key={index} className="relative group">
-                  <img
-                    src={url}
-                    alt={`预览 ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-black bg-opacity-50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Icon name="x" className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="flex-1">
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => {
+                setContent(e.target.value);
+                handleTextareaResize();
+              }}
+              placeholder="有什么新鲜事？"
+              className="w-full resize-none border-none focus:ring-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              rows={1}
+            />
 
-          {video && (
-            <div className="mt-4 relative">
-              <video src={URL.createObjectURL(video)} className="w-full rounded-lg" controls />
+            {selectedImages.length > 0 && (
+              <div className={`grid gap-2 mt-2 ${
+                selectedImages.length === 1 ? 'grid-cols-1' :
+                selectedImages.length === 2 ? 'grid-cols-2' :
+                selectedImages.length === 3 ? 'grid-cols-2' :
+                'grid-cols-2'
+              }`}>
+                {selectedImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`relative ${
+                      selectedImages.length === 3 && index === 0 ? 'row-span-2' : ''
+                    }`}
+                  >
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt=""
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 p-1 bg-gray-900/50 rounded-full text-white hover:bg-gray-900/70"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition-colors"
+                  disabled={selectedImages.length >= 4}
+                >
+                  <Image className="w-5 h-5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition-colors"
+                >
+                  <Smile className="w-5 h-5" />
+                </button>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                />
+              </div>
+
               <button
-                type="button"
-                onClick={removeVideo}
-                className="absolute top-2 right-2 p-1 bg-black bg-opacity-50 rounded-full text-white"
+                type="submit"
+                disabled={(!content.trim() && selectedImages.length === 0) || isSubmitting}
+                className="px-4 py-2 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <Icon name="x" className="w-4 h-4" />
+                发布
               </button>
             </div>
-          )}
-
-          <div className="mt-4 flex items-center justify-between">
-            <div className="flex space-x-2">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageSelect}
-                accept="image/*"
-                multiple
-                className="hidden"
-              />
-              <input
-                type="file"
-                ref={videoInputRef}
-                onChange={handleVideoSelect}
-                accept="video/*"
-                className="hidden"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                className="flex items-center space-x-1"
-              >
-                <Icon name="image" className="w-5 h-5" />
-                <span>图片</span>
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => videoInputRef.current && videoInputRef.current.click()}
-                className="flex items-center space-x-1"
-              >
-                <Icon name="video" className="w-5 h-5" />
-                <span>视频</span>
-              </Button>
-            </div>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-full bg-primary text-white px-6 py-2 font-bold shadow hover:bg-primary/90 transition-all"
-            >
-              {isSubmitting ? '发布中...' : '发布'}
-            </Button>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
+
+      {showEmojiPicker && (
+        <div className="absolute left-4 mt-2">
+          <div className="relative">
+            <EmojiPicker onEmojiClick={handleEmojiClick} />
+          </div>
+        </div>
+      )}
+    </div>
   );
-};
+}

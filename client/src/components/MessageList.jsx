@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
@@ -11,135 +11,129 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { Toaster } from '../components/ui/toaster';
 import { Icon } from './Icon';
 import { cn } from '@/lib/utils';
+import { useAuth } from '../contexts/AuthContext';
+import { apiService } from '../services/api';
+import { MessageInput } from './MessageInput';
 
-export const MessageList = () => {
+export const MessageList = ({ conversationId }) => {
   const router = useRouter();
   const { showToast } = useToast();
-  const [conversations, setConversations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const messagesEndRef = useRef(null);
+  const wsRef = useRef(null);
+  const { user } = useAuth();
 
-  // 使用无限滚动加载更多会话
-  const {
-    loadMore,
-    hasMore,
-    loading: loadingMore,
-  } = useInfiniteScroll({
-    fetchData: async page => {
-      try {
-        const response = await MessageService.getConversations(page);
-        return response.conversations;
-      } catch (error) {
-        console.error('Load more failed:', error);
-        return [];
-      }
-    },
-    initialData: conversations,
-    setData: setConversations,
-  });
-
-  // 加载会话列表
   useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        setIsLoading(true);
-        const response = await MessageService.getConversations();
-        setConversations(response.conversations);
-      } catch (error) {
-        console.error('Fetch conversations failed:', error);
-        showToast('加载会话失败', 'error');
-      } finally {
-        setIsLoading(false);
+    fetchMessages();
+    setupWebSocket();
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
       }
     };
+  }, [conversationId]);
 
-    fetchConversations();
-  }, []);
-
-  // 处理会话点击
-  const handleConversationClick = conversationId => {
-    router.push(`/messages/${conversationId}`);
+  const fetchMessages = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.getMessages(conversationId);
+      setMessages(data);
+      scrollToBottom();
+    } catch (error) {
+      showToast('获取消息失败', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (isLoading) {
+  const setupWebSocket = () => {
+    const ws = new WebSocket(`${import.meta.env.VITE_WS_URL}/messages/${conversationId}`);
+    wsRef.current = ws;
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      setMessages(prev => [...prev, message]);
+      scrollToBottom();
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      showToast('消息连接失败', 'error');
+    };
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const renderMessage = (message) => {
+    const isOwnMessage = message.sender._id === user?._id;
+
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (conversations.length === 0) {
-    return <Toaster title="暂无消息" description="开始与其他用户聊天吧" icon="message" />;
-  }
-
-  return (
-    <div className="space-y-4">
-      {conversations.map(conversation => (
-        <div
-          key={conversation.id}
-          className={cn(
-            'bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden cursor-pointer transition-colors',
-            !conversation.read && 'bg-blue-50 dark:bg-blue-900/20'
-          )}
-          onClick={() => handleConversationClick(conversation.id)}
-        >
-          <div className="p-4">
-            <div className="flex items-start space-x-4">
-              <Avatar
-                src={conversation.participant.avatar}
-                alt={conversation.participant.username}
-                size="md"
-                className="cursor-pointer"
-                onClick={e => {
-                  e.stopPropagation();
-                  router.push(`/user/${conversation.participant.id}`);
-                }}
+      <div
+        key={message._id}
+        className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-4`}
+      >
+        <div className={`flex ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'} items-end space-x-2`}>
+          <img
+            src={message.sender.avatar}
+            alt={message.sender.username}
+            className="w-8 h-8 rounded-full"
+          />
+          <div className={`max-w-[70%] ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+            {message.type === 'image' ? (
+              <img
+                src={message.content}
+                alt="消息图片"
+                className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => window.open(message.content, '_blank')}
               />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3
-                      className="text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:underline"
-                      onClick={e => {
-                        e.stopPropagation();
-                        router.push(`/user/${conversation.participant.id}`);
-                      }}
-                    >
-                      {conversation.participant.username}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
-                      {conversation.lastMessage}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end space-y-1">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {formatDistanceToNow(new Date(conversation.updatedAt), {
-                        addSuffix: true,
-                        locale: zhCN,
-                      })}
-                    </span>
-                    {!conversation.read && (
-                      <span className="inline-flex items-center justify-center w-2 h-2 bg-blue-500 rounded-full" />
-                    )}
-                  </div>
-                </div>
+            ) : (
+              <div
+                className={`px-4 py-2 rounded-lg ${
+                  isOwnMessage
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                }`}
+              >
+                {message.content}
               </div>
-            </div>
+            )}
+            <span className="text-xs text-gray-500 mt-1 block">
+              {formatDistanceToNow(new Date(message.createdAt), {
+                addSuffix: true,
+                locale: zhCN,
+              })}
+            </span>
           </div>
         </div>
-      ))}
+      </div>
+    );
+  };
 
-      {hasMore && (
-        <div className="flex justify-center">
-          <button
-            onClick={loadMore}
-            disabled={loadingMore}
-            className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            {loadingMore ? <LoadingSpinner size="sm" /> : '加载更多'}
-          </button>
-        </div>
-      )}
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto p-4">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+          </div>
+        ) : messages.length > 0 ? (
+          messages.map(renderMessage)
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            暂无消息
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <MessageInput
+        conversationId={conversationId}
+        onMessageSent={fetchMessages}
+      />
     </div>
   );
 };

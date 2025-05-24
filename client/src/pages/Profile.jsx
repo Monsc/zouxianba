@@ -1,189 +1,217 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
 import { apiService } from '../services/api';
-import { FollowService } from '../services/FollowService';
+import { useToast } from '../hooks/useToast';
 import { Button } from '../components/Button';
-import { Feed } from '../components/Feed';
 import { PostCard } from '../components/PostCard';
-import ReportModal from '../components/ReportModal';
-import MainLayout from '../components/layout/MainLayout';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Edit, Mail, UserPlus, UserCheck, MoreHorizontal, MapPin, Link as LinkIcon, Calendar } from 'lucide-react';
+import { UserPlus, UserMinus, Settings } from 'lucide-react';
+import { cn } from '../lib/utils';
 
-export const Profile = () => {
+export default function Profile() {
   const { username } = useParams();
   const { user: currentUser } = useAuth();
-  const { error, success } = useToast();
-  const navigate = useNavigate();
+  const { showToast } = useToast();
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [activeTab, setActiveTab] = useState('posts');
   const [posts, setPosts] = useState([]);
-  const [showReport, setShowReport] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('posts');
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await apiService.getProfile(username);
-        setProfile(data);
-        setIsFollowing(data.isFollowing);
-        setPosts(data.posts);
-      } catch (error) {
-        error('Failed to load profile');
-        navigate('/');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProfile();
-  }, [username, error, navigate]);
+  }, [username]);
 
-  useEffect(() => {
-    if (currentUser && profile) {
-      setIsBlocked(Array.isArray(currentUser.blocked) && currentUser.blocked.includes(profile._id));
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const [profileData, postsData] = await Promise.all([
+        apiService.getUserProfile(username),
+        apiService.getUserPosts(username)
+      ]);
+      setProfile(profileData);
+      setPosts(postsData);
+    } catch (error) {
+      showToast('获取用户信息失败', 'error');
+    } finally {
+      setLoading(false);
     }
-  }, [currentUser, profile]);
+  };
 
   const handleFollow = async () => {
     if (!currentUser) {
-      navigate('/login');
+      showToast('请先登录', 'error');
       return;
     }
 
     try {
-      if (isFollowing) {
-        await FollowService.unfollowUser(username);
-        setIsFollowing(false);
-        success('Unfollowed successfully');
+      if (profile.isFollowing) {
+        await apiService.unfollowUser(profile._id);
+        showToast('已取消关注');
       } else {
-        await FollowService.followUser(username);
-        setIsFollowing(true);
-        success('Followed successfully');
+        await apiService.followUser(profile._id);
+        showToast('关注成功');
       }
+      setProfile(prev => ({
+        ...prev,
+        isFollowing: !prev.isFollowing,
+        followersCount: prev.isFollowing ? prev.followersCount - 1 : prev.followersCount + 1
+      }));
     } catch (error) {
-      error(error.message || 'Operation failed');
-    }
-  };
-
-  const handleLike = async postId => {
-    setPosts(
-      posts.map(p =>
-        p._id === postId
-          ? {
-              ...p,
-              likes: p.liked ? p.likes - 1 : p.likes + 1,
-              liked: !p.liked,
-            }
-          : p
-      )
-    );
-  };
-
-  const handleBlock = async () => {
-    if (!profile?._id) return;
-    try {
-      if (isBlocked) {
-        await apiService.unblockUser(profile._id);
-        setIsBlocked(false);
-      } else {
-        await apiService.blockUser(profile._id);
-        setIsBlocked(true);
-      }
-    } catch (err) {
-      // 可选：错误提示
+      showToast('操作失败，请稍后重试', 'error');
     }
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-[400px]">加载中...</div>;
+    return (
+      <div className="flex justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      </div>
+    );
   }
 
   if (!profile) {
-    return <div>Profile not found</div>;
+    return (
+      <div className="text-center py-8 text-gray-500">
+        用户不存在
+      </div>
+    );
   }
 
   return (
-    <MainLayout>
-      <>
-        {/* 封面图 */}
-        <div className="h-48 bg-gray-200 dark:bg-gray-800 relative">
-          {profile.cover && <img src={profile.cover} alt="封面" className="w-full h-full object-cover" />}
-          {/* 头像悬浮 */}
-          <div className="absolute left-6 -bottom-12 z-10">
+    <div className="max-w-2xl mx-auto">
+      {/* 封面图 */}
+      <div className="h-48 bg-gray-200 dark:bg-gray-800 relative">
+        {profile.coverImage && (
+          <img
+            src={profile.coverImage}
+            alt="封面"
+            className="w-full h-full object-cover"
+          />
+        )}
+      </div>
+
+      {/* 个人信息 */}
+      <div className="px-4">
+        <div className="flex justify-between items-start -mt-16 mb-4">
+          <div className="flex items-end space-x-4">
             <img
               src={profile.avatar}
               alt={profile.username}
-              className="w-24 h-24 rounded-full border-4 border-white dark:border-background object-cover shadow-lg"
+              className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900"
             />
-          </div>
-          {/* 右上角按钮 */}
-          <div className="absolute right-6 top-6 flex gap-2 z-10">
-            {currentUser && currentUser.username === username ? (
-              <Button size="sm" variant="outline" onClick={() => navigate('/settings/profile')}>
-                <Edit className="w-4 h-4 mr-1" /> 编辑资料
-              </Button>
-            ) : currentUser && (
-              <>
-                <Button size="sm" variant={isFollowing ? 'secondary' : 'primary'} onClick={handleFollow}>
-                  {isFollowing ? <UserCheck className="w-4 h-4 mr-1" /> : <UserPlus className="w-4 h-4 mr-1" />}
-                  {isFollowing ? '已关注' : '关注'}
-                </Button>
-                <Button size="sm" variant="outline">
-                  <Mail className="w-4 h-4 mr-1" /> 私信
-                </Button>
-                <Button size="icon" variant="ghost"><MoreHorizontal className="w-4 h-4" /></Button>
-              </>
-            )}
-          </div>
-        </div>
-        {/* 个人信息区 */}
-        <div className="pt-16 px-6 pb-4">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profile.name}</span>
-                {profile.isVerified && <span className="text-blue-500">✔</span>}
-              </div>
-              <div className="text-gray-500">@{profile.username}</div>
-              <div className="text-gray-500 text-sm mt-1 flex items-center gap-2">
-                {profile.bio && <span>{profile.bio}</span>}
-                {profile.location && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{profile.location}</span>}
-                {profile.website && <span className="flex items-center gap-1"><LinkIcon className="w-4 h-4" />{profile.website}</span>}
-                {profile.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />加入于 {new Date(profile.createdAt).toLocaleDateString()}</span>}
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <span>关注 <span className="font-bold">{profile.followingCount}</span></span>
-              <span>粉丝 <span className="font-bold">{profile.followerCount}</span></span>
+            <div className="mb-4">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {profile.username}
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400">
+                @{profile.handle}
+              </p>
             </div>
           </div>
-        </div>
-        {/* Tab栏和内容 */}
-        <div className="border-b border-border px-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-4 w-full">
-              <TabsTrigger value="posts">推文</TabsTrigger>
-              <TabsTrigger value="replies">回复</TabsTrigger>
-              <TabsTrigger value="media">媒体</TabsTrigger>
-              <TabsTrigger value="likes">喜欢</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        {/* Tab内容 */}
-        <div className="px-6 py-4">
-          {activeTab === 'posts' && <Feed username={username} />}
-          {activeTab === 'replies' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
-          {activeTab === 'media' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
-          {activeTab === 'likes' && <div className="text-center text-muted-foreground py-12">暂未开放</div>}
-        </div>
-      </>
-    </MainLayout>
-  );
-};
 
-export default Profile;
+          <div className="flex space-x-2">
+            {currentUser && currentUser._id !== profile._id ? (
+              <Button
+                variant={profile.isFollowing ? 'outline' : 'default'}
+                onClick={handleFollow}
+              >
+                {profile.isFollowing ? (
+                  <>
+                    <UserMinus className="w-4 h-4 mr-2" />
+                    取消关注
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    关注
+                  </>
+                )}
+              </Button>
+            ) : currentUser && currentUser._id === profile._id ? (
+              <Link to="/settings">
+                <Button variant="outline">
+                  <Settings className="w-4 h-4 mr-2" />
+                  编辑资料
+                </Button>
+              </Link>
+            ) : null}
+          </div>
+        </div>
+
+        {profile.bio && (
+          <p className="text-gray-700 dark:text-gray-300 mb-4">
+            {profile.bio}
+          </p>
+        )}
+
+        {/* 统计信息 */}
+        <div className="flex space-x-4 mb-4">
+          <Link
+            to={`/profile/${profile.username}/following`}
+            className="text-gray-700 dark:text-gray-300 hover:underline"
+          >
+            <span className="font-bold">{profile.followingCount}</span>{' '}
+            关注
+          </Link>
+          <Link
+            to={`/profile/${profile.username}/followers`}
+            className="text-gray-700 dark:text-gray-300 hover:underline"
+          >
+            <span className="font-bold">{profile.followersCount}</span>{' '}
+            粉丝
+          </Link>
+          <span className="text-gray-700 dark:text-gray-300">
+            <span className="font-bold">{profile.postsCount}</span>{' '}
+            帖子
+          </span>
+        </div>
+
+        {/* 标签页 */}
+        <div className="border-b border-gray-200 dark:border-gray-800">
+          <div className="flex space-x-8">
+            <button
+              className={cn(
+                'py-4 border-b-2 font-medium text-sm',
+                activeTab === 'posts'
+                  ? 'border-blue-500 text-blue-500'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+              )}
+              onClick={() => setActiveTab('posts')}
+            >
+              帖子
+            </button>
+            <button
+              className={cn(
+                'py-4 border-b-2 font-medium text-sm',
+                activeTab === 'media'
+                  ? 'border-blue-500 text-blue-500'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+              )}
+              onClick={() => setActiveTab('media')}
+            >
+              媒体
+            </button>
+            <button
+              className={cn(
+                'py-4 border-b-2 font-medium text-sm',
+                activeTab === 'likes'
+                  ? 'border-blue-500 text-blue-500'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+              )}
+              onClick={() => setActiveTab('likes')}
+            >
+              喜欢
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 内容列表 */}
+      <div className="divide-y divide-gray-200 dark:divide-gray-800">
+        {posts.map(post => (
+          <PostCard key={post._id} post={post} />
+        ))}
+      </div>
+    </div>
+  );
+}

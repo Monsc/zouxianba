@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { apiService } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
@@ -9,6 +9,7 @@ import LoginForm from './LoginForm';
 import CreatePostButton from './CreatePostButton';
 import { Loader2 } from 'lucide-react';
 import MainLayout from './layout/MainLayout';
+import { useInView } from 'react-intersection-observer';
 
 export const Feed = () => {
   const { username } = useParams();
@@ -20,42 +21,53 @@ export const Feed = () => {
   const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const feedRef = useRef(null);
+  const { ref: loadMoreRef, inView } = useInView({
+    threshold: 0,
+  });
+
+  const fetchPosts = async (isRefreshing = false) => {
+    try {
+      setLoading(true);
+      setError(null);
+      let data;
+      if (user) {
+        data = await apiService.getPosts(isRefreshing ? 1 : page);
+      } else {
+        data = await apiService.getPublicFeed(isRefreshing ? 1 : page);
+      }
+      let postsArr = [];
+      if (Array.isArray(data)) {
+        postsArr = data;
+      } else if (data && Array.isArray(data.posts)) {
+        postsArr = data.posts;
+      }
+      if (isRefreshing || page === 1) {
+        setPosts(postsArr);
+      } else {
+        setPosts(prev => [...prev, ...postsArr]);
+      }
+      setHasMore(data && typeof data.hasMore === 'boolean' ? data.hasMore : postsArr.length > 0);
+    } catch (error) {
+      setError(error?.response?.data?.message || '加载失败，请稍后重试');
+      toastError(error?.response?.data?.message || '加载失败，请稍后重试');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        let data;
-        if (user) {
-          data = await apiService.getPosts(page);
-        } else {
-          data = await apiService.getPublicFeed(page);
-        }
-        let postsArr = [];
-        if (Array.isArray(data)) {
-          postsArr = data;
-        } else if (data && Array.isArray(data.posts)) {
-          postsArr = data.posts;
-        }
-        if (page === 1) {
-          setPosts(postsArr);
-        } else {
-          setPosts(prev => [...prev, ...postsArr]);
-        }
-        setHasMore(data && typeof data.hasMore === 'boolean' ? data.hasMore : postsArr.length > 0);
-      } catch (error) {
-        setError(error?.response?.data?.message || '加载失败，请稍后重试');
-        toastError(error?.response?.data?.message || '加载失败，请稍后重试');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPosts();
   }, [username, page, user]);
 
-  const handleLoadMore = () => {
-    setPage(prev => prev + 1);
+  useEffect(() => {
+    if (inView && hasMore && !loading) {
+      setPage(prev => prev + 1);
+    }
+  }, [inView, hasMore, loading]);
+
+  const handleRefresh = async () => {
+    await fetchPosts(true);
   };
 
   const handleLike = async postId => {
@@ -116,58 +128,67 @@ export const Feed = () => {
 
   if (loading && page === 1) {
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-      </div>
+      <MainLayout>
+        <div className="space-y-6">
+          <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 p-4">
+            <CreatePostButton />
+          </div>
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+          </div>
+        </div>
+      </MainLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <p className="text-red-500 mb-4">{error}</p>
-        <button onClick={() => setPage(1)} className="text-blue-500 hover:text-blue-600">
-          重试
-        </button>
-      </div>
+      <MainLayout>
+        <div className="text-center py-8">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button onClick={() => setPage(1)} className="text-blue-500 hover:text-blue-600">
+            重试
+          </button>
+        </div>
+      </MainLayout>
     );
   }
 
   return (
     <MainLayout>
-      <div className="space-y-6">
-        {/* 发帖按钮 - 仅顶部显示 */}
+      <div className="space-y-6" ref={feedRef}>
+        {/* 发帖按钮 */}
         <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 p-4">
           <CreatePostButton />
         </div>
+
         {/* 内容列表 */}
-        {Array.isArray(posts) && posts.length > 0 ? (
-          <>
-            {posts.map(post => (
-              <PostCard
-                key={post._id}
-                post={post}
-                onLike={() => handleLike(post._id)}
-                onComment={handleComment}
-                onDelete={() => handleDelete(post._id)}
-              />
-            ))}
-            {hasMore && (
-              <div className="text-center py-4">
-                <button
-                  onClick={handleLoadMore}
-                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
-                >
-                  加载更多
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">暂无内容</p>
-          </div>
-        )}
+        <div className="space-y-4">
+          {Array.isArray(posts) && posts.length > 0 ? (
+            <>
+              {posts.map(post => (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  onLike={() => handleLike(post._id)}
+                  onComment={handleComment}
+                  onDelete={() => handleDelete(post._id)}
+                />
+              ))}
+              <div ref={loadMoreRef} className="h-4" />
+              {loading && (
+                <div className="flex justify-center py-4">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500 mb-4">暂无内容</p>
+            </div>
+          )}
+        </div>
+
         {/* 登录弹窗 */}
         <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
           <DialogContent>

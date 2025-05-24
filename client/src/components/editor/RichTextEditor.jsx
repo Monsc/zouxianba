@@ -5,9 +5,16 @@ import { apiService } from '../../services/api';
 import TopicSelector from './TopicSelector';
 import MentionSelector from './MentionSelector';
 import EmojiPicker from './EmojiPicker';
+import { cn } from '../../lib/utils';
 
-const RichTextEditor = ({ onSubmit, placeholder = '分享你的想法...' }) => {
-  const [content, setContent] = useState('');
+export const RichTextEditor = ({
+  value,
+  onChange,
+  placeholder = '有什么新鲜事？',
+  maxLength = 280,
+  className,
+}) => {
+  const [charCount, setCharCount] = useState(0);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState([]);
@@ -17,6 +24,13 @@ const RichTextEditor = ({ onSubmit, placeholder = '分享你的想法...' }) => 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.style.height = 'auto';
+      editorRef.current.style.height = `${editorRef.current.scrollHeight}px`;
+    }
+  }, [value]);
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
@@ -41,17 +55,16 @@ const RichTextEditor = ({ onSubmit, placeholder = '分享你的想法...' }) => 
   };
 
   const handleSubmit = async () => {
-    if (!content.trim() && images.length === 0) return;
+    if (!value.trim() && images.length === 0) return;
     
     try {
       setLoading(true);
-      await onSubmit({
-        content,
+      await onChange({
+        content: value,
         images: images.map(img => img.url),
         topics: selectedTopics,
         mentions: selectedMentions.map(user => user._id)
       });
-      setContent('');
       setImages([]);
       setSelectedTopics([]);
       setSelectedMentions([]);
@@ -62,9 +75,11 @@ const RichTextEditor = ({ onSubmit, placeholder = '分享你的想法...' }) => 
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && e.metaKey) {
-      handleSubmit();
+  const handleInput = (e) => {
+    const content = e.target.value;
+    if (content.length <= maxLength) {
+      onChange(content);
+      setCharCount(content.length);
     }
   };
 
@@ -88,42 +103,21 @@ const RichTextEditor = ({ onSubmit, placeholder = '分享你的想法...' }) => 
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-      <div className="flex items-start space-x-4">
-        <div className="flex-1">
-          <Editor
-            apiKey={process.env.REACT_APP_TINYMCE_API_KEY}
-            onInit={(evt, editor) => editorRef.current = editor}
-            value={content}
-            onEditorChange={(newContent) => setContent(newContent)}
-            init={{
-              height: 200,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
-              placeholder: placeholder,
-              resize: false,
-              auto_focus: true,
-              max_chars: 280,
-              setup: (editor) => {
-                editor.on('keyup', () => {
-                  const count = editor.getContent({ format: 'text' }).length;
-                  if (count > 280) {
-                    editor.setContent(editor.getContent().substring(0, 280));
-                  }
-                });
-              }
-            }}
-          />
-        </div>
+    <div className="relative">
+      <textarea
+        ref={editorRef}
+        value={value}
+        onChange={handleInput}
+        placeholder={placeholder}
+        className={cn(
+          'w-full resize-none bg-transparent outline-none text-[15px] leading-6',
+          'placeholder:text-gray-500 dark:placeholder:text-gray-400',
+          className
+        )}
+        rows={1}
+      />
+      <div className="absolute bottom-2 right-2 text-sm text-gray-500 dark:text-gray-400">
+        {charCount}/{maxLength}
       </div>
 
       {/* 工具栏 */}
@@ -166,7 +160,7 @@ const RichTextEditor = ({ onSubmit, placeholder = '分享你的想法...' }) => 
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={loading || (!content.trim() && images.length === 0)}
+          disabled={loading || (!value.trim() && images.length === 0)}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? '发布中...' : '发布'}
@@ -227,11 +221,6 @@ const RichTextEditor = ({ onSubmit, placeholder = '分享你的想法...' }) => 
           <EmojiPicker onSelect={handleEmojiSelect} />
         </div>
       )}
-
-      {/* 字符计数 */}
-      <div className="mt-2 text-right text-gray-500">
-        {content.length}/280
-      </div>
     </div>
   );
 };

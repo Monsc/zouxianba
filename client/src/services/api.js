@@ -393,6 +393,117 @@ class ApiService {
     });
     return response.data;
   }
+
+  // 搜索相关
+  async search(query, type = 'top') {
+    const response = await this.get('/search', { params: { q: query, type } });
+    return response.data;
+  }
+
+  // 用户相关
+  async followUser(userId) {
+    const response = await this.post(`/users/${userId}/follow`);
+    return response.data;
+  }
+
+  async unfollowUser(userId) {
+    const response = await this.delete(`/users/${userId}/follow`);
+    return response.data;
+  }
+
+  // 话题相关
+  async followTopic(topicId) {
+    const response = await this.post(`/topics/${topicId}/follow`);
+    return response.data;
+  }
+
+  async unfollowTopic(topicId) {
+    const response = await this.delete(`/topics/${topicId}/follow`);
+    return response.data;
+  }
+
+  // 帖子相关
+  async createPost(formData) {
+    const response = await this.post('/posts', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
+
+  async getPosts(page = 1) {
+    const response = await this.get('/posts', { params: { page } });
+    return response.data;
+  }
+
+  async getPublicFeed(page = 1) {
+    const response = await this.get('/posts/public', { params: { page } });
+    return response.data;
+  }
+
+  async likePost(postId) {
+    const response = await this.post(`/posts/${postId}/like`);
+    return response.data;
+  }
+
+  async createComment(postId, content) {
+    const response = await this.post(`/posts/${postId}/comments`, { content });
+    return response.data;
+  }
+
+  async deletePost(postId) {
+    const response = await this.delete(`/posts/${postId}`);
+    return response.data;
+  }
+
+  // 认证相关
+  async login(credentials) {
+    const response = await this.post('/auth/login', credentials);
+    return response.data;
+  }
+
+  async register(userData) {
+    const response = await this.post('/auth/register', userData);
+    return response.data;
+  }
+
+  // 文件上传
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await this.post('/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
+
+  // 消息相关接口
+  async getConversations() {
+    const response = await this.get('/messages/conversations');
+    return response.data;
+  }
+
+  async getMessages(conversationId) {
+    const response = await this.get(`/messages/conversations/${conversationId}/messages`);
+    return response.data;
+  }
+
+  async sendMessage(conversationId, content) {
+    const response = await this.post(`/messages/conversations/${conversationId}/messages`, {
+      content,
+    });
+    return response.data;
+  }
+
+  async createConversation(userId) {
+    const response = await this.post('/messages/conversations', {
+      participantId: userId,
+    });
+    return response.data;
+  }
 }
 
 // 创建并导出单例实例

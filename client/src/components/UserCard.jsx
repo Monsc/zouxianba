@@ -1,102 +1,59 @@
-import React, { useState } from 'react';
-import { Avatar } from './Avatar';
-import { Button } from '@/components/ui/button';
-import { FollowService } from '@/services/FollowService';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { Button } from './Button';
+import { apiService } from '../services/api';
+import { useToast } from '../hooks/useToast';
 
-export const UserCard = ({ user, onFollowChange, showBio = true, showStats = true }) => {
+export const UserCard = ({ user }) => {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
-  const [isFollowing, setIsFollowing] = useState(user.isFollowing);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleFollow = async () => {
     if (!currentUser) {
-      showToast('请先登录', 'warning');
-      return;
-    }
-
-    if (currentUser.id === user.id) {
+      showToast('请先登录', 'error');
       return;
     }
 
     try {
-      setIsLoading(true);
-      if (isFollowing) {
-        await FollowService.unfollowUser(user.id);
-        setIsFollowing(false);
-        onFollowChange?.(user.id, false);
-      } else {
-        await FollowService.followUser(user.id);
-        setIsFollowing(true);
-        onFollowChange?.(user.id, true);
-      }
+      await apiService.followUser(user._id);
+      showToast(user.isFollowing ? '已取消关注' : '关注成功');
     } catch (error) {
-      showToast('操作失败，请重试', 'error');
-    } finally {
-      setIsLoading(false);
+      showToast('操作失败，请稍后重试', 'error');
     }
   };
 
   return (
-    <div className="flex items-start space-x-3 p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-      <Link href={`/users/${user.id}`}>
-        <Avatar src={user.avatar} alt={user.username} size="md" className="flex-shrink-0" />
-      </Link>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between">
+    <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+      <div className="flex items-center justify-between">
+        <Link to={`/profile/${user.username}`} className="flex items-center space-x-3">
+          <img
+            src={user.avatar}
+            alt={user.username}
+            className="w-12 h-12 rounded-full"
+          />
           <div>
-            <Link
-              href={`/users/${user.id}`}
-              className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:underline"
-            >
+            <h3 className="font-bold text-gray-900 dark:text-white">
               {user.username}
-            </Link>
-            {showBio && user.bio && (
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              @{user.handle}
+            </p>
+            {user.bio && (
+              <p className="mt-1 text-gray-600 dark:text-gray-300">
                 {user.bio}
               </p>
             )}
           </div>
-
-          {currentUser && currentUser.id !== user.id && (
-            <Button
-              variant={isFollowing ? 'outline' : 'primary'}
-              size="sm"
-              onClick={handleFollow}
-              disabled={isLoading}
-              className={cn('ml-4', isFollowing && 'text-gray-500 hover:text-red-500')}
-            >
-              {isFollowing ? '取消关注' : '关注'}
-            </Button>
-          )}
-        </div>
-
-        {showStats && (
-          <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-            <Link
-              href={`/users/${user.id}/followers`}
-              className="hover:text-gray-700 dark:hover:text-gray-200"
-            >
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {user.followersCount}
-              </span>{' '}
-              粉丝
-            </Link>
-            <Link
-              href={`/users/${user.id}/following`}
-              className="hover:text-gray-700 dark:hover:text-gray-200"
-            >
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {user.followingCount}
-              </span>{' '}
-              关注
-            </Link>
-          </div>
+        </Link>
+        {currentUser && currentUser._id !== user._id && (
+          <Button
+            variant={user.isFollowing ? 'outline' : 'default'}
+            size="sm"
+            onClick={handleFollow}
+          >
+            {user.isFollowing ? '取消关注' : '关注'}
+          </Button>
         )}
       </div>
     </div>

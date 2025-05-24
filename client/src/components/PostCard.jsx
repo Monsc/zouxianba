@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './Button';
 import { formatDistanceToNow } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
 import ReportModal from './ReportModal';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Repeat2 } from 'lucide-react';
+import { cn } from '../lib/utils';
+import { useToast } from '../hooks/useToast';
+import { apiService } from '../services/api';
 
 export const PostCard = ({ post, onLike, onComment, onDelete }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   const [showComments, setShowComments] = useState(false);
   const [commentContent, setCommentContent] = useState('');
   const [showReport, setShowReport] = useState(false);
+  const [isLiked, setIsLiked] = useState(post.liked);
+  const [likes, setLikes] = useState(post.likes);
+  const [shares, setShares] = useState(post.shares || 0);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+  const [isReposted, setIsReposted] = useState(post.isReposted);
+  const [repostCount, setRepostCount] = useState(post.repostCount);
+
+  // 点击外部关闭菜单
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSubmitComment = e => {
     e.preventDefault();
@@ -27,158 +53,242 @@ export const PostCard = ({ post, onLike, onComment, onDelete }) => {
     navigate(`/post/${post._id}`);
   };
 
-  return (
-    <div className="post-card relative">
-      {/* 举报按钮 */}
-      <button
-        className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors z-10"
-        onClick={() => setShowReport(true)}
-        aria-label="举报"
-      >
-        <i className="icon-bell" />
-      </button>
-      {showReport && (
-        <ReportModal
-          type="content"
-          targetId={post._id}
-          onClose={() => setShowReport(false)}
+  const handleLike = async () => {
+    try {
+      if (isLiked) {
+        await apiService.unlikePost(post._id);
+        setLikes(prev => prev - 1);
+      } else {
+        await apiService.likePost(post._id);
+        setLikes(prev => prev + 1);
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      showToast('操作失败', 'error');
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.share({
+        title: `${post.author.username} 的帖子`,
+        text: post.content,
+        url: window.location.origin + `/post/${post._id}`,
+      });
+      setShares(prev => prev + 1);
+    } catch (error) {
+      console.error('分享失败:', error);
+    }
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('确定要删除这条帖子吗？')) {
+      onDelete(post._id);
+    }
+  };
+
+  const handleRepost = async () => {
+    try {
+      if (isReposted) {
+        await apiService.unrepostPost(post._id);
+        setRepostCount(prev => prev - 1);
+      } else {
+        await apiService.repostPost(post._id);
+        setRepostCount(prev => prev + 1);
+      }
+      setIsReposted(!isReposted);
+    } catch (error) {
+      showToast('操作失败', 'error');
+    }
+  };
+
+  const renderMedia = () => {
+    if (!post.media) return null;
+
+    if (post.media.type === 'image') {
+      return (
+        <img
+          src={post.media.url}
+          alt="Post attachment"
+          className="mt-4 rounded-lg max-h-96 w-full object-cover"
+          loading="lazy"
         />
-      )}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-        <div className="flex items-start space-x-4">
-          <Link to={`/profile/${post.author.username}`}>
-            <img
-              src={post.author.avatar || '/default-avatar.png'}
-              alt={post.author.username}
-              className="w-12 h-12 rounded-full"
-            />
-          </Link>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <Link
-                  to={`/profile/${post.author.username}`}
-                  className="font-bold text-gray-900 dark:text-white hover:underline"
-                >
-                  {post.author.username}
-                </Link>
-                <span className="text-gray-500 dark:text-gray-400 ml-2">@{post.author.handle}</span>
-              </div>
-              <div className="text-gray-500 dark:text-gray-400 text-sm">
-                {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-              </div>
+      );
+    }
+
+    if (post.media.type === 'video') {
+      return (
+        <video
+          src={post.media.url}
+          controls
+          className="mt-4 rounded-lg max-h-96 w-full"
+          poster={post.media.thumbnail}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <div
+      className="bg-white dark:bg-gray-900 rounded-lg shadow p-4"
+      role="article"
+      tabIndex={0}
+      aria-label={`${post.author.username} 的帖子`}
+    >
+      <div className="flex items-start space-x-4">
+        <Link
+          to={`/profile/${post.author.username}`}
+          className="flex-shrink-0"
+          onClick={handleAuthorClick}
+        >
+          <img
+            src={post.author.avatar}
+            alt={post.author.username}
+            className="w-12 h-12 rounded-full"
+            loading="lazy"
+          />
+        </Link>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <Link
+                to={`/profile/${post.author.username}`}
+                className="font-bold text-gray-900 dark:text-white hover:underline"
+                onClick={handleAuthorClick}
+              >
+                {post.author.username}
+              </Link>
+              <span className="text-gray-500 dark:text-gray-400 ml-2">@{post.author.handle}</span>
             </div>
-            <p className="mt-2 text-gray-900 dark:text-white">{post.content}</p>
-            {post.image && (
-              <img
-                src={post.image}
-                alt="Post attachment"
-                className="mt-4 rounded-lg max-h-96 w-full object-cover"
-              />
-            )}
-            <div className="mt-4 flex items-center space-x-6">
-              <button
-                onClick={() => onLike(post._id)}
-                className={`flex items-center space-x-2 ${
-                  post.liked
-                    ? 'text-red-500'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-red-500'
-                }`}
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill={post.liked ? 'currentColor' : 'none'}
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-                <span>{post.likes}</span>
-              </button>
-              <button
-                onClick={() => setShowComments(!showComments)}
-                className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-blue-500"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
-                <span>{post.commentCount}</span>
-              </button>
-              {user && user._id === post.author._id && (
-                <button
-                  onClick={() => onDelete(post._id)}
-                  className="text-gray-500 dark:text-gray-400 hover:text-red-500"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-500 dark:text-gray-400 text-sm">
+                {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: zhCN })}
+              </span>
+              {user && (user._id === post.author._id || user.isAdmin) && (
+                <div className="relative" ref={menuRef}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowMenu(!showMenu)}
+                    aria-label="更多选项"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                  {showMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10">
+                      <button
+                        onClick={handleDelete}
+                        className="w-full px-4 py-2 text-left text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        删除
+                      </button>
+                      <button
+                        onClick={() => setShowReport(true)}
+                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        举报
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
-            {showComments && (
-              <div className="mt-4 space-y-4">
-                {Array.isArray(post.comments) &&
-                  post.comments.map(comment => (
-                    <div key={comment._id} className="flex space-x-4">
-                      <img
-                        src={comment.author.avatar || '/default-avatar.png'}
-                        alt={comment.author.username}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center">
-                          <Link
-                            to={`/profile/${comment.author.username}`}
-                            className="font-bold text-gray-900 dark:text-white hover:underline"
-                          >
-                            {comment.author.username}
-                          </Link>
-                          <span className="text-gray-500 dark:text-gray-400 ml-2 text-sm">
-                            {formatDistanceToNow(new Date(comment.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-gray-900 dark:text-white">{comment.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                {user && (
-                  <form onSubmit={handleSubmitComment} className="mt-4">
-                    <div className="flex space-x-4">
-                      <input
-                        type="text"
-                        value={commentContent}
-                        onChange={e => setCommentContent(e.target.value)}
-                        placeholder="Write a comment..."
-                        className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <Button type="submit" disabled={!commentContent.trim()}>
-                        Comment
-                      </Button>
-                    </div>
-                  </form>
-                )}
-              </div>
-            )}
           </div>
+          <div className="mt-2 text-[15px] whitespace-pre-wrap">
+            {post.content}
+          </div>
+
+          {Array.isArray(post.tags) && post.tags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {post.tags.map(tag => (
+                <span
+                  key={tag}
+                  className="text-primary hover:underline cursor-pointer"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {renderMedia()}
+
+          <div className="mt-3 flex items-center justify-between max-w-md">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowComments(true)}
+              className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+              aria-label="评论"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>{post.comments?.length || 0}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRepost}
+              className={`flex items-center space-x-1 ${
+                isReposted
+                  ? 'text-green-500'
+                  : 'text-gray-500 hover:text-green-500 dark:text-gray-400 dark:hover:text-green-400'
+              }`}
+            >
+              <Repeat2 className="h-4 w-4" />
+              <span>{repostCount}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLike}
+              className={`flex items-center space-x-1 ${
+                isLiked
+                  ? 'text-red-500'
+                  : 'text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400'
+              }`}
+            >
+              <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+              <span>{likes}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleShare}
+              className="flex items-center space-x-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+              aria-label="分享"
+            >
+              <Share2 className="h-4 w-4" />
+              <span>{shares}</span>
+            </Button>
+          </div>
+
+          {showComments && (
+            <div className="mt-4">
+              <form onSubmit={handleSubmitComment} className="flex space-x-2">
+                <input
+                  type="text"
+                  value={commentContent}
+                  onChange={e => setCommentContent(e.target.value)}
+                  placeholder="添加评论..."
+                  className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="评论输入框"
+                />
+                <Button type="submit" disabled={!commentContent.trim()}>
+                  发送
+                </Button>
+              </form>
+            </div>
+          )}
         </div>
       </div>
+
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        postId={post._id}
+      />
     </div>
   );
 };
