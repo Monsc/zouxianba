@@ -184,6 +184,18 @@ class UserController {
       });
     }
   }
+
+  // 推荐用户（推特化体验）
+  async getRecommendedUsers(req, res) {
+    try {
+      // TODO: 实现推荐算法，这里先返回空数组
+      res.json([]);
+    } catch (error) {
+      res.status(error.statusCode || 500).json({
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = new UserController(); 
