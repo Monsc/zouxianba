@@ -72,22 +72,22 @@ function RightSidebar() {
   }
 
   return (
-    <aside className="sidebar-right hidden xl:flex flex-col w-80 p-4 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-[#192734] space-y-6">
+    <aside className="sidebar-right hidden xl:flex flex-col w-80 p-4 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2233] space-y-6 transition-colors duration-300">
       {/* 搜索框 */}
       <div className="search-box mb-6">
         <div className="relative">
           <input
             type="text"
             placeholder="搜索走线吧"
-            className="w-full px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-2 rounded-full bg-gray-100 dark:bg-[#22303c] border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-gray-900 dark:text-gray-100"
             onClick={() => navigate('/search')}
           />
-          <i className="icon-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <i className="icon-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
         </div>
       </div>
 
       {/* 推荐用户 */}
-      <div className="bg-gray-50 dark:bg-[#22303c] rounded-2xl shadow p-4 mb-4">
+      <div className="bg-white dark:bg-[#22303c] rounded-2xl shadow-lg p-4 mb-4 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">推荐关注</h2>
         <div className="space-y-4">
           {users.map(user => (
@@ -111,7 +111,7 @@ function RightSidebar() {
                 className={`px-4 py-1 rounded-full text-sm font-bold transition-colors shadow-sm border-none focus:outline-none focus:ring-2 focus:ring-primary/50 ${
                   user.isFollowing
                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                    : 'bg-primary text-white hover:bg-primary-hover'
+                    : 'bg-primary text-white hover:bg-primary-hover dark:bg-blue-500 dark:hover:bg-blue-600'
                 }`}
                 onClick={async e => {
                   e.stopPropagation();
@@ -137,7 +137,7 @@ function RightSidebar() {
       </div>
 
       {/* 热门话题 */}
-      <div className="bg-gray-50 dark:bg-[#22303c] rounded-2xl shadow p-4">
+      <div className="bg-white dark:bg-[#22303c] rounded-2xl shadow-lg p-4 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">热门话题</h2>
         <div className="space-y-3">
           {topics.map(topic => (
@@ -154,18 +154,18 @@ function RightSidebar() {
       </div>
 
       {/* 底部链接 */}
-      <div className="mt-8 text-sm text-gray-500">
+      <div className="mt-8 text-sm text-gray-500 dark:text-gray-400">
         <div className="flex flex-wrap gap-2">
-          <a href="/about" className="hover:text-gray-700">
+          <a href="/about" className="hover:text-gray-700 dark:hover:text-gray-200">
             关于我们
           </a>
-          <a href="/privacy" className="hover:text-gray-700">
+          <a href="/privacy" className="hover:text-gray-700 dark:hover:text-gray-200">
             隐私政策
           </a>
-          <a href="/terms" className="hover:text-gray-700">
+          <a href="/terms" className="hover:text-gray-700 dark:hover:text-gray-200">
             使用条款
           </a>
-          <a href="/help" className="hover:text-gray-700">
+          <a href="/help" className="hover:text-gray-700 dark:hover:text-gray-200">
             帮助中心
           </a>
         </div>

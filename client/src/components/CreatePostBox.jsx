@@ -78,10 +78,10 @@ function CreatePostBox() {
   };
 
   return (
-    <div className="create-post-box bg-white dark:bg-[#15202b] rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-4 mb-4">
+    <div className="create-post-box bg-white dark:bg-[#1a2233] rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 mb-4 transition-colors duration-300">
       <form onSubmit={handleSubmit} className="post-form flex flex-col gap-4">
         {error && (
-          <div className="error-message bg-red-100 text-red-700 rounded px-3 py-2 text-sm mb-2">
+          <div className="error-message bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded px-3 py-2 text-sm mb-2 border border-red-200 dark:border-red-700">
             {error}
           </div>
         )}
@@ -93,14 +93,14 @@ function CreatePostBox() {
             className="avatar w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 object-cover shadow"
           />
           <div className="author-info">
-            <span className="username font-bold text-md">{user?.username || '游客'}</span>
-            <span className="handle text-gray-400 text-sm ml-2">@{user?.handle || 'guest'}</span>
+            <span className="username font-bold text-md text-gray-900 dark:text-gray-100">{user?.username || '游客'}</span>
+            <span className="handle text-gray-400 dark:text-gray-500 text-sm ml-2">@{user?.handle || 'guest'}</span>
           </div>
         </div>
 
         <textarea
           ref={textareaRef}
-          className="post-input w-full min-h-[80px] rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#15202b] p-3 text-md resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+          className="post-input w-full min-h-[80px] rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#192734] text-gray-900 dark:text-gray-100 p-3 text-md resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-all"
           placeholder="有什么新鲜事？"
           value={content}
           onChange={e => setContent(e.target.value)}
@@ -113,12 +113,12 @@ function CreatePostBox() {
             {images.map((file, index) => (
               <div
                 key={index}
-                className="media-item relative group rounded-lg overflow-hidden shadow"
+                className="media-item relative group rounded-lg overflow-hidden shadow bg-gray-100 dark:bg-[#22303c] border border-gray-200 dark:border-gray-700"
               >
                 <img
                   src={URL.createObjectURL(file)}
                   alt={`Media ${index + 1}`}
-                  className="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                  className="w-full h-32 object-cover rounded-lg"
                 />
                 <button
                   type="button"
@@ -135,7 +135,7 @@ function CreatePostBox() {
 
         <div className="post-actions flex items-center justify-between mt-2">
           <div className="flex items-center gap-4">
-            <label className="media-upload cursor-pointer flex items-center gap-2 text-primary hover:text-blue-400 transition-colors">
+            <label className="media-upload cursor-pointer flex items-center gap-2 text-primary hover:text-blue-400 dark:hover:text-blue-300 transition-colors">
               <input
                 type="file"
                 accept="image/*,video/*"
