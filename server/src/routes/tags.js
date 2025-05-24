@@ -51,4 +51,10 @@ router.get('/:name/posts', async (req, res) => {
   }
 });
 
+// 获取热门话题（推特化体验）
+router.get('/topics/trending', (req, res) => {
+  // TODO: 可实现真实热门话题逻辑
+  res.json([]);
+});
+
 module.exports = router; 

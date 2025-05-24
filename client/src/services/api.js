@@ -87,7 +87,10 @@ class ApiService {
 
         if (error.response?.status === 401 && needAuth) {
           useUserStore.getState().clearUser();
-          window.location.href = '/login';
+          // 只在非登录页跳转，且加hash防抖
+          if (!window.location.pathname.startsWith('/login')) {
+            window.location.href = '/login#redirected';
+          }
           return Promise.reject(error);
         }
 
