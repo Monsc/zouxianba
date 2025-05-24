@@ -200,7 +200,14 @@ class ApiService {
   }
 
   async createPost(data) {
-    const response = await this.post('/posts', data);
+    // 提取话题标签
+    const hashtags = data.content.match(/#[\w\u4e00-\u9fa5]+/g) || [];
+    const processedHashtags = hashtags.map(tag => tag.slice(1)); // 移除#符号
+    
+    const response = await this.post('/posts', {
+      ...data,
+      hashtags: processedHashtags
+    });
     return response.data;
   }
 
@@ -337,6 +344,23 @@ class ApiService {
     return response.data;
   }
 
+  async getTopicPosts(topic, page = 1, limit = 20) {
+    const response = await this.get(`/topics/${encodeURIComponent(topic)}/posts`, {
+      params: { page, limit }
+    });
+    return response.data;
+  }
+
+  async followTopic(topic) {
+    const response = await this.post(`/topics/${encodeURIComponent(topic)}/follow`);
+    return response.data;
+  }
+
+  async unfollowTopic(topic) {
+    const response = await this.delete(`/topics/${encodeURIComponent(topic)}/follow`);
+    return response.data;
+  }
+
   async sendImageMessage(userId, imageFile) {
     const formData = new FormData();
     formData.append('image', imageFile);
@@ -351,6 +375,19 @@ class ApiService {
   // 获取公开信息流
   async getPublicFeed(page = 1, limit = 20) {
     const response = await this.get('/posts/public-feed', { params: { page, limit } });
+    return response.data;
+  }
+
+  // 转发功能
+  async repost(postId, comment = '') {
+    const response = await this.post(`/posts/${postId}/repost`, { comment });
+    return response.data;
+  }
+
+  async getReposts(postId, page = 1, limit = 20) {
+    const response = await this.get(`/posts/${postId}/reposts`, {
+      params: { page, limit }
+    });
     return response.data;
   }
 }

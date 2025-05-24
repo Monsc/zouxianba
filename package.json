@@ -41,7 +41,11 @@
     "redis": "^5.0.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
-    "speakeasy": "^2.0.0"
+    "speakeasy": "^2.0.0",
+    "@sentry/react": "^7.0.0",
+    "@sentry/tracing": "^7.0.0",
+    "@tinymce/tinymce-react": "^4.0.0",
+    "crypto-js": "^4.1.1"
   },
   "lint-staged": {
     "*.{js,jsx}": [

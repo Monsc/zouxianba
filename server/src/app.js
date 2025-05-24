@@ -11,6 +11,8 @@ const { errorHandler } = require('./middleware/errorHandler');
 const { securityMiddleware } = require('./middleware/security');
 const { performanceMiddleware } = require('./middleware/performance');
 const routes = require('./routes');
+const Sentry = require('@sentry/node');
+const Tracing = require('@sentry/tracing');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -19,6 +21,20 @@ const prisma = new PrismaClient();
 const redisClient = createClient({
   url: process.env.REDIS_URL,
 });
+
+// Sentry 初始化
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [
+    new Sentry.Integrations.Http({ tracing: true }),
+    new Tracing.Integrations.Express({ app }),
+  ],
+  tracesSampleRate: 1.0,
+});
+
+// Sentry 请求监控中间件（必须在所有路由和中间件之前）
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
 
 // 中间件
 app.use(helmet());
@@ -58,6 +74,9 @@ app.use(performanceMiddleware);
 
 // 路由
 app.use('/api', routes);
+
+// Sentry 错误处理（必须在所有路由和自定义错误处理中间件之后）
+app.use(Sentry.Handlers.errorHandler());
 
 // 错误处理
 app.use(errorHandler);
